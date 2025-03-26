@@ -1,5 +1,3 @@
-from scipy.integrate import solve_ivp
-
 from .model import Model
 import numpy as np
 
@@ -46,32 +44,32 @@ class TwoTanks(Model):
             index = int(t // self.Ts) - 1
         else:
             index = int(t // self.Ts)
-        return self.u1_data[index]
+        return self.u_data[index, 0]
     
     def u2(self, t: float) -> float:
         if t % self.Ts == 0 and t != 0:
             index = int(t // self.Ts) - 1
         else:
             index = int(t // self.Ts)
-        return self.u2_data[index]
+        return self.u_data[index, 1]
     
-    def simulate(self, h1: float, h2: float, u1: list, u2: list, Ts: float) -> list:
-        self.reset_history()
-        self.u1_data = u1
-        self.u2_data = u2
-        self.Ts = Ts
+    # def simulate(self, h1: float, h2: float, u1: list, u2: list, Ts: float) -> list:
+    #     self.reset_history()
+    #     self.u1_data = u1
+    #     self.u2_data = u2
+    #     self.Ts = Ts
             
-        state = {"h1": h1, "h2": h2, "u1": u1[0], "u2": u2[0]}
+    #     state = {"h1": h1, "h2": h2, "u1": u1[0], "u2": u2[0]}
             
-        for i in range(len(u1)):
-            t_span = [i * Ts, (i + 1) * Ts]
-            sol = solve_ivp(self.ode, t_span, [h1,h2], t_eval=t_span, method='RK45')
-            h1 = sol.y[0][-1]
-            h2 = sol.y[1][-1]
-            state = {"h1": h1, "h2": h2, "u1": u1[i], "u2": u2[i]}
-            self.log_state(state)
+    #     for i in range(len(u1)):
+    #         t_span = [i * Ts, (i + 1) * Ts]
+    #         sol = solve_ivp(self.ode, t_span, [h1,h2], t_eval=t_span, method='RK45')
+    #         h1 = sol.y[0][-1]
+    #         h2 = sol.y[1][-1]
+    #         state = {"h1": h1, "h2": h2, "u1": u1[i], "u2": u2[i]}
+    #         self.log_state(state)
             
-        return self.get_history()
+    #     return self.get_history()
     
 
         
