@@ -42,5 +42,15 @@ class Model:
             self.log_state(state)
         
         return self.get_history()
-        
+    
+    def step(self, y0: list, u: list, Ts: float) -> list:
+        '''
+        Simulate the model for one step. u should have nu colomns and 1 row.
+        '''
+        self.reset_history()
+        self.u_data = u
+        self.Ts = Ts
+        t_span = [0, Ts]
+        sol = solve_ivp(self.ode, t_span, y0, t_eval=t_span, method='RK45')
+        return sol.y[:,-1]
     

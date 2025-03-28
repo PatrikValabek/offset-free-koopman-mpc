@@ -28,7 +28,8 @@ class TwoTanks(Model):
         h2 = max(h2, 0.0)
 
         if self.interaction:
-            flow12 = self.k1 * np.sqrt(max(h1 - h2, 0.0))
+            delta_h = h1 - h2
+            flow12 = self.k1 * np.sign(delta_h) * np.sqrt(abs(delta_h))
         else:
             flow12 = 0.0
 
