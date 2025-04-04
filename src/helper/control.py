@@ -3,16 +3,48 @@ import torch
 
 from .koopman import evaluate_jacobian
 
-class EKF():
+class KF():
+    def __init__(self, A, B, C, x0, P0, Q, R):
+        self.A = A
+        self.B = B
+        self.C = C
+        self.Q = Q
+        self.R = R
+        self.x = x0
+        self.P = P0  
+        
+    def predict(self, u):
+        self.x = self.A @ self.x.reshape(-1,1) + self.B @ u.reshape(-1,1)
+        self.P = self.A @ self.P @ self.A.T + self.Q
+        return self.x, self.P
     
-    def __init__(self, A, B, x0, P0, problem, Q, R):
+    def update(self, y):
+        y_pred = self.C@self.x.reshape(-1,1)
+        S = self.C @ self.P @ self.C.T + self.R
+        K = self.P @ self.C.T @ np.linalg.inv(S)
+        self.x = self.x + K @ (y - y_pred.T).T
+        self.P = (np.eye(self.P.shape[0]) - K @ self.C) @ self.P
+        
+    def step(self, u, y):
+        self.predict(u)
+        self.update(y)
+        return self.x
+        
+    
+class EKF():
+    def __init__(self, A, B, x0, P0, problem, H, Q, R, disturbance=0):
+        self.disturbance = disturbance
         self.A = A
         self.B = B
         self.Q = Q
         self.R = R
         self.x = x0
         self.P = P0
+        self.H = H
         self.problem = problem
+        self.nd = disturbance
+        self.nx = A.shape[0] - self.nd
+        self.ny = H.shape[1] - self.nd
     
     def get_y(self, x):
         y = self.problem.nodes[4]({"x": torch.from_numpy(x.T).float()})
@@ -24,12 +56,13 @@ class EKF():
         return self.x, self.P
     
     def update(self, y):
-        H = evaluate_jacobian(self.problem.nodes[4], torch.tensor(self.x).T[0])
-        y_pred = self.get_y(self.x.T[0])
-        S = H @ self.P @ H.T + self.R
-        K = self.P @ H.T @ np.linalg.inv(S)
+        y_pred = self.get_y(self.x.T[0:self.nx]) + self.x.T[self.nx:]
+        S = self.H @ self.P @ self.H.T + self.R
+        K = self.P @ self.H.T @ np.linalg.inv(S)
+        print(K @ (y - y_pred).T)
+        print(self.x)
         self.x = self.x + K @ (y - y_pred).T
-        self.P = (np.eye(self.P.shape[0]) - K @ H) @ self.P
+        self.P = (np.eye(self.P.shape[0]) - K @ self.H) @ self.P
         
     def step(self, u, y):
         self.predict(u)
