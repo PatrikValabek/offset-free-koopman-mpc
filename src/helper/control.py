@@ -32,7 +32,7 @@ class KF():
         
     
 class EKF():
-    def __init__(self, A, B, x0, P0, problem, H, Q, R, disturbance=0):
+    def __init__(self, A, B, x0, P0, problem, Q, R, disturbance=0):
         self.disturbance = disturbance
         self.A = A
         self.B = B
@@ -40,11 +40,9 @@ class EKF():
         self.R = R
         self.x = x0
         self.P = P0
-        self.H = H
         self.problem = problem
         self.nd = disturbance
         self.nx = A.shape[0] - self.nd
-        self.ny = H.shape[1] - self.nd
     
     def get_y(self, x):
         y = self.problem.nodes[4]({"x": torch.from_numpy(x.T).float()})
@@ -56,11 +54,11 @@ class EKF():
         return self.x, self.P
     
     def update(self, y):
-        y_pred = self.get_y(self.x.T[0:self.nx]) + self.x.T[self.nx:]
+        y_pred = self.get_y(self.x.T[0,0:self.nx]) + self.x.T[0,self.nx:]
+        J = evaluate_jacobian(self.problem.nodes[4], torch.tensor(self.x[:self.nx]).T[0])
+        self.H = np.hstack([J, np.eye(self.nd)])
         S = self.H @ self.P @ self.H.T + self.R
         K = self.P @ self.H.T @ np.linalg.inv(S)
-        print(K @ (y - y_pred).T)
-        print(self.x)
         self.x = self.x + K @ (y - y_pred).T
         self.P = (np.eye(self.P.shape[0]) - K @ self.H) @ self.P
         
