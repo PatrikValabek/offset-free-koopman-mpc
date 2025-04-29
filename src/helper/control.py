@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.linalg import inv
 import torch
 
 from .koopman import evaluate_jacobian
@@ -32,7 +33,7 @@ class KF():
         
     
 class EKF():
-    def __init__(self, A, B, x0, P0, problem, Q, R, disturbance=0):
+    def __init__(self, A, B, x0, P0, problem, Q, R, disturbance=0, T_real = None):
         self.disturbance = disturbance
         self.A = A
         self.B = B
@@ -41,6 +42,10 @@ class EKF():
         self.x = x0
         self.P = P0
         self.problem = problem
+        if T_real is not None:
+            self.T_real = T_real
+        else:
+            self.T_real = np.eye(A.shape[0]-disturbance)
         self.nd = disturbance
         self.nx = A.shape[0] - self.nd
     
@@ -54,9 +59,9 @@ class EKF():
         return self.x, self.P
     
     def update(self, y):
-        y_pred = self.get_y(self.x.T[0,0:self.nx]) + self.x.T[0,self.nx:]
+        y_pred = self.get_y(self.T_real@self.x.T[0,0:self.nx]) + self.x.T[0,self.nx:]
         J = evaluate_jacobian(self.problem.nodes[4], torch.tensor(self.x[:self.nx]).T[0])
-        self.H = np.hstack([J, np.eye(self.nd)])
+        self.H = np.hstack([J@self.T_real, np.eye(self.nd)])
         S = self.H @ self.P @ self.H.T + self.R
         K = self.P @ self.H.T @ np.linalg.inv(S)
         self.x = self.x + K @ (y - y_pred).T
