@@ -217,6 +217,52 @@
 \section{Results}
 \label{sec:Results}
 
+\begin{table}[h]
+  \centering
+  \caption{Comparison of structure of A}
+  \label{tab:ident-comp}
+  \begin{tabular}{cccccc}
+      \toprule
+        Structure & Time TE/MPC & Optimal? \([\%]\) & OBJ & ST \(h_1\) & ST \(h_2\) \\
+        \midrule
+        Full          & 0.2392 / 2.3884 & 26.7 & 100.0 & 43 & 48 \\
+        Block Diagonal & 0.2191 / 1.6204 & 100.0 & 94.1 & 25 & 31 \\
+        \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{Comparison of several methods}
+  \label{tab:ident-comp}
+  \begin{tabular}{cccccc}
+      \toprule
+        Structure & OBJ u  & OBJ y & OBJ & ST \(h_1\) & ST \(h_2\) \\
+        \midrule
+        NMPC          & 4.4568 & 20.3818 & 100.0  & 8 & 8 \\%(24.8386)
+        Parsim-K      & 6.0253 & 24.5910 & 123.3 & 27 & 27 \\
+        Full C          & 3.8177 & 23.8167 & 111.3 & 66 & 78 \\
+        Block Diagonal C & 3.8492 & 22.4462 & 105.9 & 47 & 42 \\
+        Full \(C_k\)          & 11.5966 & 18.9656 & 123.0 & 31 & 23 \\
+        Block Diagonal \(C_k\) &  11.5214 & 19.0154 & 122.9 & 30 & 23 \\
+        \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{Comparison of several Tunings}
+  \label{tab:ident-comp}
+  \begin{tabular}{cccccc}
+      \toprule
+        Tuning & OBJ u  & OBJ y & OBJ & ST \(h_1\) & ST \(h_2\) \\
+        \midrule
+        \(C_k(z0)\)          & 3.9120 & 29.3575 & 133.9  & 24 & 23 \\%(24.8386)
+        \(C_k(z_s)\)      & 11.3832 & 19.4816 & 124.3 & 31 & 23 \\
+        C          & 3.8177 & 23.8167 & 111.3 & 66 & 78 \\
+        \bottomrule
+  \end{tabular}
+\end{table}
 
 %\bibliographystyle{elsarticle-num-names}  % Elsevier's numbered citation style
 %\bibliography{bibfile}

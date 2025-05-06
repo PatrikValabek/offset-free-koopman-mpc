@@ -1,6 +1,8 @@
 import numpy as np
 from numpy.linalg import inv
 import torch
+import cvxpy as cp
+import joblib
 
 from .koopman import evaluate_jacobian
 
@@ -60,7 +62,7 @@ class EKF():
     
     def update(self, y):
         y_pred = self.get_y(self.T_real@self.x.T[0,0:self.nx]) + self.x.T[0,self.nx:]
-        J = evaluate_jacobian(self.problem.nodes[4], torch.tensor(self.x[:self.nx]).T[0])
+        J = evaluate_jacobian(self.problem.nodes[4], torch.tensor(self.T_real@self.x[:self.nx]).T[0])
         self.H = np.hstack([J@self.T_real, np.eye(self.nd)])
         S = self.H @ self.P @ self.H.T + self.R
         K = self.P @ self.H.T @ np.linalg.inv(S)
@@ -72,150 +74,73 @@ class EKF():
         self.update(y)
         return self.x
     
-class EKF_test():
-    
-    def __init__(self, A, B, x0, P0, problem, Q, R, disturbance=False, F=None, C=None):
-        self.disturbance = disturbance
-        self.problem = problem
-        self.Q = Q
-        self.R = R
-        self.x = x0
-        self.P = P0
-
-        if disturbance:
-            assert F is not None and C is not None, "F and C must be provided if disturbance is True"
-
-            self.F = F
-            self.C = C
-
-            nx = A.shape[0]
-            nd = F.shape[1]
-            nu = B.shape[1]
-
-            # Augmented dynamics
-            self.A = np.block([
-                [A, np.zeros((nx, nd))],
-                [np.zeros((nd, nx)), np.eye(nd)]
-            ])
-            self.B = np.vstack([
-                B,
-                np.zeros((nd, nu))
-            ])
-        else:
-            self.A = A
-            self.B = B
-            self.C = C
-            self.F = np.zeros((C.shape[0], 0))  # no disturbance part
-
-    
-    def get_y(self, x_physical, d=None):
-        """
-        Get predicted measurement y from physical state x and optional disturbance d
-        """
-        yhat = self.C @ x_physical.reshape(-1, 1)
-        if self.disturbance and d is not None:
-            yhat = self.C @ x_physical.reshape(-1, 1) +  self.F @ d.reshape(-1, 1)
-
-        return yhat.reshape(1, -1)
-    
-    def predict(self, u):
-        self.x = self.A @ self.x.reshape(-1, 1) + self.B @ u.reshape(-1, 1)
-        self.P = self.A @ self.P @ self.A.T + self.Q
-        return self.x, self.P
-    
-    def update(self, y):
-        nx = self.C.shape[1]  # physical state dimension
-        x_phys = self.x[:nx]           # only physical state
-        d_est = self.x[nx:] if self.disturbance else None
-
-        H = evaluate_jacobian(self.problem.nodes[4], torch.tensor(x_phys).T[0])
-        y_pred = self.get_y(x_phys, d_est)
-
-        H_aug = np.hstack([H, self.F])  # Total measurement Jacobian wrt [x; d]
-        S = H_aug @ self.P @ H_aug.T + self.R
-        K = self.P @ H_aug.T @ np.linalg.inv(S)
-        self.x = self.x + K @ (y - y_pred).T
-        self.P = (np.eye(self.P.shape[0]) - K @ H_aug) @ self.P
-
-
-    def step(self, u, y):
-        self.predict(u)
-        self.update(y)
-        return self.x
-    
-class EKF_noC():
-    
-    def __init__(self, A, B, x0, P0, problem, Q, R, disturbance=False, F=None, C=None):
-        self.disturbance = disturbance
-        self.problem = problem
-        self.Q = Q
-        self.R = R
-        self.x = x0
-        self.P = P0
-
-        if disturbance:
-            assert F is not None and C is not None, "F and C must be provided if disturbance is True"
-
-            self.F = F
-            self.C = C
-
-            nx = A.shape[0]
-            nd = F.shape[1]
-            nu = B.shape[1]
-
-            # Augmented dynamics
-            self.A = np.block([
-                [A, np.zeros((nx, nd))],
-                [np.zeros((nd, nx)), np.eye(nd)]
-            ])
-            self.B = np.vstack([
-                B,
-                np.zeros((nd, nu))
-            ])
-        else:
-            self.A = A
-            self.B = B
-            self.C = C
-            self.F = np.zeros((C.shape[0], 0))  # no disturbance part
-
-    
-    def get_y(self, x_physical, d=None):
-        """
-        Get predicted measurement y from physical state x and optional disturbance d
-        """
-        y = self.problem.nodes[4]({"x": torch.from_numpy(x_physical.T).float()})
-        yhat = y["yhat"].detach().numpy().reshape(-1, 1)
-        if self.disturbance and d is not None:
-            yhat = yhat +  self.F @ d.reshape(-1, 1)
-
-        return yhat.reshape(1, -1)
-    
-    def predict(self, u):
-        self.x = self.A @ self.x.reshape(-1, 1) + self.B @ u.reshape(-1, 1)
-        self.P = self.A @ self.P @ self.A.T + self.Q
-        return self.x, self.P
-    
-    def update(self, y):
-        nx = self.C.shape[1]  # physical state dimension
-        x_phys = self.x[:nx]           # only physical state
-        d_est = self.x[nx:] if self.disturbance else None
-
-        H = evaluate_jacobian(self.problem.nodes[4], torch.tensor(x_phys).T[0])
-        y_pred = self.get_y(x_phys, d_est)
-
-        H_aug = np.hstack([H, self.F])  # Total measurement Jacobian wrt [x; d]
-        S = H_aug @ self.P @ H_aug.T + self.R
-        K = self.P @ H_aug.T @ np.linalg.inv(S)
-        self.x = self.x + K @ (y - y_pred).T
-        self.P = (np.eye(self.P.shape[0]) - K @ H_aug) @ self.P
-
-
-    def step(self, u, y):
-        self.predict(u)
-        self.update(y)
-        return self.x
-
-
-    
-    
+class MPC():
+    def __init__(self, A, B, C):
+        self.A = A
+        self.B = B
+        self.C = C
+        self.nz = A.shape[0]
+        self.ny = C.shape[0]
+        self.nu = B.shape[1]
+        loaded_setup = joblib.load("sim_setup.pkl")
+        Qy = loaded_setup["Qy"]
+        Qu = loaded_setup["Qu"]
+        self.Qz = C.T@Qy@C + 1e-8 * np.eye(A.shape[0])
+        self.Qu = loaded_setup["Qu"]
+        self.N = loaded_setup["N"]
+        self.u_min = loaded_setup["u_min"]
+        self.u_max = loaded_setup["u_max"]
+        self.y_min = loaded_setup["y_min"]
+        self.y_max = loaded_setup["y_max"]
         
+        self.build_problem()
+    
+    def build_problem(self):
+        '''
+        Build the MPC problem using cvxpy
+        '''
+        # parameters
+        self.z0 = cp.Parameter(self.nz)
+        self.d0 = cp.Parameter(self.ny)
+        self.u_prev = cp.Parameter(self.nu)
+        self.z_ref = cp.Parameter(self.nz)
+
+        # optimized variables
+        z = cp.Variable((self.nz, self.N + 1))
+        self.u = cp.Variable((self.nu, self.N)) 
+        
+        # building the problem
+        constraints = [z[:, 0] == self.z0]
+        cost = 0
+
+        for k in range(self.N):
+            constraints += [
+                z[:, k+1] == self.A @ z[:, k] + self.B @ self.u[:,k],
+                self.u_min <= self.u[:, k], self.u[:, k] <= self.u_max,
+                self.y_min <= self.C @ z[:, k] + self.d0, self.C @ z[:, k] + self.d0 <= self.y_max
+            ]
+            if k == 0:
+                cost += cp.quad_form(z[:, k] - self.z_ref, self.Qz) + cp.quad_form(self.u[:, 0] - self.u_prev, self.Qu)
+            else:
+                cost += cp.quad_form(z[:, k] - self.z_ref, self.Qz) + cp.quad_form(self.u[:, k] - self.u[:, k-1], self.Qu)
+                
+        self.mpc = cp.Problem(cp.Minimize(cost), constraints)
+        
+    def get_u_optimal(self, z0, d0, u_prev, z_ref):
+        '''
+        Get the optimal control input solving the MPC problem
+        '''
+        self.z0.value = z0.flatten()
+        self.d0.value = d0.flatten()
+        self.u_prev.value = u_prev.flatten()
+        self.z_ref.value = z_ref.flatten()
+        # solve the problem
+        self.mpc.solve(solver=cp.GUROBI)
+        
+        if self.mpc.status != cp.OPTIMAL:
+            print("MPC problem is not optimal")
+            print(self.mpc.status)
+            print(self.mpc.solver_stats.solve_time)
+            print(self.mpc.solver_stats.num_iters)
+             
+        return self.u[:, 0].value, self.mpc.status
