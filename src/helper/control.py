@@ -74,6 +74,58 @@ class EKF():
         self.update(y)
         return self.x
     
+class TargetEstimation():
+    def __init__(self, A, B, C):
+        self.A = A
+        self.B = B
+        self.C = C
+        self.nz = A.shape[0]
+        self.ny = C.shape[0]
+        self.nu = B.shape[1]
+        loaded_setup = joblib.load("sim_setup.pkl")
+        self.Qy = loaded_setup["Qy"]
+        self.u_min = loaded_setup["u_min"]
+        self.u_max = loaded_setup["u_max"]
+        self.y_min = loaded_setup["y_min"]
+        self.y_max = loaded_setup["y_max"]
+        
+        self.build_problem()
+
+    def build_problem(self):
+        self.z_s = cp.Variable(self.nz)
+        self.y_s = cp.Variable(self.ny)
+        self.u_s = cp.Variable(self.nu)
+        self.d0 = cp.Parameter(self.ny)
+        self.y_sp = cp.Parameter(self.ny)
+        
+        constraints_s = [self.z_s == self.A @ self.z_s + self.B @ self.u_s]
+        constraints_s += [self.y_s == self.C @ self.z_s + self.d0]
+        constraints_s += [self.u_min <= self.u_s, self.u_s <= self.u_max]
+        constraints_s += [self.y_min <= self.y_s, self.y_s <= self.y_max]
+
+        cost_s = 0
+        cost_s += cp.quad_form(self.y_s - self.y_sp, self.Qy)
+
+        self.te = cp.Problem(cp.Minimize(cost_s), constraints_s)
+        
+    def get_target(self, d0, y_sp):
+        self.d0.value = d0.flatten()
+        self.y_sp.value = y_sp.flatten()
+        
+        # solve the problem
+        self.te.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)
+        
+        if self.te.status != cp.OPTIMAL:
+            print("Target estimation problem is not optimal")
+            print(self.te.status)
+            print(self.te.solver_stats.solve_time)
+            print(self.te.solver_stats.num_iters)
+            raise RuntimeError("Solver did not return an optimal solution")
+            
+        return self.z_s.value, self.y_s.value
+    
+        
+    
 class MPC():
     def __init__(self, A, B, C):
         self.A = A
@@ -84,7 +136,6 @@ class MPC():
         self.nu = B.shape[1]
         loaded_setup = joblib.load("sim_setup.pkl")
         Qy = loaded_setup["Qy"]
-        Qu = loaded_setup["Qu"]
         self.Qz = C.T@Qy@C + 1e-8 * np.eye(A.shape[0])
         self.Qu = loaded_setup["Qu"]
         self.N = loaded_setup["N"]
@@ -135,12 +186,13 @@ class MPC():
         self.u_prev.value = u_prev.flatten()
         self.z_ref.value = z_ref.flatten()
         # solve the problem
-        self.mpc.solve(solver=cp.GUROBI)
+        self.mpc.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)#, BarConvTol=1e-6)
         
         if self.mpc.status != cp.OPTIMAL:
             print("MPC problem is not optimal")
             print(self.mpc.status)
             print(self.mpc.solver_stats.solve_time)
             print(self.mpc.solver_stats.num_iters)
+            raise RuntimeError("Solver did not return an optimal solution")
              
-        return self.u[:, 0].value, self.mpc.status
+        return self.u[:, 0].value
