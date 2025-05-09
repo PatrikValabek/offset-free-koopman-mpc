@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1746777766 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/elsarticle-template-harv.tex" "elsarticle-template-harv.pdf" "elsarticle-template-harv" 1746777767 0
-  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/elsarticle-template-harv.tex" 1746777766 8327 11c0179b01b5e336466a60e03b9bf132 ""
+["pdflatex"] 1746784123 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/elsarticle-template-harv.tex" "elsarticle-template-harv.pdf" "elsarticle-template-harv" 1746784125 0
+  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/elsarticle-template-harv.tex" 1746784123 8739 60e06a88aeb2450ff2ea2a7ff05f71d3 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
@@ -252,10 +252,10 @@
   "/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1695101518 4623355 b8cad38412faebe1ce5b780a45db67bd ""
   "/usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1695101503 7883454 557e60c9a507e5eb9adaf486a9c0de14 ""
   "/usr/local/texlive/2023/texmf.cnf" 1678822455 577 1b2b1af17af2508fb20dd85783af4050 ""
-  "elsarticle-template-harv.aux" 1746777767 1871 8a419b4496f592bc3dc8251bc6d86cda "pdflatex"
-  "elsarticle-template-harv.out" 1746777767 360 13c1668177fc98b4b28e8fcd7f9391c6 "pdflatex"
-  "elsarticle-template-harv.spl" 1746777766 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "elsarticle-template-harv.tex" 1746777766 8327 11c0179b01b5e336466a60e03b9bf132 ""
+  "elsarticle-template-harv.aux" 1746784124 2115 fa9d2d30d8b3a72989110b9c74174e0a "pdflatex"
+  "elsarticle-template-harv.out" 1746784124 360 13c1668177fc98b4b28e8fcd7f9391c6 "pdflatex"
+  "elsarticle-template-harv.spl" 1746784124 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "elsarticle-template-harv.tex" 1746784123 8739 60e06a88aeb2450ff2ea2a7ff05f71d3 ""
   (generated)
   "elsarticle-template-harv.aux"
   "elsarticle-template-harv.log"
