@@ -136,7 +136,7 @@ class MPC():
         self.nu = B.shape[1]
         loaded_setup = joblib.load("sim_setup.pkl")
         Qy = loaded_setup["Qy"]
-        self.Qz = C.T@Qy@C + 1e-8 * np.eye(A.shape[0])
+        Qz = C.T@Qy@C + 1e-8 * np.eye(A.shape[0])
         self.Qu = loaded_setup["Qu"]
         self.N = loaded_setup["N"]
         self.u_min = loaded_setup["u_min"]
@@ -144,9 +144,9 @@ class MPC():
         self.y_min = loaded_setup["y_min"]
         self.y_max = loaded_setup["y_max"]
         
-        self.build_problem()
+        self.build_problem(Qz)
     
-    def build_problem(self):
+    def build_problem(self, Qz):
         '''
         Build the MPC problem using cvxpy
         '''
@@ -171,9 +171,9 @@ class MPC():
                 self.y_min <= self.C @ z[:, k] + self.d0, self.C @ z[:, k] + self.d0 <= self.y_max
             ]
             if k == 0:
-                cost += cp.quad_form(z[:, k] - self.z_ref, self.Qz) + cp.quad_form(self.u[:, 0] - self.u_prev, self.Qu)
+                cost += cp.quad_form(z[:, k] - self.z_ref, Qz) + cp.quad_form(self.u[:, 0] - self.u_prev, self.Qu)
             else:
-                cost += cp.quad_form(z[:, k] - self.z_ref, self.Qz) + cp.quad_form(self.u[:, k] - self.u[:, k-1], self.Qu)
+                cost += cp.quad_form(z[:, k] - self.z_ref, Qz) + cp.quad_form(self.u[:, k] - self.u[:, k-1], self.Qu)
                 
         self.mpc = cp.Problem(cp.Minimize(cost), constraints)
         

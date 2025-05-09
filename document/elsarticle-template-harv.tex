@@ -248,18 +248,25 @@
         \bottomrule
   \end{tabular}
 \end{table}
-
 \begin{table}[h]
   \centering
   \caption{Comparison of several Tunings}
   \label{tab:ident-comp}
-  \begin{tabular}{cccccc}
+  \begin{tabular}{cccc}
       \toprule
-        Tuning & OBJ u  & OBJ y & OBJ & ST \(h_1\) & ST \(h_2\) \\
+        LP MPC & LP TE & Tuning & OBJ \\
         \midrule
-        \(C_k(z0)\)          & 3.9120 & 29.3575 & 133.9  & 24 & 23 \\%(24.8386)
-        \(C_k(z_s)\)      & 11.3832 & 19.4816 & 124.3 & 31 & 23 \\
-        C          & 3.8177 & 23.8167 & 111.3 & 66 & 78 \\
+        - & - & \(J(x_s)\)          & 171.22 \\%(24.8386)
+        \(C\) & \(C\) & \(J(x_s)\)           & 147.26 \\
+        \(J(x_s)\) \text{w/o y-con} & \(J(x_{s,k-1})\) & \(J(x_s)\)           & 149.18 \\ 
+        \(J(x_k)\) & \(J(x_k)\) & \(J(x_s)\)          & 163.69 \\
+        \(J(x_k)\) & \(J(x_s)\) & \(J(x_s)\)          & 149.35 \\
+        \midrule
+        - & - & \(C\)          & 156.21 \\%(24.8386)
+        \(C\) & \(C\) & \(C\)            & 151.73 \\
+        \(J(x_s)\) \text{w/o y-con} & \(J(x_{s,k-1})\) & \(C\)            & 158.80 \\ 
+        \(J(x_k)\) & \(J(x_k)\) & \(C\)           & 177.33 \\
+        \(J(x_k)\) & \(J(x_s)\) & \(C\)           & 158.68 \\
         \bottomrule
   \end{tabular}
 \end{table}

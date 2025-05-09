@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1746436722 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/elsarticle-template-harv.tex" "elsarticle-template-harv.pdf" "elsarticle-template-harv" 1746436723 0
-  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/elsarticle-template-harv.tex" 1746436722 7890 503f602c3306569d322157ea01ce9edd ""
+["pdflatex"] 1746777766 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/elsarticle-template-harv.tex" "elsarticle-template-harv.pdf" "elsarticle-template-harv" 1746777767 0
+  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/elsarticle-template-harv.tex" 1746777766 8327 11c0179b01b5e336466a60e03b9bf132 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
@@ -34,6 +34,7 @@
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1248133631 32722 d7379af29a190c3f453aba36302ff5a9 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb" 1248133631 32362 179c33bbf43f19adbb3825bb4e36e57a ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb" 1248133631 32726 0a1aea6fcd6468ee2cf64d891f5c43c8 ""
+  "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb" 1248133631 32626 4f5c1b83753b1dd3a97d1b399a005b4b ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb" 1248133631 37944 359e864bd06cde3b1cf57bb20757fb06 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb" 1248133631 36118 fad905eba93cff5bce1e185fe980a177 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti7.pfb" 1248133631 36607 d654cb3f2bc54f57509240071db3bffa ""
@@ -251,10 +252,10 @@
   "/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1695101518 4623355 b8cad38412faebe1ce5b780a45db67bd ""
   "/usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1695101503 7883454 557e60c9a507e5eb9adaf486a9c0de14 ""
   "/usr/local/texlive/2023/texmf.cnf" 1678822455 577 1b2b1af17af2508fb20dd85783af4050 ""
-  "elsarticle-template-harv.aux" 1746436723 1871 8a419b4496f592bc3dc8251bc6d86cda "pdflatex"
-  "elsarticle-template-harv.out" 1746436723 360 13c1668177fc98b4b28e8fcd7f9391c6 "pdflatex"
-  "elsarticle-template-harv.spl" 1746436722 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "elsarticle-template-harv.tex" 1746436722 7890 503f602c3306569d322157ea01ce9edd ""
+  "elsarticle-template-harv.aux" 1746777767 1871 8a419b4496f592bc3dc8251bc6d86cda "pdflatex"
+  "elsarticle-template-harv.out" 1746777767 360 13c1668177fc98b4b28e8fcd7f9391c6 "pdflatex"
+  "elsarticle-template-harv.spl" 1746777766 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "elsarticle-template-harv.tex" 1746777766 8327 11c0179b01b5e336466a60e03b9bf132 ""
   (generated)
   "elsarticle-template-harv.aux"
   "elsarticle-template-harv.log"
