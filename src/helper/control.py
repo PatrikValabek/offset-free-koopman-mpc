@@ -74,6 +74,47 @@ class EKF():
         self.update(y)
         return self.x
     
+class EKF_C():
+    def __init__(self, A, B, C, x0, P0, problem, Q, R, disturbance=0, T_real = None):
+        self.disturbance = disturbance
+        self.A = A
+        self.B = B
+        self.Q = Q
+        self.R = R
+        self.x = x0
+        self.P = P0
+        self.C = C
+        self.problem = problem
+        if T_real is not None:
+            self.T_real = T_real
+        else:
+            self.T_real = np.eye(A.shape[0]-disturbance)
+        self.nd = disturbance
+        self.nx = A.shape[0] - self.nd
+    
+    def get_y(self, x):
+        y = self.problem.nodes[4]({"x": torch.from_numpy(x.T).float()})
+        return y["yhat"].detach().numpy().reshape(1,-1)
+    
+    def predict(self, u):
+        self.x = self.A @ self.x.reshape(-1,1) + self.B @ u.reshape(-1,1)
+        self.P = self.A @ self.P @ self.A.T + self.Q
+        return self.x, self.P
+    
+    def update(self, y):
+        y_pred = self.get_y(self.T_real@self.x.T[0,0:self.nx]) + self.x.T[0,self.nx:]
+        J = self.C
+        self.H = np.hstack([J@self.T_real, np.eye(self.nd)])
+        S = self.H @ self.P @ self.H.T + self.R
+        K = self.P @ self.H.T @ np.linalg.inv(S)
+        self.x = self.x + K @ (y - y_pred).T
+        self.P = (np.eye(self.P.shape[0]) - K @ self.H) @ self.P
+        
+    def step(self, u, y):
+        self.predict(u)
+        self.update(y)
+        return self.x
+    
 class TargetEstimation():
     def __init__(self, A, B, C):
         self.A = A
