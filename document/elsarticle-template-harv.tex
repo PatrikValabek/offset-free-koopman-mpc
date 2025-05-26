@@ -220,13 +220,14 @@
 
 \subsection{Nonlinear MPC}
 
-\subsection{Koopman Operator}
+\subsection{Koopman Operator for Control}
 
 \subsection{Koopman MPC}
 
 \subsection{State Estimation - Observer}
 
 \section{Koopman MPC with Offset-Free - Easyiest}
+\label{sec:easy-mpc}
 In this section, we will present a standard offset free optimal framework consisting of Target Optimization, State Estimation - Observer and MPC. As observer is standard Kalman filter or extended Kalman filter, we will discuss mainly remaining two optimization problems. Both remaining components had to be designed in a way that they are able to work with the Koopman operator. The main goal of this section is to show that the standard formulation can be easily transformed for the offset-free MPC use.
 
 \begin{figure}[H]
@@ -266,25 +267,35 @@ In this section, we will present a standard offset free optimal framework consis
   \end{align}
 \end{subequations}
 
+\subsection{Closed-Loop Control Structure}
+
 \section{Koopman MPC with Offset-Free - Proposed}
 
-Main drawback that we observe in a current Koopman MPC (offset-free, robust, or any other), is that the optimization is done without leveraging knowledge of the lifted space. Of course we are predicting in the lifted space, but in objective function we are using original space, that is created derived as linear transformation of the lifted space. This transformation is not linear by nature, but to use linear MPC, we think we had no other choice. Some papers are not using this transformation directly, but after closer look, they are usualy using equivalent transformations. We will show that we can use the lifted space directly in the objective function, show how to handle the lifted space and transformation of an objective function.
+Main drawback that we observe in a current Koopman MPC (offset-free, robust, or any other), is that the optimization is done without leveraging knowledge of the lifted space. Of course we are predicting in the lifted space, but in objective function we are using original space, that is created derived as linear transformation of the lifted space \(y_k = Cz_k\). This transformation is not linear by nature \(y_k = h(z_k)\), but to use linear MPC, we think we had no other choice. Some papers are not using this transformation directly, but after closer look, they are usually using equivalent transformations, for example expanding lifted space with measurements, but dynamic in lifted space is linear, so transformations to achieve back this measurements is linear. We will show that we can use the lifted space directly in the objective function, showing how to handle the lifted space and transformation of an objective function.
 We can fully eliminate the neccessity of the back transformation used in objective function in MPC, but we still need them to compute the target for the lifted space. In this case and case of constraints, we use a first order Taylor expansion, to better approximate the transformation. 
 
 \subsection{Target Optimization}
+
+The objective function of target estimation is the same as in the standard offset-free MPC. The main difference is in 
+
+The proposed target optimization problem is formulated as:
+
 \begin{subequations}
   \label{eq:cs:target}
   \begin{align}
-    \min_{\bar{u}, \bar{z}} \quad & \; (\bar{y} - y_\text{ref})^\intercal Q_\text{y} (\bar{y} - y_\text{ref}) \label{eq:cs:target:obj} \\
-    \text{s.t.} \quad & \; \bar{z} = A\bar{z} + B\bar{u} \label{eq:cs:target:z} \\
-    & \; \bar{y} = H(z_k)\bar{z} + h(z_k) - H(z_k)z_k + d \label{eq:cs:target:y} \\
-    & \; u_{\min} \leq \bar{u} \leq u_{\max} \label{eq:cs:target:u} \\
-    & \; y_{\min} \leq \bar{y} \leq y_{\max} \label{eq:cs:target:ycon} \\
-    & \; d = \hat{d}(t), \quad y_\text{ref} = y_\text{sp}, \quad z_k = \hat{z}(t) \label{eq:cs:target:params}
+    \min_{\bar{u}, \bar{z}, \bar{y}} \quad & \; (\bar{y} - y_\text{ref})^\intercal Q_\text{y} (\bar{y} - y_\text{ref}), \label{eq:cs:target:obj} \\
+    \text{s.t.} \quad & \; \bar{z} = A\bar{z} + B\bar{u}, \label{eq:cs:target:z} \\
+    & \; \bar{y} = H(\ui{z}{LP})\bar{z} + h(\ui{z}{LP}) - H(\ui{z}{LP})\ui{z}{LP} + d, \label{eq:cs:target:y} \\
+    & \; u_{\min} \leq \bar{u} \leq u_{\max}, \label{eq:cs:target:u} \\
+    & \; y_{\min} \leq \bar{y} \leq y_{\max}, \label{eq:cs:target:ycon} \\
+    & \; d = \hat{d}(t), \quad y_\text{ref} = y_\text{sp}, \quad \ui{z}{LP} = \bar{z}_{-1}, \label{eq:cs:target:params}
   \end{align}
 \end{subequations}
+where \(H(\ui{z}{LP})\) is the Jacobian of the transformation \(h(\ui{z}{LP})\). \(\ui{z}{LP}\) is a linearization point, the point where we approximate our function with first order Taylor expansion. We propose, that this point should be as close as possible to the \(\bar{z}\). Therefor we are using the previously calculated target \(\bar{z}_{-1}\). This allow us to better approximate the transformation of the lifted space to the original space and more precise target optimization.  
+
 
 \subsection{MPC}
+The proposed MPC problem is formulated as:
 \begin{subequations}
   \label{eq:cs:mpc}
   \begin{align}
@@ -297,13 +308,35 @@ We can fully eliminate the neccessity of the back transformation used in objecti
     & \; z_0 = \hat{z}(t), \quad d = \hat{d}(t), \quad u_{-1} = u(t-T_\text{s}) \label{eq:cs:mpc:init}
   \end{align}
 \end{subequations}
+where \(H(z_0)\) is the Jacobian of the transformation \(h(z_0)\) at the point \(z_0\). This linearization point is chosen to best approximate the surroundings of current operational point. The first order Taylor expansion is done to receive \(y_k\), which is used only in the constrains of the system. In objective funtion, we use a tuning matric \(\ui{Q}{z}\) to penalize the difference from lifted space target. We propose to derive this tuning matrix as follows:
+\begin{equation}
+  Q_\text{z} = H(\bar{z})^\intercal Q_\text{y} H(\bar{z}).
+\end{equation}
+
+This allows us to use and tune our problem using matrix \(\ui{Q}{y}\), which is convenient and easily tuned. 
+This is a significant change from the standard Koopman MPC, where the objective function is defined in the original space. 
+
+\subsection{Closed-Loop Control Structure}
 
 \section{Block Diagonal Deep Koopman Transformation}
-
+\todo{split this section into theory and simulation evaluation}
+During our work, we encounter a several problems with the suboptimal or infeasible solutions using Koopman MPC using Gurobi solver. For the enhancement of the performaance, we are proposing a block diagonal structure of the matrix \(A\). This transformation can be done after obtaining the Koopman operator, with finding the transformation matrix \(T\) that transforms the Koopman operator to the block diagonal form:
+\begin{equation}
+  \bar{A} = T^{-1} A T.
+\end{equation}
+This transformation is done by finding the eigenvalues and eigenvectors of the Koopman operator, and then grouping them into blocks. The transformation matrix \(T\) is constructed from the eigenvectors, and the block diagonal form \(\bar{A}\) is obtained by applying the transformation to the original Koopman operator \(A\). Using this approach, we had to modify the rest of the model accordingly, using the transformation matrix \(T\) to transform the input and output matrices \(B\) and \(C\) as well as the lifted states \(z\):
+\begin{equation}
+  \bar{B} = T^{-1} B, \quad \bar{C} = C T, \quad \bar{z}_k = T z_k.
+\end{equation}
+When computing the Jackobian, we are transforming the original Jackobian \(H(z_k)\) to the block diagonal form \(\bar{H}(z_k)\) using the transformation matrix \(T\):
+\begin{equation}
+  \bar{H}(z_k) = H(z_k) T = H(T^{-1}\bar{z}_k) T.
+\end{equation}
+After this transformation we are able to enhace the performance in optimization as can be seen in Table~\ref{tab:block-diagonal}. This table is done using the formulation of Koopman MPC which can be seen in Sec.~\ref{sec:easy-mpc}. The table shows the decrease in a computational times. Also with this formulation we are able to obtain optimal solution \(100\%\) time during simulation. Contrary, the full Koopman MPC formulation is able to obtain optimal solution only \(26.7\%\) of the time with the rest of the time giving warning, that the solution is suboptimal. We can see also increase in a control performance, which is measured by the objective function value, which is in optimal case arounf \(6\%\) lower. Also the settling time for both levels is lower. 
 \begin{table}[h]
   \centering
-  \caption{Comparison of structure of A}
-  \label{tab:ident-comp}
+  \caption{Comparison of structure of problem to solver time and control performance.}
+  \label{tab:block-diagonal}
   \begin{tabular}{cccccc}
       \toprule
         Structure & Time TE/MPC & Optimal? \([\%]\) & OBJ & ST \(h_1\) & ST \(h_2\) \\
@@ -313,6 +346,10 @@ We can fully eliminate the neccessity of the back transformation used in objecti
         \bottomrule
   \end{tabular}
 \end{table}
+
+The second option how to obtain the block diagonal structure is to learn the Koopman operator directly in the block diagonal form. This can be done by limiting the number of learnable parameters in a Koopman matrix during training to those that are in the block diagonal form. This also speeds the training as less parameters are learned.
+
+To obtain an optimal performance, which is neccessary for the real time control, we are proposing to use the block diagonal structure of the Koopman operator. There is no neccessity to use the full Koopman operator, as the block diagonal structure is able to capture the same dynamics of the system and favors the optimization performance. The way this structure is obtained, during or after the training, is not important, as long as the Koopman operator is in the block diagonal form.
 
 \section{Simulation Setup}
 
@@ -361,7 +398,7 @@ We can fully eliminate the neccessity of the back transformation used in objecti
 
 \begin{table}[h]
   \centering
-  \caption{Comparison of several Tunings}
+  \caption{Comparison of several Methods}
   \label{tab:ident-comp}
   \begin{tabular}{cccc}
       \toprule
@@ -376,7 +413,13 @@ We can fully eliminate the neccessity of the back transformation used in objecti
   \end{tabular}
 \end{table}
 
-%\bibliographystyle{elsarticle-num-names}  % Elsevier's numbered citation style
+\section{Experimental Setup}
+
+\section{Experimental Results}
+
+\section{Discussion}
+\section{Conclusion}
+
 %\bibliography{bibfile}
  % Reference your .bib file (without .bib extension)
 \end{document}
