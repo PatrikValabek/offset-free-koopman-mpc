@@ -74,6 +74,158 @@ class EKF():
         self.update(y)
         return self.x
     
+
+class UKF():
+    def __init__(self, A, B, x0, P0, problem, Q, R, disturbance=0, T_real=None,
+                 alpha=1e-3, beta=2, kappa=0):
+        self.A = A
+        self.B = B
+        self.Q = Q
+        self.R = R
+        self.x = x0
+        self.P = P0
+        self.problem = problem
+        self.nd = disturbance
+        self.nx = A.shape[0] - self.nd
+
+        if T_real is not None:
+            self.T_real = T_real
+        else:
+            self.T_real = np.eye(self.nx)
+
+        self.n = A.shape[0]  # full state dimension (including disturbance if any)
+        self.alpha = alpha
+        self.beta = beta
+        self.kappa = kappa
+        self.lam = alpha**2 * (self.n + kappa) - self.n
+        self.gamma = np.sqrt(self.n + self.lam)
+
+        # Weights for mean and covariance
+        self.Wm = np.full(2 * self.n + 1, 1 / (2 * (self.n + self.lam)))
+        self.Wc = np.copy(self.Wm)
+        self.Wm[0] = self.lam / (self.n + self.lam)
+        self.Wc[0] = self.Wm[0] + (1 - alpha**2 + beta)
+
+    def get_y(self, x):
+        """Measurement model h(x) using the NN node from problem.nodes[4]."""
+        y = self.problem.nodes[4]({"x": torch.from_numpy(x.T).float()})
+        return y["yhat"].detach().numpy().reshape(1, -1)
+
+    def f(self, x, u):
+        """State transition model: linear dynamics."""
+        return self.A @ x.reshape(-1, 1) + self.B @ u.reshape(-1, 1)
+
+    def generate_sigma_points(self):
+        """Generates 2n+1 sigma points."""
+        sigma_pts = [self.x.flatten()]
+        sqrt_P = np.linalg.cholesky((self.n + self.lam) * self.P)
+        for i in range(self.n):
+            sigma_pts.append((self.x.flatten() + sqrt_P[:, i]))
+            sigma_pts.append((self.x.flatten() - sqrt_P[:, i]))
+        return np.array(sigma_pts)
+
+    def predict(self, u):
+        sigma_pts = self.generate_sigma_points()
+        X_pred = np.array([self.f(x, u).flatten() for x in sigma_pts])
+        self.x = np.sum(self.Wm[:, None] * X_pred, axis=0).reshape(-1, 1)
+
+        self.P = self.Q.copy()
+        for i in range(2 * self.n + 1):
+            dx = (X_pred[i] - self.x.flatten()).reshape(-1, 1)
+            self.P += self.Wc[i] * (dx @ dx.T)
+
+        self.sigma_pts_pred = X_pred
+
+    def update(self, y):
+        # Transform predicted sigma points through measurement function h(x)
+        Y = []
+        for x in self.sigma_pts_pred:
+            x_input = np.dot(self.T_real, x[:self.nx].reshape(-1, 1)).T
+            y_pred = self.get_y(x_input.T) + x[self.nx:].reshape(1, -1)  # Add disturbance part
+            Y.append(y_pred.flatten())
+        Y = np.array(Y)
+        y_mean = np.sum(self.Wm[:, None] * Y, axis=0).reshape(-1, 1)
+
+        # Innovation covariance
+        Pyy = self.R.copy()
+        for i in range(2 * self.n + 1):
+            dy = (Y[i] - y_mean.flatten()).reshape(-1, 1)
+            Pyy += self.Wc[i] * dy @ dy.T
+        
+        # Cross-covariance
+        Pxy = np.zeros((self.n, y_mean.shape[0]))
+        for i in range(2 * self.n + 1):
+            dx = (self.sigma_pts_pred[i] - self.x.flatten()).reshape(-1, 1)
+            dy = (Y[i] - y_mean.flatten()).reshape(-1, 1)
+            Pxy += self.Wc[i] * dx @ dy.T
+
+        # Kalman gain and update
+        K = Pxy @ np.linalg.inv(Pyy)
+        self.x = self.x + K @ (y.reshape(-1, 1) - y_mean)
+        self.P = self.P - K @ Pyy @ K.T
+
+    def step(self, u, y):
+        self.predict(u)
+        self.update(y)
+        return self.x
+
+    
+class EEKF():
+    def __init__(self, A, B, x0, P0, problem, Q, R, disturbance=0, T_real = None):
+        self.disturbance = disturbance
+        self.A = A
+        self.B = B
+        self.Q = Q
+        self.R = R
+        self.x = x0
+        self.P = P0
+        self.problem = problem
+        if T_real is not None:
+            self.T_real = T_real
+        else:
+            self.T_real = np.eye(A.shape[0]-disturbance)
+        self.nd = disturbance
+        self.nx = A.shape[0] - self.nd
+    
+    def get_y(self, x):
+        y = self.problem.nodes[4]({"x": torch.from_numpy(x.T).float()})
+        return y["yhat"].detach().numpy().reshape(1,-1)
+    
+    def get_x(self, y):
+        x = self.problem.nodes[0]({"Y0": torch.from_numpy(y.T).float()})
+        return x["x"].detach().numpy().reshape(1,-1)
+    
+    def predict(self, u):
+        self.x = self.A @ self.x.reshape(-1,1) + self.B @ u.reshape(-1,1)
+        self.P = self.A @ self.P @ self.A.T + self.Q
+        return self.x, self.P
+    
+    def update(self, y):
+        y_pred = self.get_y(self.T_real@self.x.T[0,0:self.nx]) + self.x.T[0,self.nx:]
+        J = evaluate_jacobian(self.problem.nodes[4], torch.tensor(self.T_real@self.x[:self.nx]).T[0])
+        self.H = np.hstack([J@self.T_real, np.eye(self.nd)])
+        S = self.H @ self.P @ self.H.T + self.R
+        K = self.P @ self.H.T @ np.linalg.inv(S)
+        self.x = self.x + K @ (y - y_pred).T
+        self.P = (np.eye(self.P.shape[0]) - K @ self.H) @ self.P
+        
+        # Update the state with the estimated state from the output
+        x_trans = self.get_x(y).T
+        print(x_trans)
+        print(self.x)
+        x_diff = np.zeros((self.x.shape[0],1))
+        x_diff[:self.nx] = np.linalg.inv(self.T_real)@x_trans - self.x[:self.nx].reshape(-1,1)
+        Kx = self.P @ np.linalg.inv(self.P @ np.eye(self.x.shape[0]))
+        self.x = self.x + Kx @ x_diff
+        print(self.x)
+        self.P = (np.eye(self.P.shape[0]) - Kx) @ self.P
+        
+        
+    def step(self, u, y):
+        self.predict(u)
+        self.update(y)
+        return self.x
+    
 class EKF_C():
     def __init__(self, A, B, C, x0, P0, problem, Q, R, disturbance=0, T_real = None):
         self.disturbance = disturbance

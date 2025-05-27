@@ -319,18 +319,18 @@ This is a significant change from the standard Koopman MPC, where the objective 
 \subsection{Closed-Loop Control Structure}
 
 \section{Block Diagonal Deep Koopman Transformation}
-\todo{split this section into theory and simulation evaluation}
+\todo{split this section into theory and simulation evaluation, bevare notation conflict zbar}
 During our work, we encounter a several problems with the suboptimal or infeasible solutions using Koopman MPC using Gurobi solver. For the enhancement of the performaance, we are proposing a block diagonal structure of the matrix \(A\). This transformation can be done after obtaining the Koopman operator, with finding the transformation matrix \(T\) that transforms the Koopman operator to the block diagonal form:
 \begin{equation}
   \bar{A} = T^{-1} A T.
 \end{equation}
 This transformation is done by finding the eigenvalues and eigenvectors of the Koopman operator, and then grouping them into blocks. The transformation matrix \(T\) is constructed from the eigenvectors, and the block diagonal form \(\bar{A}\) is obtained by applying the transformation to the original Koopman operator \(A\). Using this approach, we had to modify the rest of the model accordingly, using the transformation matrix \(T\) to transform the input and output matrices \(B\) and \(C\) as well as the lifted states \(z\):
 \begin{equation}
-  \bar{B} = T^{-1} B, \quad \bar{C} = C T, \quad \bar{z}_k = T z_k.
+  \bar{B} = T^{-1} B, \quad \bar{C} = C T, \quad \bar{z}_k = T^{-1} z_k.
 \end{equation}
 When computing the Jackobian, we are transforming the original Jackobian \(H(z_k)\) to the block diagonal form \(\bar{H}(z_k)\) using the transformation matrix \(T\):
 \begin{equation}
-  \bar{H}(z_k) = H(z_k) T = H(T^{-1}\bar{z}_k) T.
+  \bar{H}(z_k) = H(z_k) T = H(T\bar{z}_k) T.
 \end{equation}
 After this transformation we are able to enhace the performance in optimization as can be seen in Table~\ref{tab:block-diagonal}. This table is done using the formulation of Koopman MPC which can be seen in Sec.~\ref{sec:easy-mpc}. The table shows the decrease in a computational times. Also with this formulation we are able to obtain optimal solution \(100\%\) time during simulation. Contrary, the full Koopman MPC formulation is able to obtain optimal solution only \(26.7\%\) of the time with the rest of the time giving warning, that the solution is suboptimal. We can see also increase in a control performance, which is measured by the objective function value, which is in optimal case arounf \(6\%\) lower. Also the settling time for both levels is lower. 
 \begin{table}[h]
@@ -412,6 +412,64 @@ To obtain an optimal performance, which is neccessary for the real time control,
         \bottomrule
   \end{tabular}
 \end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{Comparison of several Methods with feasible solutions}
+  \label{tab:ident-comp}
+  \begin{tabular}{cccccc}
+      \toprule
+        ALG & MODEL & OBJ & OBJ u & OBJ y \\
+        \midrule
+        NMPC & Tru & 67.72 & 14.41 & 53.31 \\%(24.8386)
+        MPC & Pa.-K (3) & 129.64 & - & - \\
+        MPC & DK & 114.93 & 13.52 & 101.41 \\
+        TMPC & DK (C, tune C) & 116.56 & 13.52 & 103.04 \\
+        TMPC & DK (C) & 115.08 & 16.65 & 98.43 \\
+        TMPC & DK (J(z)) & 117.12 & 23.96 & 93.16 \\
+        TMPC & DK (J(z), tune C) & 126.17 & 20.77 & 105.40 \\
+        \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{Comparison of several Methods with feasible solutions, small Qu}
+  \label{tab:ident-comp}
+  \begin{tabular}{ccc}
+      \toprule
+        ALG & MODEL & OBJ \\
+        \midrule
+        NMPC & Tru & 47.55 \\%(24.8386)
+        MPC & Pa.-K (3) & 142.21 \\
+        MPC & DK & 94.37 \\
+        TMPC & DK (C, tune C) & 95.94 \\
+        TMPC & DK (C) & 93.58 \\
+        TMPC & DK (J(z)) & 88.74 \\
+        TMPC & DK (J(z), tune C) & 101.44 \\
+        \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{Comparison of several methods, small ref. changes}
+  \label{tab:ident-comp}
+  \begin{tabular}{cccccc}
+      \toprule
+        ALG & MODEL & OBJ & OBJ u & OBJ y \\
+        \midrule
+        NMPC & Tru & 2.26 & 0.76 & 1.50 \\%(2.26-0.76)
+        MPC & Pa.-K (3) & 3.83 & 0.90 & 2.93 \\
+        MPC & DK & 3.92 & 0.76 & 3.16 \\
+        TMPC & DK (C, tune C) & 3.47 & 0.84 & 2.63 \\
+        TMPC & DK (C) & 3.23 & 0.71 & 2.52 \\
+        TMPC & DK (J(z)) & 9.98 & 6.84 & 3.14 \\
+        TMPC & DK (J(z), tune C) & 7.94 & 3.63 & 4.31 \\
+        \bottomrule
+  \end{tabular}
+\end{table}
+
 
 \section{Experimental Setup}
 
