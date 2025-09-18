@@ -211,13 +211,13 @@ class EEKF():
         
         # Update the state with the estimated state from the output
         x_trans = self.get_x(y).T
-        print(x_trans)
-        print(self.x)
+        #print(x_trans)
+        #print(self.x)
         x_diff = np.zeros((self.x.shape[0],1))
         x_diff[:self.nx] = np.linalg.inv(self.T_real)@x_trans - self.x[:self.nx].reshape(-1,1)
         Kx = self.P @ np.linalg.inv(self.P @ np.eye(self.x.shape[0]))
         self.x = self.x + Kx @ x_diff
-        print(self.x)
+        #print(self.x)
         self.P = (np.eye(self.P.shape[0]) - Kx) @ self.P
         
         

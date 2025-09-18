@@ -1,5 +1,6 @@
 # Data related to the project
 data/
+figures/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

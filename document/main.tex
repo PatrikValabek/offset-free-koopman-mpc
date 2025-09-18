@@ -356,6 +356,53 @@ To obtain an optimal performance, which is neccessary for the real time control,
 \section{Simulation Results}
 \label{sec:Results}
 
+In the following, we make precise the output mappings sketched in the notes and list the combinations (setups) evaluated in the simulations.
+
+\subsection{Output mappings for target and prediction}
+
+We consider three alternatives for computing the steady-state output corresponding to a candidate steady-state lifted state \(\bar z_k\) and disturbance estimate \(\hat d_k\):
+\begin{subequations}
+  \label{eq:target-mappings}
+  \begin{align}
+    \text{T1:}\quad & \bar y_k = C\,\bar z_k + \hat d_k, \\[-0.2em]
+    \text{T2:}\quad & \bar y_k = h\!\left(\bar z_{k-1}\right) + J_{\bar z_{k-1}}\,\big(\bar z_k - \bar z_{k-1}\big) + \hat d_k, \\[-0.2em]
+    \text{T3:}\quad & \bar y_k = h\!\left(\hat z_k\right) + J_{\hat z_k}\,\big(\bar z_k - \hat z_k\big) + \hat d_k.
+  \end{align}
+\end{subequations}
+Here, \(h(\cdot)\) denotes the measurement/lifted-to-output map, and \(J_{z}\) its Jacobian evaluated at \(z\).
+
+For dynamic prediction over the horizon, with disturbance held at the current estimate \(\hat d_k\), we use four alternatives for the output of a predicted lifted state \(z_{k+i}\):
+\begin{subequations}
+  \label{eq:dyn-mappings}
+  \begin{align}
+    \text{D1:}\quad & y_{k+i} = C\, z_{k+i} + \hat d_k, \\[-0.2em]
+    \text{D2:}\quad & y_{k+i} = h\!\left(\bar z_{k-1}\right) + J_{\bar z_{k-1}}\,\big(\bar z_{k+i} - \bar z_{k-1}\big) + \hat d_k, \\[-0.2em]
+    \text{D3:}\quad & y_{k+i} = h\!\left(\hat z_k\right) + J_{\hat z_k}\,\big(\bar z_{k+i} - \hat z_k\big) + \hat d_k, \\[-0.2em]
+    \text{D4:}\quad & y_{k+i} = h\!\left(\bar z_k\right) + J_{\bar z_k}\,\big( z_{k+i} - \bar z_k\big) + \hat d_k.
+  \end{align}
+\end{subequations}
+
+\subsection{Simulation setups}
+
+We index target mappings by T1--T3 and dynamic mappings by D1--D4 as in \eqref{eq:target-mappings}--\eqref{eq:dyn-mappings}. The simulation setups below pair one target mapping with one dynamic mapping:
+
+\begin{table}[h]
+  \centering
+  \caption{Simulation setups matrix. Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). Fill cells with the identifier/value for each tested combination.}
+  \label{tab:setups-matrix}
+  \begin{tabular}{lcccc}
+      \toprule
+      & \multicolumn{4}{c}{DM} \\
+      \cmidrule(lr){2-5}
+      TM & D1 & D2 & D3 & D4 \\
+      \midrule
+      T1 &  & x & x & x \\
+      T2 & x &  &  &  \\
+      T3 & x &  &  &  \\
+      \bottomrule
+  \end{tabular}
+\end{table}
+
 % \begin{table}[h]
 %   \centering
 %   \caption{Comparison of several methods}
