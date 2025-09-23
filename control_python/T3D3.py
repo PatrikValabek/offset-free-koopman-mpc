@@ -247,17 +247,28 @@ def main() -> None:
     for k in range(sim_time):
         y_setpoint = loaded_setup['reference'][:, k]
 
-        # D3: linearize at current estimate z_sim[:nz, k]
+        # D3T3: linearize at current estimate z_sim[:nz, k]
         J_t = helper.evaluate_jacobian(
             problem.nodes[4],
             torch.from_numpy(T_real @ z_sim[:nz, k]).float(),
         ) @ T_real
         J = J_t
+        
+        # T3: target update, linearize at current estimate \hat z_{k+1}
+        start_time_target = time.time()
+        zs_sim[:, k + 1], ys_sim[:, k + 1] = target_estimation.get_target(
+            z_sim[nz:, k + 1], 
+            y_setpoint, 
+            get_y(T_real @ z_sim[:nz, k]), 
+            z_sim[:nz, k], 
+            J
+        )
+        end_time_target = time.time()
+        total_time_target += end_time_target - start_time_target
 
-        if k > 0:
-            Qz = J_t.T @ Qy @ J_t
-            Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
-            mpc.build_problem(Qz_psd)
+        Qz = J.T @ Qy @ J
+        Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
+        mpc.build_problem(Qz_psd)
 
         start_time_mpc = time.time()
         u_opt = mpc.get_u_optimal(
@@ -284,18 +295,6 @@ def main() -> None:
 
         # state estimation
         z_sim[:, k + 1] = EKF.step(u_sim[:, k], y_sim[:, k]).flatten()
-
-        # T3: target update, linearize at current estimate \hat z_{k+1}
-        J_next = helper.evaluate_jacobian(
-            problem.nodes[4],
-            torch.from_numpy(T_real @ z_sim[:nz, k + 1]).float(),
-        ) @ T_real
-        start_time_target = time.time()
-        zs_sim[:, k + 1], ys_sim[:, k + 1] = target_estimation.get_target(
-            z_sim[nz:, k + 1], y_setpoint, get_y(T_real @ z_sim[:nz, k + 1]), z_sim[:nz, k + 1], J_next
-        )
-        end_time_target = time.time()
-        total_time_target += end_time_target - start_time_target
 
         u_prev = u_sim[:, k]
 

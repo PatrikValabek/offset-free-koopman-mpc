@@ -516,3 +516,82 @@ class TaylorMPC():
             raise RuntimeError("Solver did not return an optimal solution")
              
         return self.u[:, 0].value
+    
+    class TaylorCrossMPC():
+    def __init__(self, A, B):
+        self.A = A
+        self.B = B
+        self.nz = A.shape[0]
+        self.nu = B.shape[1]
+        loaded_setup = joblib.load("sim_setup.pkl")
+        self.Qu = loaded_setup["Qu"]
+        self.Qy = loaded_setup["Qy"]
+        self.N = loaded_setup["N"]
+        self.u_min = loaded_setup["u_min"]
+        self.u_max = loaded_setup["u_max"]
+        self.y_min = loaded_setup["y_min"]
+        self.y_max = loaded_setup["y_max"]
+        self.ny = self.y_max.shape[0]
+        
+    def build_problem(self, Qz):
+        '''
+        Build the MPC problem using cvxpy
+        '''
+        # parameters
+        self.z0 = cp.Parameter(self.nz)
+        self.d0 = cp.Parameter(self.ny)
+        self.u_prev = cp.Parameter(self.nu)
+        self.z_ref = cp.Parameter(self.nz)
+        self.y_k = cp.Parameter(self.ny)
+        self.z_k = cp.Parameter(self.nz)
+        self.C_k = cp.Parameter((self.ny, self.nz))
+        self.Qz = Qz
+        self.alpha = cp.Parameter(self.ny)
+
+        # optimized variables
+        z = cp.Variable((self.nz, self.N + 1))
+        self.u = cp.Variable((self.nu, self.N)) 
+        
+        # building the problem
+        constraints = [z[:, 0] == self.z0]
+        cost = 0
+
+        for k in range(self.N):
+            constraints += [
+                z[:, k+1] == self.A @ z[:, k] + self.B @ self.u[:,k],
+                self.u_min <= self.u[:, k], self.u[:, k] <= self.u_max,
+                self.y_min <= self.C_k @ z[:, k] + self.y_k - self.C_k @ self.z_k + self.d0, self.C_k @ z[:, k] + self.y_k - self.C_k @ self.z_k + self.d0 <= self.y_max
+            ]
+            if k == 0:
+                cost += cp.quad_form(z[:, k] - self.z_ref, self.Qz) 
+                cost += cp.quad_form(self.alpha, self.Qy)
+                cost += cp.quad_form(self.u[:, 0] - self.u_prev, self.Qu)
+            else:
+                cost += cp.quad_form(z[:, k] - self.z_ref, self.Qz)
+                cost += cp.quad_form(self.alpha, self.Qy) 
+                cost += cp.quad_form(self.u[:, k] - self.u[:, k-1], self.Qu)
+                
+        self.mpc = cp.Problem(cp.Minimize(cost), constraints)
+        
+    def get_u_optimal(self, z0, d0, u_prev, z_ref, y_k, z_k, C_k):
+        '''
+        Get the optimal control input solving the MPC problem
+        '''
+        self.z0.value = z0.flatten()
+        self.d0.value = d0.flatten()
+        self.u_prev.value = u_prev.flatten()
+        self.z_ref.value = z_ref.flatten()
+        self.y_k.value = y_k.flatten()
+        self.z_k.value = z_k.flatten()
+        self.C_k.value = C_k
+        # solve the problem
+        self.mpc.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)#, BarConvTol=1e-6)
+        
+        if self.mpc.status != cp.OPTIMAL:
+            print("MPC problem is not optimal")
+            print(self.mpc.status)
+            print(self.mpc.solver_stats.solve_time)
+            print(self.mpc.solver_stats.num_iters)
+            raise RuntimeError("Solver did not return an optimal solution")
+             
+        return self.u[:, 0].value

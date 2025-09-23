@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1758186633 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" "main.pdf" "main" 1758186634 0
-  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" 1758186633 23174 1765c2e5cb6c4daac7036ec38f04fd40 ""
+["pdflatex"] 1758616658 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" "main.pdf" "main" 1758616659 0
+  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" 1758616658 24177 56aedb1f26f901d49103b7860738c5c9 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
@@ -260,10 +260,10 @@
   "/usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1695101503 7883454 557e60c9a507e5eb9adaf486a9c0de14 ""
   "/usr/local/texlive/2023/texmf.cnf" 1678822455 577 1b2b1af17af2508fb20dd85783af4050 ""
   "figures/close_loop.pdf" 1744223130 16786 b1610c0819bf5ea4d4c46e19340bf684 ""
-  "main.aux" 1758186634 8551 791fa03acedfce707cbfbf249d59dbb4 "pdflatex"
-  "main.out" 1758186634 4050 ac7102da8222511dc6c5a44a255aa625 "pdflatex"
-  "main.spl" 1758186633 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "main.tex" 1758186633 23174 1765c2e5cb6c4daac7036ec38f04fd40 ""
+  "main.aux" 1758616659 9539 664fd1f5b1ed8569f7bc11e915a7f965 "pdflatex"
+  "main.out" 1758616659 4050 ac7102da8222511dc6c5a44a255aa625 "pdflatex"
+  "main.spl" 1758616658 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "main.tex" 1758616658 24177 56aedb1f26f901d49103b7860738c5c9 ""
   (generated)
   "main.aux"
   "main.log"
