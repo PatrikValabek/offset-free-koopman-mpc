@@ -235,6 +235,12 @@ def main() -> None:
     y_sim_descaled[:, 0] = scaler.inverse_transform(y_sim[:, 0].reshape(1, -1))[0]
 
     for k in range(0, sim_time):
+        idx_prev = max(k - 1, 0)        
+        # Target update
+        zs_sim[:, k], ys_sim[:, k] = target_estimation.get_target(
+            z_sim[nz:, k], loaded_setup["reference"][:, k]
+        )
+
         # MPC
         u_opt = mpc.get_u_optimal(z_sim[:nz, k], z_sim[nz:, k], u_prev, zs_sim[:, k])
         u_sim[:, k] = u_opt
@@ -247,37 +253,61 @@ def main() -> None:
         y_sim[:, k + 1] = scaler.transform(y_sim_descaled[:, k + 1].reshape(1, -1))[0]
 
         # Estimation
-        z_sim[:, k + 1] = KF.step(u_sim[:, k], y_sim[:, k]).flatten()
-
-        # Target update
-        zs_sim[:, k + 1], ys_sim[:, k + 1] = target_estimation.get_target(
-            z_sim[nz:, k + 1], loaded_setup["reference"][:, k]
-        )
+        z_sim[:, k + 1] = KF.step(u_sim[:, k], y_sim[:, k + 1]).flatten()
+        
         u_prev = u_sim[:, k]
 
     # Objective (exact phrase preserved)
+    y_pred = C@z_sim[:nz, :]+ z_sim[nz:, :]
+    y_pred_descaled = scaler.inverse_transform(y_pred.T).T
+    
+    Qu = loaded_setup['Qu']
+    Qy = loaded_setup['Qy']
     objective_value = 0.0
     state_error_cost = 0.0
     control_increment_cost = 0.0
+    x_term_total = 0.0
+    y_term = 0.0
+    y_term_total = 0.0
     for k in range(sim_time):
-        y_diff = y_sim[:, k] - loaded_setup["reference"][:, k]
-        # Match notebook behavior: always use k-1 (wraps to last element at k=0)
+        y_diff = y_sim[:, k] - loaded_setup['reference'][:, k]
         u_diff = u_sim[:, k] - u_sim[:, k - 1]
-        y_term = float(y_diff.T @ loaded_setup["Qy"] @ y_diff)
-        u_term = float(u_diff.T @ loaded_setup["Qu"] @ u_diff)
+        y_term = float(y_diff.T @ Qy @ y_diff)
+        u_term = float(u_diff.T @ Qu @ u_diff)
         state_error_cost += y_term
         control_increment_cost += u_term
         objective_value += y_term + u_term
 
+        # Evaluate x_term (latent state error cost)
+        Qz = C.T @ Qy @ C
+        Qz_psd = Qz + 1e-8 * np.eye(nz)  # ensure PSD
+        x_diff = z_sim[:nz, k] - zs_sim[:, k]
+        x_term = float(x_diff.T @ Qz_psd @ x_diff)
+        x_term_total += x_term
+        
+        y_diff_pred = y_pred[:, k] - ys_sim[:, k]
+        #print(f"Step {k}: y_diff_pred = {y_diff_pred}, diff Cz-Czr: {C@z_sim[:nz, k] - C@zs_sim[:, k]}, diff Cxdiff: {C@x_diff}")  # Debug print to trace
+        
+        y_term = float(y_diff_pred.T @ Qy @ y_diff_pred)
+        y_term_total += y_term
+
     print(f"Closed-loop objective function value: {objective_value}")
     print(f"State error term: {state_error_cost}")
     print(f"Control increment term: {control_increment_cost}")
+    print(f"Latent state error term (x_term): {x_term_total}")
+    print(f"Output error term (y_term): {y_term_total}")
+
 
     # Plots saved to figures/
+    y_pred = C@z_sim[:nz, :]
+    y_pred_descaled = scaler.inverse_transform(y_pred.T).T
+    
     fig = plt.figure(figsize=(12, 8))
     plt.subplot(2, 1, 1)
     plt.plot(y_sim_descaled[0, :], label='h1')
     plt.plot(y_sim_descaled[1, :], label='h2')
+    # plt.plot(y_pred_descaled.T, color='green', linestyle='-.', label='pred h1')
+    # plt.plot(y_pred_descaled.T, color='green', linestyle=':', label='pred h2')
     plt.plot(scaler.inverse_transform(ys_sim.T).T[0, :], color='red', linestyle='--', label='target h1')
     plt.plot(scaler.inverse_transform(ys_sim.T).T[1, :], color='red', linestyle=':', label='target h2')
     plt.title('K-MPC (Block-Diag C LTI) Simulation')
@@ -290,8 +320,8 @@ def main() -> None:
 
     fig2 = plt.figure(figsize=(12, 8))
     plt.subplot(2, 1, 1)
-    plt.plot(u_sim_descaled[0, max(0, 50):], label='q1')
-    plt.plot(u_sim_descaled[1, max(0, 50):], label='q2')
+    plt.plot(u_sim_descaled[0, :], label='q1')
+    plt.plot(u_sim_descaled[1, :], label='q2')
     plt.xlabel('Time step')
     plt.ylabel('Input')
     plt.legend()

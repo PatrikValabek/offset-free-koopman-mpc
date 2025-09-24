@@ -56,6 +56,14 @@ def main() -> None:
     A_backtransformed = T_real @ A_block @ inv(T_real)
     print('Backtransformation equals original A?', np.allclose(A, A_backtransformed, atol=1e-6))
 
+    # Save sparsity pattern figure instead of showing
+    plt.figure()
+    plt.imshow(np.abs(A_transformed) > 1e-6, cmap='gray')
+    plt.title('Nonzero pattern in Schur form R')
+    plt.tight_layout()
+    plt.savefig(os.path.join(figures_dir, 'A_transformed_pattern.png'), dpi=200)
+    plt.close()
+
     # Apply similarity transform to A, B, C
     A = A_block
     B = inv(T_real) @ B
@@ -165,17 +173,17 @@ def main() -> None:
     # EKF = helper.EKF_C(A_, B_, C, z_est_, P0, problem, Q, Rm, 2, T_real)
 
     # -----------------------------
-    # Target calculation
+    # Target calculation (T3): linearize at current estimate \hat z
     # -----------------------------
     target_estimation = helper.TaylorTargetEstimation(A, B)
 
-    J = helper.evaluate_jacobian(
+    J_hat = helper.evaluate_jacobian(
         problem.nodes[4],
         torch.from_numpy(T_real @ z_est_[0, :nz]).float(),
     ) @ T_real
 
     z_s, y_s = target_estimation.get_target(
-        z_est_[:, nz:], y_setpoint, get_y(T_real @ z_est_[0, :nz]), z_est_[0, :nz], J
+        z_est_[:, nz:], y_setpoint, get_y(T_real @ z_est_[0, :nz]), z_est_[0, :nz], J_hat
     )
     print(target_estimation.te.status)
     print('Optimal y:', scaler.inverse_transform(y_s.reshape(1, -1)))
@@ -184,12 +192,12 @@ def main() -> None:
     z_ref = z_s
 
     # -----------------------------
-    # MPC problem formulation
+    # MPC problem formulation (D3): linearize dynamics/output at current estimate \hat z
     # -----------------------------
     Qy = loaded_setup['Qy']
     J = helper.evaluate_jacobian(
         problem.nodes[4],
-        torch.from_numpy(T_real @ z_s).float(),
+        torch.from_numpy(T_real @ z_est_[0, :nz]).float(),
     ) @ T_real
     Qz = J.T @ Qy @ J
     Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
@@ -197,7 +205,7 @@ def main() -> None:
     mpc = helper.TaylorMPC(A, B)
     mpc.build_problem(Qz_psd)
     u_opt = mpc.get_u_optimal(
-        z_est_[0, :nz], z_est_[:, nz:], u_previous, z_ref, get_y(T_real @ z_s), z_s, J
+        z_est_[0, :nz], z_est_[:, nz:], u_previous, z_ref, get_y(T_real @ z_est_[0, :nz]), z_est_[0, :nz], J
     )
     print(u_opt)
     print(mpc.mpc.status)
@@ -217,9 +225,10 @@ def main() -> None:
     total_time_target = 0.0
     total_time_mpc = 0.0
 
+    # Initial target refinement at current estimate (T3)
     start_time_target = time.time()
     z_s, y_s = target_estimation.get_target(
-        z_est_[:, nz:], y_setpoint, get_y(T_real @ z_s), z_s, J
+        z_est_[:, nz:], y_setpoint, get_y(T_real @ z_est_[0, :nz]), z_est_[0, :nz], J_hat
     )
     end_time_target = time.time()
     total_time_target += end_time_target - start_time_target
@@ -237,32 +246,26 @@ def main() -> None:
 
     for k in range(sim_time):
         y_setpoint = loaded_setup['reference'][:, k]
-        idx_prev = max(k - 1, 0)
 
-        # target update (T2): linearize at previous target zs_sim[:, k]
-        J = helper.evaluate_jacobian(
+        # D3T3: linearize at current estimate z_sim[:nz, k]
+        J_t = helper.evaluate_jacobian(
             problem.nodes[4],
-            torch.from_numpy(T_real @ zs_sim[:, idx_prev]).float(),
+            torch.from_numpy(T_real @ z_sim[:nz, k]).float(),
         ) @ T_real
+        J = J_t
+        
+        # T3: target update, linearize at current estimate \hat z_{k+1}
         start_time_target = time.time()
-        zs_sim[:, k], ys_sim[:, k] = target_estimation.get_target(
-            z_sim[nz:, k], 
+        zs_sim[:, k + 1], ys_sim[:, k + 1] = target_estimation.get_target(
+            z_sim[nz:, k + 1], 
             y_setpoint, 
-            get_y(T_real @ zs_sim[:, idx_prev]), 
-            zs_sim[:, idx_prev], 
+            get_y(T_real @ z_sim[:nz, k]), 
+            z_sim[:nz, k], 
             J
         )
         end_time_target = time.time()
         total_time_target += end_time_target - start_time_target
 
-        # T2/D2: for MPC, linearize at the previous target zs_sim[:, k-1] (use k=0 fallback)
-        # J_prev = helper.evaluate_jacobian(
-        #     problem.nodes[4],
-        #     torch.from_numpy(T_real @ zs_sim[:, idx_prev]).float(),
-        # ) @ T_real
-        # J = J_prev
-
-        # if k > 0:
         Qz = J.T @ Qy @ J
         Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
         mpc.build_problem(Qz_psd)
@@ -273,8 +276,9 @@ def main() -> None:
             z_sim[nz:, k],
             u_prev,
             zs_sim[:, k],
-            get_y(T_real @ zs_sim[:, idx_prev]),
-            zs_sim[:, idx_prev],
+            # D3: use h(\hat z_k) and linearization point \hat z_k
+            get_y(T_real @ z_sim[:nz, k]),
+            z_sim[:nz, k],
             J,
         )
         end_time_mpc = time.time()
@@ -290,7 +294,7 @@ def main() -> None:
         y_sim[:, k + 1] = scaler.transform(y_sim_descaled[:, k + 1].reshape(1, -1))[0]
 
         # state estimation
-        z_sim[:, k + 1] = EKF.step(u_sim[:, k], y_sim[:, k + 1]).flatten()
+        z_sim[:, k + 1] = EKF.step(u_sim[:, k], y_sim[:, k]).flatten()
 
         u_prev = u_sim[:, k]
 
@@ -313,11 +317,11 @@ def main() -> None:
     )
     plt.xlabel('Time step')
     plt.ylabel('Output')
-    plt.title('TK-MPC (Taylor Block-Diag A LTI) Simulation')
+    plt.title('TK-MPC (T3D3) Simulation')
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig(os.path.join(figures_dir, 'T2D2_states.png'), dpi=200)
+    plt.savefig(os.path.join(figures_dir, 'T3D3_states.png'), dpi=200)
     plt.close()
 
     # Inputs plot
@@ -327,35 +331,11 @@ def main() -> None:
     plt.plot(u_sim_descaled[1, :], label='q2')
     plt.xlabel('Time step')
     plt.ylabel('Input')
-    plt.title('TK-MPC (Taylor Block-Diag A LTI) Inputs')
+    plt.title('TK-MPC (T3D3) Inputs')
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig(os.path.join(figures_dir, 'T2D2_inputs.png'), dpi=200)
-    plt.close()
-    
-    # Plot get_y(T_real @ z_sim[:nz, :]) as transformed outputs
-    y_sim_transformed = np.zeros((ny, sim_time + 1))
-    for k in range(sim_time + 1):
-        y_sim_transformed[:, k] = get_y(T_real @ z_sim[:nz, k])[0]
-    y_sim_transformed = scaler.inverse_transform(y_sim_transformed.T).T
-    plt.figure(figsize=(12, 8))
-    plt.subplot(2, 1, 1)
-    plt.plot(y_sim_transformed[0, :], label='h1 (transformed)')
-    plt.plot(y_sim_transformed[1, :], label='h2 (transformed)')
-    plt.plot(
-        scaler.inverse_transform(ys_sim.T).T[0, :], color='red', linestyle='--', label='target h1'
-    )
-    plt.plot(
-        scaler.inverse_transform(ys_sim.T).T[1, :], color='red', linestyle=':', label='target h2'
-    )
-    plt.xlabel('Time step')
-    plt.ylabel('Transformed Output')
-    plt.title('Transformed Outputs (get_y(T_real @ z_sim))')
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.savefig(os.path.join(figures_dir, 'T2D2_transformed_outputs.png'), dpi=200)
+    plt.savefig(os.path.join(figures_dir, 'T3D3_inputs.png'), dpi=200)
     plt.close()
 
     # Closed-loop objective value
@@ -363,8 +343,8 @@ def main() -> None:
     objective_value = 0.0
     state_error_cost = 0.0
     control_increment_cost = 0.0
-    x_term_total = 0.0
-    for k in range(sim_time):
+    sim_time_eval = 500
+    for k in range(sim_time_eval):
         y_diff = y_sim[:, k] - loaded_setup['reference'][:, k]
         u_diff = u_sim[:, k] - u_sim[:, k - 1]
         y_term = float(y_diff.T @ Qy @ y_diff)
@@ -373,23 +353,12 @@ def main() -> None:
         control_increment_cost += u_term
         objective_value += y_term + u_term
 
-        # Evaluate x_term (latent state error cost)
-        idx_prev = max(k - 1, 0)
-        J = helper.evaluate_jacobian(
-            problem.nodes[4],
-            torch.from_numpy(T_real @ zs_sim[:, idx_prev]).float(),
-        ) @ T_real
-        Qz = J.T @ Qy @ J
-        Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
-        x_diff = z_sim[:nz, k] - zs_sim[:, k]
-        x_term = float(x_diff.T @ Qz_psd @ x_diff)
-        x_term_total += x_term
-
     print(f"Closed-loop objective function value: {objective_value}")
     print(f"State error term: {state_error_cost}")
     print(f"Control increment term: {control_increment_cost}")
-    print(f"Latent state error term (x_term): {x_term_total}")
 
 
 if __name__ == '__main__':
     main()
+
+

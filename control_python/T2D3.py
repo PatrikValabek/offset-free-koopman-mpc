@@ -187,17 +187,22 @@ def main() -> None:
     # MPC problem formulation
     # -----------------------------
     Qy = loaded_setup['Qy']
-    J = helper.evaluate_jacobian(
+    J_ref = helper.evaluate_jacobian(
         problem.nodes[4],
         torch.from_numpy(T_real @ z_s).float(),
+    ) @ T_real
+    
+    J = helper.evaluate_jacobian(
+        problem.nodes[4],
+        torch.from_numpy(T_real @ z_est_[0, :nz]).float(),
     ) @ T_real
     Qz = J.T @ Qy @ J
     Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
 
-    mpc = helper.TaylorMPC(A, B)
+    mpc = helper.TaylorCrossMPC(A, B)
     mpc.build_problem(Qz_psd)
     u_opt = mpc.get_u_optimal(
-        z_est_[0, :nz], z_est_[:, nz:], u_previous, z_ref, get_y(T_real @ z_s), z_s, J
+        z_est_[0, :nz], z_est_[:, nz:], u_previous, z_ref, get_y(T_real @ z_est_[0, :nz]), z_est_[0, :nz], J, J_ref, get_y(T_real @ z_s), z_s
     )
     print(u_opt)
     print(mpc.mpc.status)
@@ -219,7 +224,7 @@ def main() -> None:
 
     start_time_target = time.time()
     z_s, y_s = target_estimation.get_target(
-        z_est_[:, nz:], y_setpoint, get_y(T_real @ z_s), z_s, J
+        z_est_[:, nz:], y_setpoint, get_y(T_real @ z_s), z_s, J_ref
     )
     end_time_target = time.time()
     total_time_target += end_time_target - start_time_target
@@ -245,8 +250,8 @@ def main() -> None:
             torch.from_numpy(T_real @ zs_sim[:, idx_prev]).float(),
         ) @ T_real
         start_time_target = time.time()
-        zs_sim[:, k + 1], ys_sim[:, k + 1] = target_estimation.get_target(
-            z_sim[nz:, k + 1], 
+        zs_sim[:, k], ys_sim[:, k] = target_estimation.get_target(
+            z_sim[nz:, k], 
             y_setpoint, 
             get_y(T_real @ zs_sim[:, idx_prev]), 
             zs_sim[:, idx_prev], 
@@ -255,15 +260,14 @@ def main() -> None:
         end_time_target = time.time()
         total_time_target += end_time_target - start_time_target
 
-        # T2/D2: for MPC, linearize at the previous target zs_sim[:, k-1] (use k=0 fallback)
-        # J_prev = helper.evaluate_jacobian(
-        #     problem.nodes[4],
-        #     torch.from_numpy(T_real @ zs_sim[:, idx_prev]).float(),
-        # ) @ T_real
-        # J = J_prev
+        # T2/D3: for MPC
+        J_est= helper.evaluate_jacobian(
+            problem.nodes[4],
+            torch.from_numpy(T_real @ z_sim[:nz, k]).float(),
+        ) @ T_real
 
         # if k > 0:
-        Qz = J.T @ Qy @ J
+        Qz = J_est.T @ Qy @ J_est
         Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
         mpc.build_problem(Qz_psd)
 
@@ -273,9 +277,12 @@ def main() -> None:
             z_sim[nz:, k],
             u_prev,
             zs_sim[:, k],
+            get_y(T_real @ z_sim[:nz, k]),
+            z_sim[:nz, k],
+            J_est,
+            J,
             get_y(T_real @ zs_sim[:, idx_prev]),
             zs_sim[:, idx_prev],
-            J,
         )
         end_time_mpc = time.time()
         total_time_mpc += end_time_mpc - start_time_mpc
@@ -317,7 +324,7 @@ def main() -> None:
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig(os.path.join(figures_dir, 'T2D2_states.png'), dpi=200)
+    plt.savefig(os.path.join(figures_dir, 'T2D3_states.png'), dpi=200)
     plt.close()
 
     # Inputs plot
@@ -331,7 +338,7 @@ def main() -> None:
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig(os.path.join(figures_dir, 'T2D2_inputs.png'), dpi=200)
+    plt.savefig(os.path.join(figures_dir, 'T2D3_inputs.png'), dpi=200)
     plt.close()
     
     # Plot get_y(T_real @ z_sim[:nz, :]) as transformed outputs
@@ -363,8 +370,8 @@ def main() -> None:
     objective_value = 0.0
     state_error_cost = 0.0
     control_increment_cost = 0.0
-    sim_time_eval = 500
-    for k in range(sim_time_eval):
+    x_term_total = 0.0
+    for k in range(sim_time):
         y_diff = y_sim[:, k] - loaded_setup['reference'][:, k]
         u_diff = u_sim[:, k] - u_sim[:, k - 1]
         y_term = float(y_diff.T @ Qy @ y_diff)
@@ -373,9 +380,21 @@ def main() -> None:
         control_increment_cost += u_term
         objective_value += y_term + u_term
 
+        # Evaluate x_term (latent state error cost)
+        J = helper.evaluate_jacobian(
+            problem.nodes[4],
+            torch.from_numpy(T_real @ z_sim[:nz, k]).float(),
+        ) @ T_real
+        Qz = J.T @ Qy @ J
+        Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
+        x_diff = z_sim[:nz, k] - zs_sim[:, k]
+        x_term = float(x_diff.T @ Qz_psd @ x_diff)
+        x_term_total += x_term
+
     print(f"Closed-loop objective function value: {objective_value}")
     print(f"State error term: {state_error_cost}")
     print(f"Control increment term: {control_increment_cost}")
+    print(f"Latent state error term (x_term): {x_term_total}")
 
 
 if __name__ == '__main__':
