@@ -1,5 +1,6 @@
 from .model import Model
 import numpy as np
+from typing import List
 
 class TwoTanks(Model):
     def __init__(
@@ -22,7 +23,7 @@ class TwoTanks(Model):
         self.k1 = k1
         self.k2 = k2
         
-    def ode(self, t: float, h: np.ndarray) -> list[float]:
+    def ode(self, t: float, h: np.ndarray) -> List[float]:
         h1, h2 = h
         h1 = max(h1, 0.0)  # prevent negative heights
         h2 = max(h2, 0.0)

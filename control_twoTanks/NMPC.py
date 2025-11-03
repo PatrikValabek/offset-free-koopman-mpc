@@ -254,12 +254,15 @@ def compute_closed_loop_objective(
 
     n_steps = min(500, y_history.shape[1])
     objective_value = 0.0
+    y_term = 0.0
+    u_term = 0.0
     for k in range(n_steps):
         y_diff = y_sim[:, k] - loaded_setup["reference"][:, k]
-        u_diff = u_sim[:, k] - (u_sim[:, k - 1] if k > 0 else np.zeros(2))
-        objective_value += float(y_diff.T @ Qy @ y_diff)
-        objective_value += float(u_diff.T @ Qu @ u_diff)
-    return objective_value
+        u_diff = u_sim[:, k] - (u_sim[:, k - 1] if k > 0 else u_sim[:, k])
+        y_term += float(y_diff.T @ Qy @ y_diff)
+        u_term += float(u_diff.T @ Qu @ u_diff)
+        objective_value = y_term + u_term
+    return objective_value, y_term, u_term
 
 
 # --------------------------------- Main -------------------------------------
@@ -281,8 +284,11 @@ def main() -> None:
     plot_inputs(figures_dir, time_arr, u_arr)
 
     data_dir = repo_root / 'data'
-    objective_value = compute_closed_loop_objective(y_arr, u_arr, loaded_setup, data_dir)
+    objective_value, y_term, u_term = compute_closed_loop_objective(y_arr, u_arr, loaded_setup, data_dir)
     print(f"Closed-loop objective function value: {objective_value}")
+    # print u and y terms
+    print(f"  - State tracking term: {y_term}")
+    print(f"  - Input increment term: {u_term}")
 
 
 if __name__ == "__main__":

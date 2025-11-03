@@ -213,8 +213,6 @@
 
 \section{Preliminaries and Notation}
 \label{sec:Preliminaries}
-
-\subsection{Parsim-K Identification}
  
 \subsection{Offset-Free MPC}
 
@@ -226,7 +224,7 @@
 
 \subsection{State Estimation - Observer}
 
-\section{Koopman MPC with Offset-Free - Easyiest}
+\section{Koopman MPC with Offset-Free - Baseline}
 \label{sec:easy-mpc}
 In this section, we will present a standard offset free optimal framework consisting of Target Optimization, State Estimation - Observer and MPC. As observer is standard Kalman filter or extended Kalman filter, we will discuss mainly remaining two optimization problems. Both remaining components had to be designed in a way that they are able to work with the Koopman operator. The main goal of this section is to show that the standard formulation can be easily transformed for the offset-free MPC use.
 
@@ -382,182 +380,443 @@ For dynamic prediction over the horizon, with disturbance held at the current es
   \end{align}
 \end{subequations}
 
-\subsection{Simulation setups}
+\subsection{Simulation Results for Two Tanks System}
 
 We index target mappings by T1--T3 and dynamic mappings by D1--D4 as in \eqref{eq:target-mappings}--\eqref{eq:dyn-mappings}. The simulation setups below pair one target mapping with one dynamic mapping:
 
 \begin{table}[h]
   \centering
-  \caption{Simulation setups matrix, with Qy and Qr with equal diagonal values (\(5\)). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3).}
-  \label{tab:setups-matrix}
+  \caption{Simulation setups matrix, with Qy much higher Qu; Qy = diag(5) Qu = diag(0.1). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). Fill cells with the identifier/value for each tested combination. NMPC benchmark is 100.}
+  \label{tab:setups-matrix-tanks-1}
   \begin{tabular}{lcccc}
       \toprule
       & \multicolumn{4}{c}{DM} \\
       \cmidrule(lr){2-5}
       TM & D1 & D2 & D3 & D4 \\
       \midrule
-      T1 & 112.91 & x & x & x \\
-      T2 & x & 108.87 &  &  \\
-      T3 & x &  &  &  \\
+      T1 & 124.19 & x & x & x \\
+      T2 & x & 104.86 & 107.47 & 103.79 \\
+      T3 & x & 105.34 & 108.11 & 103.89 \\
       \bottomrule
   \end{tabular}
 \end{table}
 
 \begin{table}[h]
   \centering
-  \caption{Simulation setups matrix. Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). Fill cells with the identifier/value for each tested combination.}
-  \label{tab:setups-matrix}
+  \caption{Simulation setups matrix, with Qy and Qu with equal diagonal values (\(5\)). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is 100.}
+  \label{tab:setups-matrix-tanks-2}
   \begin{tabular}{lcccc}
       \toprule
       & \multicolumn{4}{c}{DM} \\
       \cmidrule(lr){2-5}
       TM & D1 & D2 & D3 & D4 \\
       \midrule
-      T1 &  & x & x & x \\
-      T2 & x &  &  &  \\
-      T3 & x &  &  &  \\
+      T1 & 112.90 & x & x & x \\
+      T2 & x & 108.86 & 106.44 & 107.52 \\
+      T3 & x & 106.24 & 108.94 & 105.33 \\
       \bottomrule
   \end{tabular}
 \end{table}
 
 \begin{table}[h]
   \centering
-  \caption{Simulation setups matrix. Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). Fill cells with the identifier/value for each tested combination.}
-  \label{tab:setups-matrix}
+  \caption{Simulation setups matrix, with Qy much lower Qu; Qy = diag(0.1) Qu = diag(5). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is 100.}
+  \label{tab:setups-matrix-tanks-3}
   \begin{tabular}{lcccc}
       \toprule
       & \multicolumn{4}{c}{DM} \\
       \cmidrule(lr){2-5}
       TM & D1 & D2 & D3 & D4 \\
       \midrule
-      T1 &  & x & x & x \\
-      T2 & x &  &  &  \\
-      T3 & x &  &  &  \\
+      T1 & 147.49 & x & x & x \\
+      T2 & x & 189.52 & 176.33 & 190.96 \\
+      T3 & x & 143.29 & 143.86 & 143.47 \\
       \bottomrule
   \end{tabular}
 \end{table}
 
+\subsection{Simulation Results for Two Reactor System}
+
+We index target mappings by T1--T3 and dynamic mappings by D1--D4 as in \eqref{eq:target-mappings}--\eqref{eq:dyn-mappings}. The simulation setups below pair one target mapping with one dynamic mapping:
+
+\begin{table}[h]
+  \centering
+  \caption{Simulation setups matrix, with Qy much higher Qu; Qy = diag(5) Qu = diag(0.1). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is \(100\).}
+  \label{tab:setups-matrix-reactor-1}
+  \begin{tabular}{lcccc}
+      \toprule
+      & \multicolumn{4}{c}{DM} \\
+      \cmidrule(lr){2-5}
+      TM & D1 & D2 & D3 & D4 \\
+      \midrule
+      T1 & 365.0 & x & x & x \\
+      T2 & x & 251.5 & 250.7 & 255.5 \\
+      T3 & x & 259.0 & 265.1 & 263.2 \\
+      \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{Simulation setups matrix, with Qy and Qu with equal diagonal values (\(1\)). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is \(100\).}
+  \label{tab:setups-matrix-reactor-2}
+  \begin{tabular}{lcccc}
+      \toprule
+      & \multicolumn{4}{c}{DM} \\
+      \cmidrule(lr){2-5}
+      TM & D1 & D2 & D3 & D4 \\
+      \midrule
+      T1 & 184.5 & x & x & x \\
+      T2 & x & 146.2 & 146.8 & 146.2 \\
+      T3 & x & 150.6 & 153.9 & 150.6 \\
+      \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{Simulation setups matrix, with Qy much lower Qu; Qy = diag(0.1) Qu = diag(5). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is \(100\).}
+  \label{tab:setups-matrix-reactor-3}
+  \begin{tabular}{lcccc}
+      \toprule
+      & \multicolumn{4}{c}{DM} \\
+      \cmidrule(lr){2-5}
+      TM & D1 & D2 & D3 & D4 \\
+      \midrule
+      T1 & 130.4 & x & x & x \\
+      T2 & x & 112.1 & 112.5 & 112.2 \\
+      T3 & x & 115.5 & 116.1 & 115.6 \\
+      \bottomrule
+  \end{tabular}
+\end{table}
+
+% % \begin{table}[h]
+% %   \centering
+% %   \caption{Comparison of several methods}
+% %   \label{tab:ident-comp}
+% %   \begin{tabular}{cccccc}
+% %       \toprule
+% %         Structure & OBJ u  & OBJ y & OBJ & ST \(h_1\) & ST \(h_2\) \\
+% %         \midrule
+% %         NMPC          & 4.4568 & 20.3818 & 100.0  & 8 & 8 \\%(24.8386)
+% %         Parsim-K      & 6.0253 & 24.5910 & 123.3 & 27 & 27 \\
+% %         Full C          & 3.8177 & 23.8167 & 111.3 & 66 & 78 \\
+% %         Block Diagonal C & 3.8492 & 22.4462 & 105.9 & 47 & 42 \\
+% %         Full \(C_k\)          & 11.5966 & 18.9656 & 123.0 & 31 & 23 \\
+% %         Block Diagonal \(C_k\) &  11.5214 & 19.0154 & 122.9 & 30 & 23 \\
+% %         \bottomrule
+% %   \end{tabular}
+% % \end{table}
 % \begin{table}[h]
 %   \centering
-%   \caption{Comparison of several methods}
+%   \caption{Comparison of several Tunings}
 %   \label{tab:ident-comp}
-%   \begin{tabular}{cccccc}
+%   \begin{tabular}{cccc}
 %       \toprule
-%         Structure & OBJ u  & OBJ y & OBJ & ST \(h_1\) & ST \(h_2\) \\
+%         LP MPC & LP TE & Tuning & OBJ \\
 %         \midrule
-%         NMPC          & 4.4568 & 20.3818 & 100.0  & 8 & 8 \\%(24.8386)
-%         Parsim-K      & 6.0253 & 24.5910 & 123.3 & 27 & 27 \\
-%         Full C          & 3.8177 & 23.8167 & 111.3 & 66 & 78 \\
-%         Block Diagonal C & 3.8492 & 22.4462 & 105.9 & 47 & 42 \\
-%         Full \(C_k\)          & 11.5966 & 18.9656 & 123.0 & 31 & 23 \\
-%         Block Diagonal \(C_k\) &  11.5214 & 19.0154 & 122.9 & 30 & 23 \\
+%         - & - & \(J(z_s)\)          & 171.22 \\%(24.8386)
+%         \(C\) & \(C\) & \(J(z_s)\)           & 147.26 \\
+%         \(J(z_s)\) \text{w/o y-con} & \(J(z_{s,k-1})\) & \(J(z_s)\)           & 149.18 \\ 
+%         \(J(z_k)\) & \(J(z_k)\) & \(J(z_s)\)          & 163.69 \\
+%         \(J(z_k)\) & \(J(z_{s,k-1})\) & \(J(z_s)\)          & 149.35 \\
+%         \midrule
+%         - & - & \(C\)          & 156.21 \\%(24.8386)
+%         \(C\) & \(C\) & \(C\)            & 151.73 \\
+%         \(J(z_s)\) \text{w/o y-con} & \(J(z_{s,k-1})\) & \(C\)            & 158.80 \\ 
+%         \(J(z_k)\) & \(J(z_k)\) & \(C\)           & 177.33 \\
+%         \(J(z_k)\) & \(J(z_{s,k-1})\) & \(C\)           & 158.68 \\
 %         \bottomrule
 %   \end{tabular}
 % \end{table}
-\begin{table}[h]
+
+% \begin{table}[h]
+%   \centering
+%   \caption{Comparison of several Methods}
+%   \label{tab:ident-comp}
+%   \begin{tabular}{cccc}
+%       \toprule
+%         ALG & MODEL & OBJ \\
+%         \midrule
+%         NMPC & Tru & 88.09  \\%(24.8386)
+%         MPC & Pa.-K (3) & 167.51  \\
+%         MPC & DK & 156.21  \\
+%         TMPC & DK (C) & 147.22  \\
+%         TMPC & DK (J(z)) & 149.35  \\
+%         \bottomrule
+%   \end{tabular}
+% \end{table}
+
+% \begin{table}[h]
+%   \centering
+%   \caption{Comparison of several Methods with feasible solutions}
+%   \label{tab:ident-comp}
+%   \begin{tabular}{cccccc}
+%       \toprule
+%         ALG & MODEL & OBJ & OBJ u & OBJ y \\
+%         \midrule
+%         NMPC & Tru & 67.72 & 14.41 & 53.31 \\%(24.8386)
+%         MPC & Pa.-K (3) & 129.64 & - & - \\
+%         MPC & DK & 114.93 & 13.52 & 101.41 \\
+%         TMPC & DK (C, tune C) & 116.56 & 13.52 & 103.04 \\
+%         TMPC & DK (C) & 115.08 & 16.65 & 98.43 \\
+%         TMPC & DK (J(z)) & 117.12 & 23.96 & 93.16 \\
+%         TMPC & DK (J(z), tune C) & 126.17 & 20.77 & 105.40 \\
+%         \bottomrule
+%   \end{tabular}
+% \end{table}
+
+% \begin{table}[h]
+%   \centering
+%   \caption{Comparison of several Methods with feasible solutions, small Qu}
+%   \label{tab:ident-comp}
+%   \begin{tabular}{ccc}
+%       \toprule
+%         ALG & MODEL & OBJ \\
+%         \midrule
+%         NMPC & Tru & 47.55 \\%(24.8386)
+%         MPC & Pa.-K (3) & 142.21 \\
+%         MPC & DK & 94.37 \\
+%         TMPC & DK (C, tune C) & 95.94 \\
+%         TMPC & DK (C) & 93.58 \\
+%         TMPC & DK (J(z)) & 88.74 \\
+%         TMPC & DK (J(z), tune C) & 101.44 \\
+%         \bottomrule
+%   \end{tabular}
+% \end{table}
+
+% \begin{table}[h]
+%   \centering
+%   \caption{Comparison of several methods, small ref. changes}
+%   \label{tab:ident-comp}
+%   \begin{tabular}{cccccc}
+%       \toprule
+%         ALG & MODEL & OBJ & OBJ u & OBJ y \\
+%         \midrule
+%         NMPC & Tru & 2.26 & 0.76 & 1.50 \\%(2.26-0.76)
+%         MPC & Pa.-K (3) & 3.83 & 0.90 & 2.93 \\
+%         MPC & DK & 3.92 & 0.76 & 3.16 \\
+%         TMPC & DK (C, tune C) & 3.47 & 0.84 & 2.63 \\
+%         TMPC & DK (C) & 3.23 & 0.71 & 2.52 \\
+%         TMPC & DK (J(z)) & 9.98 & 6.84 & 3.14 \\
+%         TMPC & DK (J(z), tune C) & 7.94 & 3.63 & 4.31 \\
+%         \bottomrule
+%   \end{tabular}
+% \end{table}
+
+
+\section{Pasteurization Unit: Experimental Device}
+
+The experimental validation of the proposed control strategy is conducted on a laboratory-scale pasteurization unit, a thermal processing system designed for educational and research purposes. This apparatus, depicted in Figure~\ref{fig:PU}, represents a complex multivariable thermal system commonly encountered in food processing industries, where precise temperature regulation is crucial for product quality and safety.
+
+\begin{figure}[H]
   \centering
-  \caption{Comparison of several Tunings}
-  \label{tab:ident-comp}
-  \begin{tabular}{cccc}
-      \toprule
-        LP MPC & LP TE & Tuning & OBJ \\
-        \midrule
-        - & - & \(J(z_s)\)          & 171.22 \\%(24.8386)
-        \(C\) & \(C\) & \(J(z_s)\)           & 147.26 \\
-        \(J(z_s)\) \text{w/o y-con} & \(J(z_{s,k-1})\) & \(J(z_s)\)           & 149.18 \\ 
-        \(J(z_k)\) & \(J(z_k)\) & \(J(z_s)\)          & 163.69 \\
-        \(J(z_k)\) & \(J(z_{s,k-1})\) & \(J(z_s)\)          & 149.35 \\
-        \midrule
-        - & - & \(C\)          & 156.21 \\%(24.8386)
-        \(C\) & \(C\) & \(C\)            & 151.73 \\
-        \(J(z_s)\) \text{w/o y-con} & \(J(z_{s,k-1})\) & \(C\)            & 158.80 \\ 
-        \(J(z_k)\) & \(J(z_k)\) & \(C\)           & 177.33 \\
-        \(J(z_k)\) & \(J(z_{s,k-1})\) & \(C\)           & 158.68 \\
-        \bottomrule
-  \end{tabular}
-\end{table}
+  \includegraphics[width=0.95\linewidth]{figures/PU.png}
+  \caption{Pasteurization unit experimental apparatus.}
+  \label{fig:PU}
+\end{figure}
 
-\begin{table}[h]
+\subsection{System Configuration}
+
+The pasteurization unit comprises a tubular heat exchanger configuration with counter-current flow arrangement, as illustrated schematically in Figure~\ref{fig:scheme_heat_exchanger}. The system consists of two primary fluid circuits: the product circuit and the heating medium circuit. The product fluid is pumped through a helical tube nested within a cylindrical shell, where it exchanges thermal energy with hot water circulating in the shell side.
+
+\begin{figure}[H]
   \centering
-  \caption{Comparison of several Methods}
-  \label{tab:ident-comp}
-  \begin{tabular}{cccc}
-      \toprule
-        ALG & MODEL & OBJ \\
-        \midrule
-        NMPC & Tru & 88.09  \\%(24.8386)
-        MPC & Pa.-K (3) & 167.51  \\
-        MPC & DK & 156.21  \\
-        TMPC & DK (C) & 147.22  \\
-        TMPC & DK (J(z)) & 149.35  \\
-        \bottomrule
-  \end{tabular}
-\end{table}
+  \includegraphics[width=0.75\linewidth]{figures/scheme_heat_exchanger.pdf}
+  \caption{Schematic representation of the heat exchanger configuration.}
+  \label{fig:scheme_heat_exchanger}
+\end{figure}
 
-\begin{table}[h]
-  \centering
-  \caption{Comparison of several Methods with feasible solutions}
-  \label{tab:ident-comp}
-  \begin{tabular}{cccccc}
-      \toprule
-        ALG & MODEL & OBJ & OBJ u & OBJ y \\
-        \midrule
-        NMPC & Tru & 67.72 & 14.41 & 53.31 \\%(24.8386)
-        MPC & Pa.-K (3) & 129.64 & - & - \\
-        MPC & DK & 114.93 & 13.52 & 101.41 \\
-        TMPC & DK (C, tune C) & 116.56 & 13.52 & 103.04 \\
-        TMPC & DK (C) & 115.08 & 16.65 & 98.43 \\
-        TMPC & DK (J(z)) & 117.12 & 23.96 & 93.16 \\
-        TMPC & DK (J(z), tune C) & 126.17 & 20.77 & 105.40 \\
-        \bottomrule
-  \end{tabular}
-\end{table}
+The unit features eight manipulated variables that can be adjusted for process control:
+\begin{itemize}
+    \item \texttt{Pump1}: Product feed flow rate control (\%)
+    \item \texttt{Pump2}: Heating medium circulation rate (\%)
+    \item \texttt{Heater}: Electric heater power for the heating medium (\%)
+    \item \texttt{DV}: Diversion valve position
+    \item \texttt{FSV}: Feed selection valve
+    \item \texttt{CWV}: Cooling water valve position
+    \item \texttt{TAFV}, \texttt{TBFV}: Tank flow control valves
+\end{itemize}
 
-\begin{table}[h]
-  \centering
-  \caption{Comparison of several Methods with feasible solutions, small Qu}
-  \label{tab:ident-comp}
-  \begin{tabular}{ccc}
-      \toprule
-        ALG & MODEL & OBJ \\
-        \midrule
-        NMPC & Tru & 47.55 \\%(24.8386)
-        MPC & Pa.-K (3) & 142.21 \\
-        MPC & DK & 94.37 \\
-        TMPC & DK (C, tune C) & 95.94 \\
-        TMPC & DK (C) & 93.58 \\
-        TMPC & DK (J(z)) & 88.74 \\
-        TMPC & DK (J(z), tune C) & 101.44 \\
-        \bottomrule
-  \end{tabular}
-\end{table}
+The system is instrumented with multiple sensors providing real-time measurements, including four temperature sensors (\texttt{T1}--\texttt{T4}) positioned at strategic locations along the product and heating circuits, a flow meter (\texttt{F1}) measuring product flow rate, a level sensor (\texttt{L1}) for tank monitoring, and additional auxiliary measurements for comprehensive process monitoring.
 
-\begin{table}[h]
-  \centering
-  \caption{Comparison of several methods, small ref. changes}
-  \label{tab:ident-comp}
-  \begin{tabular}{cccccc}
-      \toprule
-        ALG & MODEL & OBJ & OBJ u & OBJ y \\
-        \midrule
-        NMPC & Tru & 2.26 & 0.76 & 1.50 \\%(2.26-0.76)
-        MPC & Pa.-K (3) & 3.83 & 0.90 & 2.93 \\
-        MPC & DK & 3.92 & 0.76 & 3.16 \\
-        TMPC & DK (C, tune C) & 3.47 & 0.84 & 2.63 \\
-        TMPC & DK (C) & 3.23 & 0.71 & 2.52 \\
-        TMPC & DK (J(z)) & 9.98 & 6.84 & 3.14 \\
-        TMPC & DK (J(z), tune C) & 7.94 & 3.63 & 4.31 \\
-        \bottomrule
-  \end{tabular}
-\end{table}
+\subsection{Control Configuration}
 
+For the experimental implementation, the control objective focuses on regulating the outlet product temperature (\texttt{T4}) to track desired setpoint trajectories. The primary manipulated variable is the heating medium flow rate (\texttt{Pump2}), which directly influences the thermal energy transferred to the product stream. Additionally, a cascade control structure is employed for the heater, where the electric heater power is modulated to maintain a constant heating medium inlet temperature (\texttt{T2}), providing a stable thermal source. The product feed rate (\texttt{Pump1}) acts as a measurable disturbance, creating varying thermal loads that challenge the controller's disturbance rejection capabilities.
 
-\section{Experimental Setup}
+The system exhibits typical characteristics of thermal processes, including significant time delays, nonlinear behavior due to temperature-dependent fluid properties, and strong coupling between flow rates and temperatures. These features make it an ideal testbed for evaluating advanced control strategies such as the proposed offset-free Koopman MPC framework.
+
+\subsection{Data Acquisition and Control Platform}
+
+The experimental apparatus is integrated with a distributed control system accessible through the ELab platform, which provides remote monitoring and control capabilities via a web-based SCADA interface. The control algorithms are implemented in MATLAB/Simulink environment with a sampling period of \SI{1}{\second}, enabling real-time control execution. All process variables are logged continuously for post-experiment analysis and performance evaluation.
+
 
 \section{Experimental Results}
 
 \section{Discussion}
 \section{Conclusion}
+
+\appendix
+
+\section{System Models}
+\label{app:models}
+
+In this appendix, we provide detailed mathematical descriptions of the two benchmark nonlinear systems used to evaluate the proposed offset-free Koopman MPC schemes: a two-tank system with hydraulic flows and a two-reactor CSTR series with recycle and parallel reactions.
+
+\subsection{Two Tanks System}
+
+The two-tank system consists of two interconnected tanks with liquid heights \(h_1\) and \(h_2\). Each tank receives an inflow (control inputs \(u_1\) and \(u_2\), respectively), and liquid can flow between tanks and out of the system through gravity-driven mechanisms. The continuous-time nonlinear dynamics are described by:
+\begin{subequations}
+  \label{eq:two-tanks}
+  \begin{align}
+    \frac{dh_1}{dt} &= \frac{1}{A_1}\left(u_1 - q_{12}\right), \\
+    \frac{dh_2}{dt} &= \frac{1}{A_2}\left(u_2 + q_{12} - q_{\text{out}}\right),
+  \end{align}
+\end{subequations}
+where \(A_1\) and \(A_2\) are the cross-sectional areas of tanks 1 and 2, respectively. The inter-tank flow \(q_{12}\) and the outlet flow \(q_{\text{out}}\) follow nonlinear hydraulic relationships:
+\begin{align}
+  q_{12} &= k_1 \, \text{sgn}(h_1 - h_2) \, \sqrt{|h_1 - h_2|}, \label{eq:q12}\\
+  q_{\text{out}} &= k_2 \, \sqrt{h_2}, \label{eq:qout}
+\end{align}
+with \(k_1\) and \(k_2\) being flow coefficients. The outputs are the measured tank heights:
+\begin{equation}
+  y = \begin{bmatrix} h_1 \\ h_2 \end{bmatrix}.
+\end{equation}
+
+The system is discretized with a sampling time \(T_s = 1\,\text{s}\) using a Runge--Kutta integration scheme. The physical parameters and operational constraints used in the simulations are summarized in Table~\ref{tab:two-tanks-params}.
+
+\begin{table}[h]
+  \centering
+  \caption{Two-tank system parameters and operational constraints.}
+  \label{tab:two-tanks-params}
+  \begin{tabular}{llc}
+    \toprule
+    \textbf{Parameter} & \textbf{Description} & \textbf{Value} \\
+    \midrule
+    \(A_1\) & Cross-sectional area of tank 1 & \(1.0\,\text{m}^2\) \\
+    \(A_2\) & Cross-sectional area of tank 2 & \(1.0\,\text{m}^2\) \\
+    \(k_1\) & Inter-tank flow coefficient & \(0.5\,\text{m}^{2.5}/\text{s}\) \\
+    \(k_2\) & Outlet flow coefficient & \(0.3\,\text{m}^{2.5}/\text{s}\) \\
+    \midrule
+    \(h_1^0\), \(h_2^0\) & Initial heights & \(0.5\,\text{m}\) \\
+    \(u_1^0\), \(u_2^0\) & Initial inflows & \(0.0705, 0.4759\,\text{m}^3/\text{s}\) \\
+    \midrule
+    \(u_1 \in\) & Inflow constraint (tank 1) & \([0.0, 0.5]\,\text{m}^3/\text{s}\) \\
+    \(u_2 \in\) & Inflow constraint (tank 2) & \([0.0, 1.0]\,\text{m}^3/\text{s}\) \\
+    \(T_s\) & Sampling time & \(1.0\,\text{s}\) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Two Reactor System}
+
+The two-reactor system consists of two continuous stirred tank reactors (CSTRs) in series with a recycle loop from the second reactor back to the first. Each reactor is equipped with jacket cooling. The system models a classic selectivity problem with parallel competing reactions on reactant A.
+
+\subsubsection{Chemical Reactions}
+
+Three reaction pathways are considered:
+\begin{align}
+  \text{(R1) Desired:}\quad &  2\,\text{A} \rightarrow \text{B}, \quad && r_1 = k_1(T)\, C_A^2, \label{eq:rxn1}\\
+  \text{(R2) Undesired:}\quad &  \text{A} \rightarrow \text{U}, \quad && r_2 = k_2(T)\, C_A, \label{eq:rxn2}\\
+  \text{(R3) Shunt (R1 only):}\quad &  \text{A} + \text{B} \rightarrow 2\,\text{B}, \quad && r_3 = k_3(T)\, C_A\, C_B, \label{eq:rxn3}
+\end{align}
+where the temperature-dependent rate constants follow Arrhenius kinetics:
+\begin{equation}
+  k_i(T) = k_{i,0}\,\exp\!\left(-\frac{E_i}{R\,T}\right), \quad i = 1,2,3.
+  \label{eq:arrhenius}
+\end{equation}
+The autocatalytic shunt reaction (R3) occurs only in the first reactor.
+
+\subsubsection{Dynamic Model}
+
+The system has eight states:
+\begin{equation}
+  x = \begin{bmatrix} C_{A,1} & T_1 & C_{A,2} & T_2 & C_{B,1} & C_{B,2} & C_{U,1} & C_{U,2} \end{bmatrix}^\top,
+\end{equation}
+where \(C_{A,i}\), \(C_{B,i}\), and \(C_{U,i}\) denote concentrations of species A, B, and U in reactor \(i\), and \(T_i\) is the temperature. The four control inputs are:
+\begin{equation}
+  u = \begin{bmatrix} F & L & T_{c,1} & T_{c,2} \end{bmatrix}^\top,
+\end{equation}
+with \(F\) the fresh feed flow rate, \(L\) the recycle flow rate, and \(T_{c,i}\) the jacket coolant temperatures.
+
+The continuous-time dynamics are:
+\begin{subequations}
+  \label{eq:cstr-series}
+  \begin{align}
+    \frac{dC_{A,1}}{dt} &= \frac{1}{V_1}\bigl[C_{A,0}\,F + L\,C_{A,2} - (F+L)\,C_{A,1}\bigr] - 2\,r_{1,1} - r_{2,1} - r_{3,1}, \\
+    \frac{dC_{B,1}}{dt} &= \frac{1}{V_1}\bigl[C_{B,0}\,F + L\,C_{B,2} - (F+L)\,C_{B,1}\bigr] + r_{1,1} + r_{3,1}, \\
+    \frac{dC_{U,1}}{dt} &= \frac{1}{V_1}\bigl[C_{U,0}\,F + L\,C_{U,2} - (F+L)\,C_{U,1}\bigr] + r_{2,1}, \\
+    \frac{dT_1}{dt} &= \frac{1}{V_1}\bigl[T_0\,F + L\,T_2 - (F+L)\,T_1\bigr] - \frac{U_1A_1}{V_1\,\rho\,c_p}(T_1 - T_{c,1}) \notag\\
+    &\quad + \frac{1}{\rho\,c_p}\bigl[(-\Delta H_1)\,r_{1,1} + (-\Delta H_2)\,r_{2,1} + (-\Delta H_3)\,r_{3,1}\bigr], \\[0.5em]
+    \frac{dC_{A,2}}{dt} &= \frac{F+L}{V_2}\bigl[C_{A,1} - C_{A,2}\bigr] - 2\,r_{1,2} - r_{2,2}, \\
+    \frac{dC_{B,2}}{dt} &= \frac{F+L}{V_2}\bigl[C_{B,1} - C_{B,2}\bigr] + r_{1,2}, \\
+    \frac{dC_{U,2}}{dt} &= \frac{F+L}{V_2}\bigl[C_{U,1} - C_{U,2}\bigr] + r_{2,2}, \\
+    \frac{dT_2}{dt} &= \frac{F+L}{V_2}\bigl[T_1 - T_2\bigr] - \frac{U_2A_2}{V_2\,\rho\,c_p}(T_2 - T_{c,2}) \notag\\
+    &\quad + \frac{1}{\rho\,c_p}\bigl[(-\Delta H_1)\,r_{1,2} + (-\Delta H_2)\,r_{2,2}\bigr],
+  \end{align}
+\end{subequations}
+where \(r_{j,i}\) denotes the rate of reaction \(j\) in reactor \(i\). The outputs are all eight states:
+\begin{equation}
+  y = x.
+\end{equation}
+
+The system is discretized with sampling time \(T_s = 1\,\text{s}\) using a Runge--Kutta integration scheme. Physical parameters, kinetic constants, and operational constraints are listed in Tables~\ref{tab:cstr-physical}--\ref{tab:cstr-constraints}.
+
+\begin{table}[h]
+  \centering
+  \caption{CSTR series physical and thermodynamic parameters.}
+  \label{tab:cstr-physical}
+  \begin{tabular}{llc}
+    \toprule
+    \textbf{Parameter} & \textbf{Description} & \textbf{Value} \\
+    \midrule
+    \(V_1\) & Volume of reactor 1 & \(1.0\times10^{-3}\,\text{m}^3\) \\
+    \(V_2\) & Volume of reactor 2 & \(2.0\times10^{-3}\,\text{m}^3\) \\
+    \(U_1A_1\) & Heat transfer coefficient \(\times\) area (R1) & \(0.461\,\text{kJ/(s·K)}\) \\
+    \(U_2A_2\) & Heat transfer coefficient \(\times\) area (R2) & \(0.732\,\text{kJ/(s·K)}\) \\
+    \(\rho\) & Liquid density & \(1050\,\text{kg/m}^3\) \\
+    \(c_p\) & Specific heat capacity & \(3.766\,\text{kJ/(kg·K)}\) \\
+    \(R\) & Universal gas constant & \(8.3145\times10^{-3}\,\text{kJ/(mol·K)}\) \\
+    \midrule
+    \(C_{A,0}\) & Feed concentration of A & \(97.35\,\text{mol/m}^3\) \\
+    \(C_{B,0}, C_{U,0}\) & Feed concentrations of B, U & \(0.0\,\text{mol/m}^3\) \\
+    \(T_0\) & Feed temperature & \(298.0\,\text{K}\) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{Arrhenius kinetic parameters for reactions R1--R3.}
+  \label{tab:cstr-kinetics}
+  \begin{tabular}{llccc}
+    \toprule
+    \textbf{Reaction} & \textbf{Parameter} & \textbf{Pre-exponential} & \textbf{Activation Energy} & \textbf{Heat of Reaction} \\
+    \midrule
+    R1: \(2\,\text{A} \rightarrow \text{B}\) & \(k_{1,0}\), \(E_1\), \(\Delta H_1\) & \(1.0\times10^5\,\text{m}^3/(\text{mol·s})\) & \(45.0\,\text{kJ/mol}\) & \(60.0\,\text{kJ/mol}\) \\
+    R2: \(\text{A} \rightarrow \text{U}\) & \(k_{2,0}\), \(E_2\), \(\Delta H_2\) & \(9.8\times10^9\,\text{s}^{-1}\) & \(70.0\,\text{kJ/mol}\) & \(40.0\,\text{kJ/mol}\) \\
+    R3: \(\text{A}+\text{B} \rightarrow 2\,\text{B}\) & \(k_{3,0}\), \(E_3\), \(\Delta H_3\) & \(5.0\times10^4\,\text{m}^3/(\text{mol·s})\) & \(55.0\,\text{kJ/mol}\) & \(60.0\,\text{kJ/mol}\) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \caption{CSTR series operational constraints and initial conditions.}
+  \label{tab:cstr-constraints}
+  \begin{tabular}{llc}
+    \toprule
+    \textbf{Parameter} & \textbf{Description} & \textbf{Value/Range} \\
+    \midrule
+    \(F \in\) & Fresh feed flow rate & \([0.0, 2.0\times10^{-4}]\,\text{m}^3/\text{s}\) \\
+    \(L \in\) & Recycle flow rate & \([0.0, 2.0\times10^{-4}]\,\text{m}^3/\text{s}\) \\
+    \(T_{c,1}, T_{c,2} \in\) & Coolant temperatures & \([280.0, 330.0]\,\text{K}\) \\
+    \midrule
+    \(x_0\) & Initial state (steady state) & Computed for \(u_0 = [1.5\times10^{-4}, 7.5\times10^{-5}, 290, 290]^\top\) \\
+    \(T_s\) & Sampling time & \(1.0\,\text{s}\) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 %\bibliography{bibfile}
  % Reference your .bib file (without .bib extension)

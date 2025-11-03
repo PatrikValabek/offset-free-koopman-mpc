@@ -73,20 +73,19 @@ def load_scalers(data_dir: Path):
 
 
 def load_sim_setup(repo_root: Path):
-    control_path = repo_root / 'control' / 'sim_setup.pkl'
-    control_py_path = repo_root / 'control_python' / 'sim_setup.pkl'
-    if control_path.exists():
-        return joblib.load(control_path.as_posix())
-    if control_py_path.exists():
-        return joblib.load(control_py_path.as_posix())
-    return joblib.load('sim_setup.pkl')
+    """
+    Load sim_setup.pkl from the directory the script is in.
+    Returns the loaded dictionary.
+    """
+    sim_setup_path = Path(__file__).parent / "sim_setup.pkl"
+    return joblib.load(sim_setup_path.as_posix())
 
 
 # ------------------------------ CT helpers ------------------------------------
 
 def build_encoders_decoders(ny: int, nz: int, nu: int, matrix_C: bool):
-    layers = [20, 40, 60]
-    layers_dec = [60, 40, 20]
+    layers = [40, 80, 120]
+    layers_dec = [120, 80, 40]
 
     # output encoder f_y
     f_y = blocks.MLP(
@@ -156,7 +155,15 @@ def main() -> None:
     # Block diagonalization
     T_real, A_block = helper.ident.real_block_diagonalize(A)
 
-    # Apply transformation as in notebook (Cell 6)
+    # Transform A to check
+    A_transformed = inv(T_real) @ A @ T_real
+    print("Close to block diagonal?", np.allclose(A_block, A_transformed, atol=1e-6))
+
+    # Backtransform A_block to verify it equals A
+    A_backtransformed = T_real @ A_block @ inv(T_real)
+    print("Backtransformation equals original A?", np.allclose(A, A_backtransformed, atol=1e-6))
+
+    # Apply transformation as in notebook
     A = inv(T_real) @ A @ T_real
     B = inv(T_real) @ B
     C = C @ T_real
@@ -168,19 +175,18 @@ def main() -> None:
     # Load scalers
     scaler, scalerU = load_scalers(data_dir)
 
-    # Plant model
-    A1 = 1
-    A2 = 0.5
-    k1 = 0.5
-    k2 = 0.8
-    TwoTanks = models.TwoTanks(True, A1, A2, k1, k2)
+    # Plant model: use full nonlinear CSTR series with recycle for simulation
+    CSTR = models.CSTRSeriesRecycle()
 
     # Sim setup
     loaded_setup = load_sim_setup(REPO_ROOT)
 
     y_start = loaded_setup['y_start']
+    y_start_ns = loaded_setup.get('y_start_ns')
+    reference_ns = loaded_setup.get('reference_ns')
     y_setpoint = loaded_setup['reference'][:, 0]
     u_previous = loaded_setup['u_previous']
+    u_previous_ns = loaded_setup.get('u_previous_ns')
 
     # Initial state estimate includes disturbance
     z_est_ = np.hstack(((inv(T_real) @ get_x_from_y(problem, y_start)).T, np.zeros((1, nd))))
@@ -222,20 +228,26 @@ def main() -> None:
     ys_sim = np.zeros((ny, sim_time + 1))
     zs_sim = np.zeros((nz, sim_time + 1))
 
-    y_sim_descaled = np.zeros((ny, sim_time + 1))
-    u_sim_descaled = np.zeros((nu, sim_time))
+    # Non-scaled histories for plant and evaluation
+    y_sim_ns = np.zeros((ny, sim_time + 1))
+    u_sim_ns = np.zeros((nu, sim_time))
 
     z_sim[:, 0] = z_est_.flatten()
     y_sim[:, 0] = y_start.flatten()
+    if y_start_ns is not None:
+        y_sim_ns[:, 0] = y_start_ns.flatten()
+    else:
+        y_sim_ns[:, 0] = scaler.inverse_transform(y_sim[:, 0].reshape(1, -1))[0]
     ys_sim[:, 0] = y_s
     zs_sim[:, 0] = z_s
     u_prev = target_estimation.u_s.value
 
-    u_sim_descaled[:, 0] = scalerU.inverse_transform(u_sim[:, 0].reshape(1, -1))[0]
-    y_sim_descaled[:, 0] = scaler.inverse_transform(y_sim[:, 0].reshape(1, -1))[0]
+    if u_previous_ns is not None:
+        u_sim_ns[:, 0] = u_previous_ns.flatten()
+    else:
+        u_sim_ns[:, 0] = scalerU.inverse_transform(u_sim[:, 0].reshape(1, -1))[0]
 
     for k in range(0, sim_time):
-        idx_prev = max(k - 1, 0)        
         # Target update
         zs_sim[:, k], ys_sim[:, k] = target_estimation.get_target(
             z_sim[nz:, k], loaded_setup["reference"][:, k]
@@ -244,90 +256,72 @@ def main() -> None:
         # MPC
         u_opt = mpc.get_u_optimal(z_sim[:nz, k], z_sim[nz:, k], u_prev, zs_sim[:, k])
         u_sim[:, k] = u_opt
-        u_sim_descaled[:, k] = scalerU.inverse_transform(u_sim[:, k].reshape(1, -1))[0]
+        u_sim_ns[:, k] = scalerU.inverse_transform(u_sim[:, k].reshape(1, -1))[0]
 
         # Plant
-        y_sim_descaled[:, k + 1] = TwoTanks.step(
-            y_sim_descaled[:, k], u_sim_descaled[:, k].reshape(1, -1), Ts
+        y_sim_ns[:, k + 1] = CSTR.step(
+            y_sim_ns[:, k], u_sim_ns[:, k].reshape(1, -1), Ts
         )
-        y_sim[:, k + 1] = scaler.transform(y_sim_descaled[:, k + 1].reshape(1, -1))[0]
+        # Scale for estimator/controller
+        y_sim[:, k + 1] = scaler.transform(y_sim_ns[:, k + 1].reshape(1, -1))[0]
 
         # Estimation
         z_sim[:, k + 1] = KF.step(u_sim[:, k], y_sim[:, k + 1]).flatten()
         
         u_prev = u_sim[:, k]
 
-    # Objective (exact phrase preserved)
-    y_pred = C@z_sim[:nz, :]+ z_sim[nz:, :]
-    y_pred_descaled = scaler.inverse_transform(y_pred.T).T
-    
+    # Compute objective in scaled units (matching notebook)
+    reference = loaded_setup['reference']
     Qu = loaded_setup['Qu']
     Qy = loaded_setup['Qy']
     objective_value = 0.0
     state_error_cost = 0.0
     control_increment_cost = 0.0
-    x_term_total = 0.0
-    y_term = 0.0
-    y_term_total = 0.0
     for k in range(sim_time):
-        y_diff = y_sim[:, k] - loaded_setup['reference'][:, k]
-        u_diff = u_sim[:, k] - u_sim[:, k - 1]
+        y_diff = y_sim[:, k] - reference[:, k]
+        prev_u = u_sim[:, k - 1] if k > 0 else u_sim[:, k]
+        u_diff = u_sim[:, k] - prev_u
         y_term = float(y_diff.T @ Qy @ y_diff)
         u_term = float(u_diff.T @ Qu @ u_diff)
         state_error_cost += y_term
         control_increment_cost += u_term
         objective_value += y_term + u_term
 
-        # Evaluate x_term (latent state error cost)
-        Qz = C.T @ Qy @ C
-        Qz_psd = Qz + 1e-8 * np.eye(nz)  # ensure PSD
-        x_diff = z_sim[:nz, k] - zs_sim[:, k]
-        x_term = float(x_diff.T @ Qz_psd @ x_diff)
-        x_term_total += x_term
-        
-        y_diff_pred = y_pred[:, k] - ys_sim[:, k]
-        #print(f"Step {k}: y_diff_pred = {y_diff_pred}, diff Cz-Czr: {C@z_sim[:nz, k] - C@zs_sim[:, k]}, diff Cxdiff: {C@x_diff}")  # Debug print to trace
-        
-        y_term = float(y_diff_pred.T @ Qy @ y_diff_pred)
-        y_term_total += y_term
-
     print(f"Closed-loop objective function value: {objective_value}")
-    print(f"State error term: {state_error_cost}")
-    print(f"Control increment term: {control_increment_cost}")
-    print(f"Latent state error term (x_term): {x_term_total}")
-    print(f"Output error term (y_term): {y_term_total}")
+    print(f"  - State tracking term: {state_error_cost}")
+    print(f"  - Input increment term: {control_increment_cost}")
 
 
-    # Plots saved to figures/
-    y_pred = C@z_sim[:nz, :]
-    y_pred_descaled = scaler.inverse_transform(y_pred.T).T
-    
-    fig = plt.figure(figsize=(12, 8))
-    plt.subplot(2, 1, 1)
-    plt.plot(y_sim_descaled[0, :], label='h1')
-    plt.plot(y_sim_descaled[1, :], label='h2')
-    # plt.plot(y_pred_descaled.T, color='green', linestyle='-.', label='pred h1')
-    # plt.plot(y_pred_descaled.T, color='green', linestyle=':', label='pred h2')
-    plt.plot(scaler.inverse_transform(ys_sim.T).T[0, :], color='red', linestyle='--', label='target h1')
-    plt.plot(scaler.inverse_transform(ys_sim.T).T[1, :], color='red', linestyle=':', label='target h2')
-    plt.title('K-MPC (Block-Diag C LTI) Simulation')
-    plt.xlabel('Time step')
-    plt.ylabel('Output')
-    plt.legend()
-    plt.grid(True)
-    fig.tight_layout()
+
+    # Plots saved to figures/ in non-scaled domain (8 states, 4 inputs)
+    fig = plt.figure(figsize=(12, 10))
+    names = ['CA1','T1','CA2','T2','CB1','CB2','CU1','CU2']
+    n_steps = sim_time
+    for i in range(min(8, ny)):
+        plt.subplot(4, 2, i+1)
+        plt.plot(y_sim_ns[i, :], label=names[i] if i < len(names) else f'y{i}')
+        if reference_ns is not None:
+            plt.plot(reference_ns[i, :n_steps+1], 'r--', label=f'{names[i]} ref' if i < len(names) else f'y{i} ref')
+        plt.xlabel('Time step')
+        plt.ylabel(names[i] if i < len(names) else f'y{i}')
+        plt.grid(True)
+        if i in (0,1):
+            plt.legend()
+        if i == 1:
+            plt.title('CT: linear MPC with nonlinear CSTR plant (states vs ref)')
+    plt.tight_layout()
     fig.savefig((figures_dir / 'CT_states.png').as_posix(), dpi=200)
 
-    fig2 = plt.figure(figsize=(12, 8))
-    plt.subplot(2, 1, 1)
-    plt.plot(u_sim_descaled[0, :], label='q1')
-    plt.plot(u_sim_descaled[1, :], label='q2')
-    plt.xlabel('Time step')
-    plt.ylabel('Input')
-    plt.legend()
-    plt.grid(True)
-    fig2.tight_layout()
-    fig2.savefig((figures_dir / 'CT_inputs.png').as_posix(), dpi=200)
+    fig_inputs, axs = plt.subplots(4, 1, figsize=(12, 10), sharex=True)
+    input_names = ['F', 'L', 'Tc1', 'Tc2']
+    for i in range(4):
+        axs[i].plot(u_sim_ns[i, :], label=input_names[i])
+        axs[i].set_ylabel(input_names[i])
+        axs[i].grid(True)
+        axs[i].legend()
+    axs[-1].set_xlabel('Time step')
+    fig_inputs.tight_layout()
+    fig_inputs.savefig((figures_dir / 'CT_inputs.png').as_posix(), dpi=200)
 
 
 if __name__ == "__main__":
