@@ -107,7 +107,7 @@ def simulate_to_steady(u: np.ndarray, x0: np.ndarray = None, dt: float = 0.1, ma
 # ---------------------------- Outputs and inputs ------------------------------
 # We control 4 inputs: [F, L, Tc1, Tc2]
 # States (nx=8): [C_A1, T1, C_A2, T2, C_B1, C_B2, C_U1, C_U2]
-nx = 24
+nx = 22
 ny = 8  
 nu = 4
 
@@ -210,7 +210,7 @@ u_max = scalerU.transform(u_max_ns.reshape(1, -1))[0]
 # Conservative y bounds based on computed references with margins
 y_vals = np.vstack([reference_ns.T])
 y_mean = y_vals.mean(axis=0)
-y_range = np.maximum(1e-6, y_vals.ptp(axis=0))
+y_range = np.maximum(1e-6, np.ptp(y_vals, axis=0))
 margin = 10
 y_min_ns = y_mean - 2.0 * margin
 y_max_ns = y_mean + 2.0 * margin

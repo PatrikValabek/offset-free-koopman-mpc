@@ -343,6 +343,7 @@ class MPC():
         '''
         Build the MPC problem using cvxpy
         '''
+        Qz_psd = cp.psd_wrap(Qz)
         # parameters
         self.z0 = cp.Parameter(self.nz)
         self.d0 = cp.Parameter(self.ny)
@@ -367,7 +368,7 @@ class MPC():
                 #cost += cp.quad_form(z[:, k] - self.z_ref, Qz) 
                 cost += cp.quad_form(self.u[:, 0] - self.u_prev, self.Qu)
             else:
-                cost += cp.quad_form(z[:, k] - self.z_ref, Qz) + cp.quad_form(self.u[:, k] - self.u[:, k-1], self.Qu)
+                cost += cp.quad_form(z[:, k] - self.z_ref, Qz_psd) + cp.quad_form(self.u[:, k] - self.u[:, k-1], self.Qu)
                 
         self.mpc = cp.Problem(cp.Minimize(cost), constraints)
         
@@ -408,6 +409,7 @@ class TaylorTargetEstimation():
         self.build_problem()
 
     def build_problem(self):
+        
         self.z_s = cp.Variable(self.nz)
         self.y_s = cp.Variable(self.ny)
         self.u_s = cp.Variable(self.nu)
