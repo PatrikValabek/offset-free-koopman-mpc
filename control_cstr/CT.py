@@ -211,7 +211,7 @@ def main() -> None:
 
     # Target calc
     target_estimation = helper.TargetEstimation(A, B, C)
-    z_s, y_s = target_estimation.get_target(z_est_[:, nz:], y_setpoint)
+    z_s, y_s, u_s = target_estimation.get_target(z_est_[:, nz:], y_setpoint)
     z_ref = z_s
 
     # MPC problem
@@ -249,7 +249,7 @@ def main() -> None:
 
     for k in range(0, sim_time):
         # Target update
-        zs_sim[:, k], ys_sim[:, k] = target_estimation.get_target(
+        zs_sim[:, k], ys_sim[:, k], u_s = target_estimation.get_target(
             z_sim[nz:, k], loaded_setup["reference"][:, k]
         )
 
@@ -290,8 +290,20 @@ def main() -> None:
     print(f"Closed-loop objective function value: {objective_value}")
     print(f"  - State tracking term: {state_error_cost}")
     print(f"  - Input increment term: {control_increment_cost}")
-
-
+    
+    # Save control loop data for comparison
+    results_dir = REPO_ROOT / 'control_cstr'
+    results_data = {
+        'time': np.arange(sim_time + 1),
+        'states': y_sim_ns,  # shape (8, T+1) - non-scaled
+        'inputs': u_sim_ns,  # shape (4, T) - non-scaled
+        'objective': objective_value,
+        'state_term': state_error_cost,
+        'input_term': control_increment_cost,
+        'reference_ns': reference_ns,
+    }
+    joblib.dump(results_data, (results_dir / 'CT_results.pkl').as_posix())
+    print(f"Saved control loop data to {results_dir / 'CT_results.pkl'}")
 
     # Plots saved to figures/ in non-scaled domain (8 states, 4 inputs)
     fig = plt.figure(figsize=(12, 10))

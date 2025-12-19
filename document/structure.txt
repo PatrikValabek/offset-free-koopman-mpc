@@ -1,0 +1,43 @@
+1. Introduction
+
+2. Preliminaries and Notation
+   2.1. Offset-Free MPC
+   2.2. Nonlinear MPC
+   2.3. Koopman Operator for Control
+   2.4. Koopman MPC
+   2.5. State Estimation - Observer
+
+3. Koopman MPC with Offset-Free - Baseline
+   3.1. Target Optimization
+   3.2. MPC
+   3.3. Closed-Loop Control Structure
+
+4. Koopman MPC with Offset-Free - Proposed
+   4.1. Target Optimization
+   4.2. MPC
+   4.3. Closed-Loop Control Structure
+
+5. Block Diagonal Deep Koopman Transformation
+
+6. Simulation Setup
+
+7. Simulation Results
+   7.1. Output mappings for target and prediction
+   7.2. Simulation Results for Two Tanks System
+   7.3. Simulation Results for Two Reactor System
+
+8. Pasteurization Unit: Experimental Device
+   8.1. System Configuration
+   8.2. Control Configuration
+   8.3. Data Acquisition and Control Platform
+
+9. Experimental Results
+
+10. Discussion
+
+11. Conclusion
+
+APPENDIX
+A. System Models
+   A.1. Two Tanks System
+   A.2. Two Reactor System

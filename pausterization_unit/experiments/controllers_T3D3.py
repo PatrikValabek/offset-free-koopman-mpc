@@ -94,8 +94,8 @@ data_dir = REPO_ROOT / '../data'
 def load():
     global A, B, C, loaded_setup, nz, nu, ny, nd, T_real, A_block, A_transformed, A_backtransformed, problem, scaler, scalerU, y_start, y_start_ns, reference, y_setpoint, u_previous, u_previous_ns, P0, Q, R, A_, B_, C_, EKF, target_estimation, mpc, Qy
     matrix_C = False
-    A = np.load(f"../data/A_C_{matrix_C}.npy")
-    B = np.load(f"../data/B_C_{matrix_C}.npy")
+    A = np.load(f"../data/A_C_{matrix_C}_Ts.npy")
+    B = np.load(f"../data/B_C_{matrix_C}_Ts.npy")
     C = np.load(f"../data/C_C_{matrix_C}.npy")
 
     loaded_setup = joblib.load("sim_setup.pkl")
@@ -105,7 +105,11 @@ def load():
     ny = C.shape[0]
     nd = ny
 
-    Q = np.eye(nz + nd) * loaded_setup['Q']
+    # Q = np.eye(nz + nd) * loaded_setup['Q']
+    Q = np.block([
+        [np.eye(nz) * loaded_setup['Q'],  np.zeros((nz, nd))],   # Trust state model
+        [np.zeros((nd, nz)), np.eye(nd) * 1.0]      # Disturbance adapts fast
+    ])
     R = np.eye(ny) * loaded_setup['R']
     P0 = np.eye(nz + nd) * loaded_setup['P0']
     Qy = loaded_setup['Qy']
@@ -164,7 +168,7 @@ def tests():
         problem.nodes[4],
         torch.from_numpy(T_real @ EKF.x[:, :nz].T).float().flatten(),
     ) @ T_real
-    z_s, y_s = target_estimation.get_target( EKF.x[:, nz:], y_setpoint, get_y(T_real @ EKF.x[0, :nz]), EKF.x[0, :nz], J)
+    z_s, y_s, u_s = target_estimation.get_target( EKF.x[:, nz:], y_setpoint, get_y(T_real @ EKF.x[0, :nz]), EKF.x[0, :nz], J)
     z_ref_prev = z_s
     print(z_ref_prev)
     Qz = J.T @ Qy @ J
@@ -178,39 +182,41 @@ def next_optimal_input(previous_input, measurement, step):
     step = int(step)
     u_prev = scalerU.transform(previous_input.reshape(1, -1))[0]
     y_prev = scaler.transform(measurement.reshape(1, -1))[0]
-    _ = EKF.step(u_prev, y_prev)
+    z_sim = EKF.step(u_prev, y_prev).flatten()
+
     y_setpoint = reference[:, step]
+
     J = helper.evaluate_jacobian(
         problem.nodes[4],
-        torch.from_numpy(T_real @ EKF.x[:nz]).float().flatten(),
+        torch.from_numpy(T_real @ z_sim[:nz]).float().flatten(),
     ) @ T_real
-
-    z_s, y_s = target_estimation.get_target(
-        EKF.x[nz:], 
+    print(get_y(T_real @ z_sim[:nz]))
+    print(y_prev)
+    z_s, y_s, u_s = target_estimation.get_target(
+        z_sim[nz:], 
         y_setpoint, 
-        get_y(T_real @ EKF.x[:nz]), 
-        EKF.x[:nz], 
+        get_y(T_real @ z_sim[:nz]), 
+        z_sim[:nz], 
         J
     )
-
+    print(z_sim[nz:])
     Qz = J.T @ Qy @ J
     Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
     mpc.build_problem(Qz_psd)
 
     z_ref = z_s
     u_opt = mpc.get_u_optimal(
-        EKF.x[:nz],
-        EKF.x[nz:],
+        z_sim[:nz],
+        z_sim[nz:],
         u_prev,
         z_ref,
-        get_y(T_real @ EKF.x[:nz]),
-        EKF.x[:nz],
+        get_y(T_real @ z_sim[:nz]),
+        z_sim[:nz],
         J,
     )
 
     u_opt = scalerU.inverse_transform(u_opt.reshape(1, -1))[0]
     y_s = scaler.inverse_transform(y_s.reshape(1, -1))[0]
-    u_s = target_estimation.u_s.value
     u_s = scalerU.inverse_transform(u_s.reshape(1, -1))[0].flatten()
     return y_s, u_opt, u_s
     

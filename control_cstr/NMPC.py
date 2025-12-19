@@ -439,6 +439,20 @@ def main() -> None:
     # print u and y terms
     print(f"  - State tracking term: {y_term}")
     print(f"  - Input increment term: {u_term}")
+    
+    # Save control loop data for comparison
+    results_dir = repo_root / 'control_cstr'
+    results_data = {
+        'time': time_arr,
+        'states': y_arr,  # shape (8, T+1) - non-scaled
+        'inputs': u_arr,  # shape (4, T+1) - non-scaled
+        'objective': objective_value,
+        'state_term': y_term,
+        'input_term': u_term,
+        'reference_ns': loaded_setup.get('reference_ns'),
+    }
+    joblib.dump(results_data, (results_dir / 'NMPC_results.pkl').as_posix())
+    print(f"Saved control loop data to {results_dir / 'NMPC_results.pkl'}")
 
 
 if __name__ == "__main__":

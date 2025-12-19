@@ -105,7 +105,11 @@ def load():
     ny = C.shape[0]
     nd = ny
 
-    Q = np.eye(nz + nd) * loaded_setup['Q']
+    # Q = np.eye(nz + nd) * loaded_setup['Q']
+    Q = np.block([
+        [np.eye(nz) * loaded_setup['Q'],  np.zeros((nz, nd))],   # Trust state model
+        [np.zeros((nd, nz)), np.eye(nd) * 1.0]      # Disturbance adapts fast
+    ])
     R = np.eye(ny) * loaded_setup['R']
     P0 = np.eye(nz + nd) * loaded_setup['P0']
     Qy = loaded_setup['Qy']
@@ -165,7 +169,7 @@ def tests():
         problem.nodes[4],
         torch.from_numpy(T_real @ EKF.x[:, :nz].T).float().flatten(),
     ) @ T_real
-    z_s, y_s = target_estimation.get_target( EKF.x[:, nz:], y_setpoint, get_y(T_real @ EKF.x[0, :nz]), EKF.x[0, :nz], J)
+    z_s, y_s, u_s = target_estimation.get_target( EKF.x[:, nz:], y_setpoint, get_y(T_real @ EKF.x[0, :nz]), EKF.x[0, :nz], J)
     z_ref_prev = z_s
     print(z_ref_prev)
     Qz = J.T @ Qy @ J
@@ -174,20 +178,24 @@ def tests():
     _ = mpc.get_u_optimal(EKF.x[0, :nz], EKF.x[:, nz:], u_previous, z_ref_prev, get_y(T_real @ z_s), z_s, J)
 
 def next_optimal_input(previous_input, measurement, step):
+    global z_ref_prev
     previous_input = np.array([previous_input])
     measurement = np.array([measurement])
     step = int(step)
     u_prev = scalerU.transform(previous_input.reshape(1, -1))[0]
     y_prev = scaler.transform(measurement.reshape(1, -1))[0]
-    _ = EKF.step(u_prev, y_prev)
+    
+    z_sim = EKF.step(u_prev, y_prev).flatten()
+
     y_setpoint = reference[:, step]
+    
     J = helper.evaluate_jacobian(
         problem.nodes[4],
         torch.from_numpy(T_real @ z_ref_prev.T).float().flatten(),
     ) @ T_real
 
-    z_s, y_s = target_estimation.get_target(
-        EKF.x[nz:], 
+    z_s, y_s, u_s = target_estimation.get_target(
+        z_sim[nz:], 
         y_setpoint, 
         get_y(T_real @ z_ref_prev), 
         z_ref_prev, 
@@ -196,22 +204,24 @@ def next_optimal_input(previous_input, measurement, step):
 
     Qz = J.T @ Qy @ J
     Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
-    mpc.build_problem(Qz_psd)
+    #mpc.build_problem(Qz_psd)
 
     z_ref = z_s
     u_opt = mpc.get_u_optimal(
-        EKF.x[:nz],
-        EKF.x[nz:],
+        z_sim[:nz],
+        z_sim[nz:],
         u_prev,
         z_ref,
         get_y(T_real @ z_ref_prev),
         z_ref_prev,
         J,
+        Qz_psd
     )
 
+    z_ref_prev = z_ref
+    print(z_sim[nz:])
     u_opt = scalerU.inverse_transform(u_opt.reshape(1, -1))[0]
     y_s = scaler.inverse_transform(y_s.reshape(1, -1))[0]
-    u_s = target_estimation.u_s.value
     u_s = scalerU.inverse_transform(u_s.reshape(1, -1))[0].flatten()
     return y_s, u_opt, u_s
     

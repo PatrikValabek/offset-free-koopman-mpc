@@ -43,8 +43,8 @@ data_dir = REPO_ROOT / '../data'
 def load():
     global A, B, C, loaded_setup, nz, nu, ny, nd, T_real, A_block, A_transformed, A_backtransformed, problem, scaler, scalerU, y_start, y_start_ns, reference, y_setpoint, u_previous, u_previous_ns, P0, Q, R, A_, B_, C_, KF, target_estimation, mpc
     matrix_C = True
-    A = np.load(f"../data/A_parsimK.npy")
-    B = np.load(f"../data/B_parsimK.npy")
+    A = np.load(f"../data/A_parsimK_Ts.npy")
+    B = np.load(f"../data/B_parsimK_Ts.npy")
     C = np.load(f"../data/C_parsimK.npy")
 
     loaded_setup = joblib.load("sim_setup.pkl")
@@ -106,7 +106,7 @@ def load():
     mpc = helper.MPC(A, B, C)
 
 def tests():
-    z_s, y_s = target_estimation.get_target(KF.x[:, nz:], y_setpoint)
+    z_s, y_s, u_s = target_estimation.get_target(KF.x[:, nz:], y_setpoint)
     z_ref = z_s
     print(z_ref)
     _ = mpc.get_u_optimal(KF.x[:, :nz], KF.x[:, nz:], u_previous, z_ref)
@@ -119,12 +119,11 @@ def next_optimal_input(previous_input, measurement, step):
     y_prev = scaler.transform(measurement.reshape(1, -1))[0]
     _ = KF.step(u_prev, y_prev)
     y_setpoint = reference[:, step]
-    z_s, y_s = target_estimation.get_target(KF.x[nz:], y_setpoint)
+    z_s, y_s, u_s = target_estimation.get_target(KF.x[nz:], y_setpoint)
     z_ref = z_s
     u_opt = mpc.get_u_optimal(KF.x[:nz], KF.x[nz:], u_prev, z_ref)
     u_opt = scalerU.inverse_transform(u_opt.reshape(1, -1))[0]
     y_s = scaler.inverse_transform(y_s.reshape(1, -1))[0]
-    u_s = target_estimation.u_s.value
     u_s = scalerU.inverse_transform(u_s.reshape(1, -1))[0].flatten()
     return y_s, u_opt, u_s
     

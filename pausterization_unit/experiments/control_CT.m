@@ -30,7 +30,7 @@ elab_manager.list();
 %                 POLLING_PERIOD (N seconds) defines how often the ELab class refreshes the data from SCADA master (this should be set to Ts)
 %
 
-Ts = 1;%
+Ts = 10;%
 device_name = 'pct23';
 mode = 'control';
 address = 'http://192.168.1.108:3030';%
@@ -65,7 +65,7 @@ pct23.setTag('FSV',1);
 
 % set close the device
 % pct23.close()
-N = 2500;
+N = 240;
 
 y = zeros(N,3);
 y_sp = zeros(N,3);
@@ -78,7 +78,7 @@ pct23.setTag('Pump2',50);
 pct23.setTag('Heater',20);
 
 double(pct23.getTag('T4').value)
-pause(1)
+pause(10)
 double(pct23.getTag('T2').value)
 pause(1)
 double(pct23.getTag('T1').value)
@@ -112,7 +112,7 @@ for i = 1:N
 
     % Wait until 1 second has passed since the start of the iteration
     elapsedTime = toc;
-    pause(max(0, 1 - elapsedTime));
+    pause(max(0, Ts - elapsedTime));
 
 end
 

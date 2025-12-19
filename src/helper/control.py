@@ -315,7 +315,7 @@ class TargetEstimation():
             print(self.te.solver_stats.num_iters)
             raise RuntimeError("Solver did not return an optimal solution")
             
-        return self.z_s.value, self.y_s.value
+        return self.z_s.value, self.y_s.value, self.u_s.value
     
         
     
@@ -445,7 +445,7 @@ class TaylorTargetEstimation():
             print(self.te.solver_stats.num_iters)
             raise RuntimeError("Solver did not return an optimal solution")
             
-        return self.z_s.value, self.y_s.value
+        return self.z_s.value, self.y_s.value, self.u_s.value
     
 class TaylorMPC():
     def __init__(self, A, B):
@@ -474,7 +474,8 @@ class TaylorMPC():
         self.y_k = cp.Parameter(self.ny)
         self.z_k = cp.Parameter(self.nz)
         self.C_k = cp.Parameter((self.ny, self.nz))
-        self.Qz = Qz
+        self.Qz_param = cp.Parameter((self.nz, self.nz), PSD=True)
+        self.linear_term_z = cp.Parameter(self.nz)  # This will be Qz @ z_ref
 
         # optimized variables
         z = cp.Variable((self.nz, self.N + 1))
@@ -491,14 +492,15 @@ class TaylorMPC():
                 self.y_min <= self.C_k @ z[:, k] + self.y_k - self.C_k @ self.z_k + self.d0, self.C_k @ z[:, k] + self.y_k - self.C_k @ self.z_k + self.d0 <= self.y_max
             ]
             if k == 0:
-                #cost += cp.quad_form(z[:, k] - self.z_ref, self.Qz) 
                 cost += cp.quad_form(self.u[:, 0] - self.u_prev, self.Qu)
             else:
-                cost += cp.quad_form(z[:, k] - self.z_ref, self.Qz) + cp.quad_form(self.u[:, k] - self.u[:, k-1], self.Qu)
+                # Expand quad_form for DPP: (z - z_ref)^T @ Qz @ (z - z_ref) = z^T @ Qz @ z - 2*z_ref^T @ Qz @ z + const
+                cost += cp.quad_form(z[:, k], self.Qz_param) - 2 * self.linear_term_z.T @ z[:, k]
+                cost += cp.quad_form(self.u[:, k] - self.u[:, k-1], self.Qu)
                 
         self.mpc = cp.Problem(cp.Minimize(cost), constraints)
         
-    def get_u_optimal(self, z0, d0, u_prev, z_ref, y_k, z_k, C_k):
+    def get_u_optimal(self, z0, d0, u_prev, z_ref, y_k, z_k, C_k, Qz):
         '''
         Get the optimal control input solving the MPC problem
         '''
@@ -509,6 +511,8 @@ class TaylorMPC():
         self.y_k.value = y_k.flatten()
         self.z_k.value = z_k.flatten()
         self.C_k.value = C_k
+        self.Qz_param.value = Qz
+        self.linear_term_z.value = Qz @ z_ref.flatten()
         # solve the problem
         self.mpc.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)#, BarConvTol=1e-6)
         
@@ -549,7 +553,7 @@ class TaylorCrossMPC():
         self.y_k = cp.Parameter(self.ny)
         self.z_k = cp.Parameter(self.nz)
         self.C_k = cp.Parameter((self.ny, self.nz))
-        self.Qz = Qz
+        self.Qz_param = cp.Parameter((self.nz, self.nz), PSD=True)
         self.alpha = cp.Parameter(self.ny)
 
         # optimized variables
@@ -569,19 +573,19 @@ class TaylorCrossMPC():
                 self.C_k @ z[:, k] + self.y_k - self.C_k @ self.z_k + self.d0 <= self.y_max
             ]
             if k == 0:
-                cost += cp.quad_form(z[:, k], self.Qz) 
+                cost += cp.quad_form(z[:, k], self.Qz_param) 
                 cost += cp.quad_form(self.alpha, self.Qy)
                 cost += 2*self.alpha.T @ self.Qy @ self.C_k @ z[:, k]
                 cost += cp.quad_form(self.u[:, 0] - self.u_prev, self.Qu)
             else:
-                cost += cp.quad_form(z[:, k], self.Qz)
+                cost += cp.quad_form(z[:, k], self.Qz_param)
                 cost += cp.quad_form(self.alpha, self.Qy) 
                 cost += 2*self.alpha.T @ self.Qy @ self.C_k @ z[:, k]
                 cost += cp.quad_form(self.u[:, k] - self.u[:, k-1], self.Qu)
                 
         self.mpc = cp.Problem(cp.Minimize(cost), constraints)
         
-    def get_u_optimal(self, z0, d0, u_prev, z_ref, y_k, z_k, C_k, C_ref, y_ref, z_p_ref):
+    def get_u_optimal(self, z0, d0, u_prev, z_ref, y_k, z_k, C_k, C_ref, y_ref, z_p_ref, Qz):
         '''
         Get the optimal control input solving the MPC problem
         '''
@@ -592,6 +596,7 @@ class TaylorCrossMPC():
         self.y_k.value = y_k.flatten()
         self.z_k.value = z_k.flatten()
         self.C_k.value = C_k
+        self.Qz_param.value = Qz
         self.alpha.value = y_k.flatten() - (C_k @ z_k).flatten() - (C_ref @ z_ref).flatten() - y_ref.flatten() + (C_ref @ z_p_ref).flatten()
         # solve the problem
         self.mpc.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)#, BarConvTol=1e-6)

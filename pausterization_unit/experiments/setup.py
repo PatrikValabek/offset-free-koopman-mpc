@@ -19,10 +19,10 @@ u_max = scalerU.transform(u_max_ns.reshape(1, -1))[0]
 
 
 # ---------------------------- Build references --------------------------------
-sim_time = 2500
-change_interval = 500
-jump = 5
-ref_y_matrix = np.array([[60.5, 76, 61], [58, 80, 58.6], [50.89195295-jump, 73.83772211-jump, 52.23040589-jump], [50.89195295+jump, 73.83772211+jump, 52.23040589+jump], [50.89195295-jump, 73.83772211-jump, 52.23040589-jump], [50.89195295, 73.83772211, 52.23040589]])
+change_interval = 60
+sim_time = change_interval*4
+
+ref_y_matrix = np.array([[59.3842, 73.3138, 60.7038], [66.8622, 78.0059, 68.3284],  [44.5748, 64.0762, 44.8680],[61, 76.6, 62]])
 
 reference_ns = np.zeros((ny, sim_time))
 for i in range(0, sim_time, change_interval):
@@ -37,10 +37,10 @@ reference = scaler.transform(reference_ns.T).T
 # ---------------------------- Initial conditions ------------------------------
 # Start from first steady state
 
-y_start_ns = np.array([[50.89195295, 73.83772211, 52.23040589]])
+y_start_ns = np.array([[59.3842, 73.3138, 60.7038]])
 y_start = scaler.transform(y_start_ns.reshape(1, -1))
 
-u_previous_ns = np.array([[50.0, 50.0, 25.0]])
+u_previous_ns = np.array([[50.0, 50.0, 20.0]])
 u_previous = scalerU.transform(u_previous_ns.reshape(1, -1))[0]
 
 
@@ -48,13 +48,13 @@ u_previous = scalerU.transform(u_previous_ns.reshape(1, -1))[0]
 # Disturbance dimension: track outputs as measurable, no explicit disturbance states here
 nd = ny
 
-Q = 0.1
-R = 0.5
+Q = 0.5
+R = 0.1
 P0 = 1
 
 N = 60
 Qy = np.eye(ny) 
-Qu = np.eye(nu) * 10.0
+Qu = np.eye(nu)
 
 u_min = scalerU.transform(u_min_ns.reshape(1, -1))[0]
 u_max = scalerU.transform(u_max_ns.reshape(1, -1))[0]

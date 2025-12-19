@@ -5,7 +5,6 @@ import os
 
 # ---------------------------- Outputs and inputs ------------------------------
 
-nx = 13
 ny = 3 
 nu = 3
 scaler = joblib.load('../data/scaler.pkl')
@@ -20,10 +19,10 @@ u_max = scalerU.transform(u_max_ns.reshape(1, -1))[0]
 
 
 # ---------------------------- Build references --------------------------------
-sim_time = 1000
-change_interval = 1000
+sim_time = 500
+change_interval = 500
 
-ref_y_matrix = np.array([[70.25248246, 79.97231202, 71.47819422], [65.0, 70.0, 67.0], [75.0, 83.0, 77.0], [70.0, 80.0, 72.0], [70.0, 80.0, 72.0]])
+ref_y_matrix = np.array([[52.738903, 69.24475,  53.087387]])
 
 reference_ns = np.zeros((ny, sim_time))
 for i in range(0, sim_time, change_interval):
@@ -49,13 +48,13 @@ u_previous = scalerU.transform(u_previous_ns.reshape(1, -1))[0]
 # Disturbance dimension: track outputs as measurable, no explicit disturbance states here
 nd = ny
 
-P0 = np.eye(nx + nd)
-Q = np.eye(nx + nd) * 0.1
+P0 = 1
+Q = 0.5
 # Q = np.block([
 #     [np.eye(nx) * 0.1,  np.zeros((nx, nd))],   # Trust state model
 #     [np.zeros((nd, nx)), np.eye(nd) * 1.0]      # Disturbance adapts fast
 # ])
-R = np.eye(ny) * 0.5
+R =  0.1
 
 N = 60
 Qy = np.eye(ny) * 5.0

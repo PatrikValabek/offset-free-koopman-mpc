@@ -49,15 +49,15 @@ def load_model():
     Returns problem object with loaded weights.
     """
     # Model parameters (must match training configuration)
-    nz = 13  # latent state dimension
+    nz = 35  # latent state dimension
     ny = 3   # output dimension (T1, T2, T4)
     nu = 3   # input dimension (u1, u2, u3)
     nsteps = 80  # prediction horizon
     
     # Network architecture (must match training)
-    cons = 10
-    layers = [6*cons, 12*cons, 18*cons]  # [12, 24, 36]
-    layers_dec = [18*cons, 12*cons, 6*cons]  # [36, 24, 12]
+    cons = 5
+    layers = [6*cons,12*cons,18*cons,24*cons]
+    layers_dec  = [24*cons,18*cons,12*cons,6*cons]
     matrix_C = False
     
     global problem, f_u, K, scaler, scalerU
@@ -132,7 +132,7 @@ def load_model():
     problem = Problem(nodes, loss)
     
     # 9. Load trained weights
-    model_path = os.path.join(data_path, 'model_C_False.pth')
+    model_path = os.path.join(data_path, 'model_baseline.pth')
     problem.load_state_dict(torch.load(model_path, map_location='cpu'), strict=False)
     
     return problem

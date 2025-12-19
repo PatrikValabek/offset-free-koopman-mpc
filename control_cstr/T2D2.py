@@ -178,7 +178,7 @@ def main() -> None:
         torch.from_numpy(T_real @ z_est_[0, :nz]).float(),
     ) @ T_real
 
-    z_s, y_s = target_estimation.get_target(
+    z_s, y_s, u_s = target_estimation.get_target(
         z_est_[:, nz:], y_setpoint, get_y(T_real @ z_est_[0, :nz]), z_est_[0, :nz], J
     )
     print(target_estimation.te.status)
@@ -222,7 +222,7 @@ def main() -> None:
     total_time_mpc = 0.0
 
     start_time_target = time.time()
-    z_s, y_s = target_estimation.get_target(
+    z_s, y_s, u_s = target_estimation.get_target(
         z_est_[:, nz:], y_setpoint, get_y(T_real @ z_s), z_s, J
     )
     end_time_target = time.time()
@@ -249,7 +249,7 @@ def main() -> None:
             torch.from_numpy(T_real @ zs_sim[:, idx_prev]).float(),
         ) @ T_real
         start_time_target = time.time()
-        zs_sim[:, k], ys_sim[:, k] = target_estimation.get_target(
+        zs_sim[:, k], ys_sim[:, k], u_s = target_estimation.get_target(
             z_sim[nz:, k], 
             y_setpoint, 
             get_y(T_real @ zs_sim[:, idx_prev]), 
@@ -317,6 +317,20 @@ def main() -> None:
     print(f"Closed-loop objective function value: {objective_value}")
     print(f"  - State tracking term: {state_error_cost}")
     print(f"  - Input increment term: {control_increment_cost}")
+    
+    # Save control loop data for comparison
+    results_dir = project_root + '/control_cstr'
+    results_data = {
+        'time': np.arange(sim_time + 1),
+        'states': y_sim_descaled,  # shape (8, T+1) - non-scaled
+        'inputs': u_sim_descaled,  # shape (4, T) - non-scaled
+        'objective': objective_value,
+        'state_term': state_error_cost,
+        'input_term': control_increment_cost,
+        'reference_ns': reference_ns,
+    }
+    joblib.dump(results_data, os.path.join(results_dir, 'T2D2_results.pkl'))
+    print(f"Saved control loop data to {os.path.join(results_dir, 'T2D2_results.pkl')}")
 
     # Plots saved to figures/ in non-scaled domain (8 states, 4 inputs)
     fig = plt.figure(figsize=(12, 10))
