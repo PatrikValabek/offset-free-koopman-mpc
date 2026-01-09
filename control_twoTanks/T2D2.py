@@ -34,9 +34,9 @@ def main() -> None:
     # -----------------------------
     matrix_C = False
 
-    A = np.load(os.path.join(project_root, 'data', f'A_C_{matrix_C}.npy'))
-    B = np.load(os.path.join(project_root, 'data', f'B_C_{matrix_C}.npy'))
-    C = np.load(os.path.join(project_root, 'data', f'C_C_{matrix_C}.npy'))
+    A = np.load(os.path.join(project_root, 'data', f'A_C_{matrix_C}_twoTanks.npy'))
+    B = np.load(os.path.join(project_root, 'data', f'B_C_{matrix_C}_twoTanks.npy'))
+    C = np.load(os.path.join(project_root, 'data', f'C_C_{matrix_C}_twoTanks.npy'))
 
     nz, nu = B.shape
     ny = C.shape[0]
@@ -112,15 +112,15 @@ def main() -> None:
     problem = Problem(nodes, loss)
 
     problem.load_state_dict(
-        torch.load(os.path.join(project_root, 'data', f'model_C_{matrix_C}.pth')),
+        torch.load(os.path.join(project_root, 'data', f'model_C_{matrix_C}_twoTanks.pth')),
         strict=False,
     )
 
     # -----------------------------
     # Load scalers and plant model
     # -----------------------------
-    scaler = joblib.load(os.path.join(project_root, 'data', 'scaler.pkl'))
-    scalerU = joblib.load(os.path.join(project_root, 'data', 'scalerU.pkl'))
+    scaler = joblib.load(os.path.join(project_root, 'data', 'scaler_twoTanks.pkl'))
+    scalerU = joblib.load(os.path.join(project_root, 'data', 'scalerU_twoTanks.pkl'))
 
     # TwoTanks physical model
     A1 = 1
@@ -174,7 +174,7 @@ def main() -> None:
         torch.from_numpy(T_real @ z_est_[0, :nz]).float(),
     ) @ T_real
 
-    z_s, y_s = target_estimation.get_target(
+    z_s, y_s, u_s = target_estimation.get_target(
         z_est_[:, nz:], y_setpoint, get_y(T_real @ z_est_[0, :nz]), z_est_[0, :nz], J
     )
     print(target_estimation.te.status)
@@ -197,7 +197,7 @@ def main() -> None:
     mpc = helper.TaylorMPC(A, B)
     mpc.build_problem(Qz_psd)
     u_opt = mpc.get_u_optimal(
-        z_est_[0, :nz], z_est_[:, nz:], u_previous, z_ref, get_y(T_real @ z_s), z_s, J
+        z_est_[0, :nz], z_est_[:, nz:], u_previous, z_ref, get_y(T_real @ z_s), z_s, J, Qz_psd
     )
     print(u_opt)
     print(mpc.mpc.status)
@@ -218,7 +218,7 @@ def main() -> None:
     total_time_mpc = 0.0
 
     start_time_target = time.time()
-    z_s, y_s = target_estimation.get_target(
+    z_s, y_s, u_s = target_estimation.get_target(
         z_est_[:, nz:], y_setpoint, get_y(T_real @ z_s), z_s, J
     )
     end_time_target = time.time()
@@ -245,7 +245,7 @@ def main() -> None:
             torch.from_numpy(T_real @ zs_sim[:, idx_prev]).float(),
         ) @ T_real
         start_time_target = time.time()
-        zs_sim[:, k], ys_sim[:, k] = target_estimation.get_target(
+        zs_sim[:, k], ys_sim[:, k], u_s = target_estimation.get_target(
             z_sim[nz:, k], 
             y_setpoint, 
             get_y(T_real @ zs_sim[:, idx_prev]), 
@@ -265,7 +265,7 @@ def main() -> None:
         # if k > 0:
         Qz = J.T @ Qy @ J
         Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
-        mpc.build_problem(Qz_psd)
+        # mpc.build_problem(Qz_psd)
 
         start_time_mpc = time.time()
         u_opt = mpc.get_u_optimal(
@@ -276,6 +276,7 @@ def main() -> None:
             get_y(T_real @ zs_sim[:, idx_prev]),
             zs_sim[:, idx_prev],
             J,
+            Qz_psd,
         )
         end_time_mpc = time.time()
         total_time_mpc += end_time_mpc - start_time_mpc

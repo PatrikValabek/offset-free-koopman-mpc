@@ -1,7 +1,8 @@
 # Data related to the project
 #data/
 figures/
-
+old/
+data/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

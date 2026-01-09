@@ -201,7 +201,7 @@ def main() -> None:
     mpc = helper.TaylorMPC(A, B)
     mpc.build_problem(Qz_psd)
     u_opt = mpc.get_u_optimal(
-        z_est_[0, :nz], z_est_[:, nz:], u_previous, z_ref, get_y(T_real @ z_s), z_s, J
+        z_est_[0, :nz], z_est_[:, nz:], u_previous, z_ref, get_y(T_real @ z_s), z_s, J, Qz_psd
     )
     print(u_opt)
     print(mpc.mpc.status)
@@ -262,7 +262,7 @@ def main() -> None:
         # MPC: rebuild with updated Qz at current linearization point
         Qz = J.T @ Qy @ J
         Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
-        mpc.build_problem(Qz_psd)
+        # mpc.build_problem(Qz_psd)
 
         start_time_mpc = time.time()
         u_opt = mpc.get_u_optimal(
@@ -273,6 +273,7 @@ def main() -> None:
             get_y(T_real @ zs_sim[:, idx_prev]),
             zs_sim[:, idx_prev],
             J,
+            Qz_psd,
         )
         end_time_mpc = time.time()
         total_time_mpc += end_time_mpc - start_time_mpc

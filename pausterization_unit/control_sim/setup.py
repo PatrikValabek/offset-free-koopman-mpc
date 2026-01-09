@@ -22,7 +22,7 @@ u_max = scalerU.transform(u_max_ns.reshape(1, -1))[0]
 sim_time = 500
 change_interval = 500
 
-ref_y_matrix = np.array([[52.738903, 69.24475,  53.087387]])
+ref_y_matrix = np.array([[54.66027, 73.49036, 54.36351]])
 
 reference_ns = np.zeros((ny, sim_time))
 for i in range(0, sim_time, change_interval):

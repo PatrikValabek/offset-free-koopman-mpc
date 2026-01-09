@@ -60,25 +60,19 @@ import models  # type: ignore
 # ------------------------------ IO utilities ----------------------------------
 
 def load_matrices_C_variant(data_dir: Path, matrix_C: bool) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    A = np.load((data_dir / f"A_C_{matrix_C}.npy").as_posix())
-    B = np.load((data_dir / f"B_C_{matrix_C}.npy").as_posix())
-    C = np.load((data_dir / f"C_C_{matrix_C}.npy").as_posix())
+    A = np.load((data_dir / f"A_C_{matrix_C}_twoTanks.npy").as_posix())
+    B = np.load((data_dir / f"B_C_{matrix_C}_twoTanks.npy").as_posix())
+    C = np.load((data_dir / f"C_C_{matrix_C}_twoTanks.npy").as_posix())
     return A, B, C
 
 
 def load_scalers(data_dir: Path):
-    scaler = joblib.load((data_dir / 'scaler.pkl').as_posix())
-    scalerU = joblib.load((data_dir / 'scalerU.pkl').as_posix())
+    scaler = joblib.load((data_dir / 'scaler_twoTanks.pkl').as_posix())
+    scalerU = joblib.load((data_dir / 'scalerU_twoTanks.pkl').as_posix())
     return scaler, scalerU
 
 
-def load_sim_setup(repo_root: Path):
-    control_path = repo_root / 'control_python' / 'sim_setup.pkl'
-    control_py_path = repo_root / 'control_python' / 'sim_setup.pkl'
-    if control_path.exists():
-        return joblib.load(control_path.as_posix())
-    if control_py_path.exists():
-        return joblib.load(control_py_path.as_posix())
+def load_sim_setup():
     return joblib.load('sim_setup.pkl')
 
 
@@ -163,7 +157,7 @@ def main() -> None:
 
     # Koopman enc/dec + problem and load weights
     problem = build_encoders_decoders(ny, nz, nu, matrix_C)
-    problem.load_state_dict(torch.load((data_dir / f'model_C_{matrix_C}.pth').as_posix()), strict=False)
+    problem.load_state_dict(torch.load((data_dir / f'model_C_{matrix_C}_twoTanks.pth').as_posix()), strict=False)
 
     # Load scalers
     scaler, scalerU = load_scalers(data_dir)
@@ -176,7 +170,7 @@ def main() -> None:
     TwoTanks = models.TwoTanks(True, A1, A2, k1, k2)
 
     # Sim setup
-    loaded_setup = load_sim_setup(REPO_ROOT)
+    loaded_setup = load_sim_setup()
 
     y_start = loaded_setup['y_start']
     y_setpoint = loaded_setup['reference'][:, 0]
@@ -205,7 +199,7 @@ def main() -> None:
 
     # Target calc
     target_estimation = helper.TargetEstimation(A, B, C)
-    z_s, y_s = target_estimation.get_target(z_est_[:, nz:], y_setpoint)
+    z_s, y_s, u_s = target_estimation.get_target(z_est_[:, nz:], y_setpoint)
     z_ref = z_s
 
     # MPC problem
@@ -237,7 +231,7 @@ def main() -> None:
     for k in range(0, sim_time):
         idx_prev = max(k - 1, 0)        
         # Target update
-        zs_sim[:, k], ys_sim[:, k] = target_estimation.get_target(
+        zs_sim[:, k], ys_sim[:, k], u_s = target_estimation.get_target(
             z_sim[nz:, k], loaded_setup["reference"][:, k]
         )
 

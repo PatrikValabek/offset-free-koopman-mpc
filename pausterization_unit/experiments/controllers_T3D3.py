@@ -33,7 +33,7 @@ import helper  # type: ignore
 import models  # type: ignore
 
 def build_encoders_decoders(ny: int, nz: int, nu: int, matrix_C: bool):
-    cons =3
+    cons =1
     layers = [6*cons,12*cons,18*cons]
     layers_dec  = [18*cons,12*cons,6*cons]
 
@@ -94,8 +94,8 @@ data_dir = REPO_ROOT / '../data'
 def load():
     global A, B, C, loaded_setup, nz, nu, ny, nd, T_real, A_block, A_transformed, A_backtransformed, problem, scaler, scalerU, y_start, y_start_ns, reference, y_setpoint, u_previous, u_previous_ns, P0, Q, R, A_, B_, C_, EKF, target_estimation, mpc, Qy
     matrix_C = False
-    A = np.load(f"../data/A_C_{matrix_C}_Ts.npy")
-    B = np.load(f"../data/B_C_{matrix_C}_Ts.npy")
+    A = np.load(f"../data/A_C_{matrix_C}.npy")
+    B = np.load(f"../data/B_C_{matrix_C}.npy")
     C = np.load(f"../data/C_C_{matrix_C}.npy")
 
     loaded_setup = joblib.load("sim_setup.pkl")
@@ -202,7 +202,7 @@ def next_optimal_input(previous_input, measurement, step):
     print(z_sim[nz:])
     Qz = J.T @ Qy @ J
     Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
-    mpc.build_problem(Qz_psd)
+    # mpc.build_problem(Qz_psd)
 
     z_ref = z_s
     u_opt = mpc.get_u_optimal(
@@ -213,6 +213,7 @@ def next_optimal_input(previous_input, measurement, step):
         get_y(T_real @ z_sim[:nz]),
         z_sim[:nz],
         J,
+        Qz_psd
     )
 
     u_opt = scalerU.inverse_transform(u_opt.reshape(1, -1))[0]

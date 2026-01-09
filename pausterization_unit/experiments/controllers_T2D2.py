@@ -33,7 +33,7 @@ import helper  # type: ignore
 import models  # type: ignore
 
 def build_encoders_decoders(ny: int, nz: int, nu: int, matrix_C: bool):
-    cons =3
+    cons =1
     layers = [6*cons,12*cons,18*cons]
     layers_dec  = [18*cons,12*cons,6*cons]
 
@@ -175,7 +175,7 @@ def tests():
     Qz = J.T @ Qy @ J
     Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])   
     mpc.build_problem(Qz_psd)
-    _ = mpc.get_u_optimal(EKF.x[0, :nz], EKF.x[:, nz:], u_previous, z_ref_prev, get_y(T_real @ z_s), z_s, J)
+    _ = mpc.get_u_optimal(EKF.x[0, :nz], EKF.x[:, nz:], u_previous, z_ref_prev, get_y(T_real @ z_s), z_s, J, Qz_psd)
 
 def next_optimal_input(previous_input, measurement, step):
     global z_ref_prev

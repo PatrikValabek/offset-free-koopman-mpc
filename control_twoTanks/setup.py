@@ -3,9 +3,9 @@ import joblib
 
 matrix_C = False
 # Load matrices A, B, and C 
-A = np.load('../data/A_C_' + str(matrix_C) + '.npy')
-B = np.load('../data/B_C_' + str(matrix_C) + '.npy')
-C = np.load('../data/C_C_' + str(matrix_C) + '.npy')
+A = np.load('../data/A_C_' + str(matrix_C) + '_twoTanks.npy')
+B = np.load('../data/B_C_' + str(matrix_C) + '_twoTanks.npy')
+C = np.load('../data/C_C_' + str(matrix_C) + '_twoTanks.npy')
 
 nz, nu = B.shape  # state and input dimensions
 ny = C.shape[0]  # output dimensions
@@ -14,8 +14,8 @@ ny = C.shape[0]  # output dimensions
 F = np.eye(ny)
 nd = F.shape[1]
 
-scaler = joblib.load('../data/scaler.pkl')
-scalerU = joblib.load('../data/scalerU.pkl')
+scaler = joblib.load('../data/scaler_twoTanks.pkl')
+scalerU = joblib.load('../data/scalerU_twoTanks.pkl')
 
 # begining
 y_start_ns = np.array([0.5, 0.499999])
@@ -31,8 +31,8 @@ R = np.eye(ny) * 0.5
 
 # controller
 N = 20
-Qy = np.eye(ny) * 0.1
-Qu = np.eye(nu) * 5
+Qy = np.eye(ny) * 1
+Qu = np.eye(nu) * 1
 u_min = scalerU.transform(np.array([[0.0, 0.0]]))[0]
 u_max = scalerU.transform(np.array([[0.5, 1.0]]))[0]
 y_min = scaler.transform(np.array([[-5.0, -5.0]]))[0]
