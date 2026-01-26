@@ -33,7 +33,7 @@ import helper  # type: ignore
 import models  # type: ignore
 
 def build_encoders_decoders(ny: int, nz: int, nu: int, matrix_C: bool):
-    cons =1
+    cons =3
     layers = [6*cons,12*cons,18*cons]
     layers_dec  = [18*cons,12*cons,6*cons]
 
@@ -103,7 +103,7 @@ def load():
     # Q = np.eye(nz + nd) * loaded_setup['Q']
     Q = np.block([
         [np.eye(nz) * loaded_setup['Q'],  np.zeros((nz, nd))],   # Trust state model
-        [np.zeros((nd, nz)), np.eye(nd) * 1.0]      # Disturbance adapts fast
+        [np.zeros((nd, nz)), np.eye(nd) * 0.05]      # Disturbance adapts fast
     ])
     R = np.eye(ny) * loaded_setup['R']
     P0 = np.eye(nz + nd) * loaded_setup['P0']
@@ -170,8 +170,8 @@ def next_optimal_input(previous_input, measurement, step):
     measurement = np.array([measurement])
     step = int(step)
     u_prev = scalerU.transform(previous_input.reshape(1, -1))[0]
-    y_prev = scaler.transform(measurement.reshape(1, -1))[0]
-    _ = KF.step(u_prev, y_prev)
+    y_now = scaler.transform(measurement.reshape(1, -1))[0]
+    _ = KF.step(u_prev, y_now)
     print(KF.x[nz:])
     y_setpoint = reference[:, step]
     z_s, y_s, u_s = target_estimation.get_target(KF.x[nz:], y_setpoint)

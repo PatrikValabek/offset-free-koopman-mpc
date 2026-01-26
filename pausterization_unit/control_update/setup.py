@@ -33,6 +33,8 @@ for i in range(0, sim_time, change_interval):
 
 reference = scaler.transform(reference_ns.T).T
 
+reference_u_ns = np.array([[50.0, 50.0, 20.0]])
+reference_u = scalerU.transform(reference_u_ns.reshape(1, -1))[0]
 
 # ---------------------------- Initial conditions ------------------------------
 # Start from first steady state
@@ -50,24 +52,29 @@ nd = ny
 
 P0 = 1
 Q = 0.1
-Qd = 0.05
 # Q = np.block([
 #     [np.eye(nx) * 0.1,  np.zeros((nx, nd))],   # Trust state model
 #     [np.zeros((nd, nx)), np.eye(nd) * 1.0]      # Disturbance adapts fast
 # ])
-R =  0.5    
+Qd = 0.1
+R =  0.5
 
 N = 60
 # For ny and nu = 3, Qy and Qu as np.array with explicit values, equivalent to eye(3) + 5
 Qy = np.array([
     [5.0, 0.0, 0.0],
-    [0.0, 5.0, 0.0],
-    [0.0, 0.0, 5.0]
+    [0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0]
 ])
 Qu = np.array([
     [5.0, 0.0, 0.0],
-    [0.0, 5.0, 0.0],
-    [0.0, 0.0, 5.0]
+    [0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0]
+])
+Qdu = np.array([
+    [1.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0],
+    [0.0, 0.0, 1.0]
 ])
 
 
@@ -95,6 +102,7 @@ sim_setup = {
     'N': N,
     'Qy': Qy,
     'Qu': Qu,
+    'Qdu': Qdu,
     'u_min': u_min,
     'u_max': u_max,
     'y_min': y_min,
@@ -102,6 +110,8 @@ sim_setup = {
     'sim_time': sim_time,
     'reference': reference,
     'reference_ns': reference_ns,
+    'reference_u': reference_u,
+    'reference_u_ns': reference_u_ns,
     'notes': 'Pausterization unit setup',
 }
 
