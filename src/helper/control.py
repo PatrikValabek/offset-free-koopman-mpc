@@ -32,6 +32,37 @@ class KF():
         self.predict(u)
         self.update(y)
         return self.x
+
+class TVKF():
+    def __init__(self, A, B, C, x0, P0, Q, R):
+        self.A = A
+        self.B = B
+        self.C = C
+        self.c = 0
+        self.Q = Q
+        self.R = R
+        self.x = x0
+        self.P = P0  
+        
+    def predict(self, u):
+        self.x = self.A @ self.x.reshape(-1,1) + self.B @ u.reshape(-1,1)
+        self.P = self.A @ self.P @ self.A.T + self.Q
+        return self.x, self.P
+    
+    def update(self, y):
+        y_pred = self.C@self.x.reshape(-1,1) + self.c.reshape(-1,1)
+        # self.C_k @ z[:, k] + self.Cd @ self.d0 + self.y_k - self.C_k @ self.z_k
+        S = self.C @ self.P @ self.C.T + self.R
+        K = self.P @ self.C.T @ np.linalg.inv(S)
+        self.x = self.x + K @ (y - y_pred.T).T
+        self.P = (np.eye(self.P.shape[0]) - K @ self.C) @ self.P
+        
+    def step(self, u, y, y_lp, x_lp, J, C_k):
+        self.C = C_k
+        self.c = y_lp - J @ x_lp
+        self.predict(u)
+        self.update(y)
+        return self.x
         
     
 class EKF():
@@ -62,6 +93,7 @@ class EKF():
     
     def update(self, y):
         y_pred = self.get_y(self.T_real@self.x.T[0,0:self.nx]) + self.x.T[0,self.nx:]
+        
         J = evaluate_jacobian(self.problem.nodes[4], torch.tensor(self.T_real@self.x[:self.nx]).T[0])
         self.H = np.hstack([J@self.T_real, np.eye(self.nd)])
         S = self.H @ self.P @ self.H.T + self.R
@@ -268,10 +300,12 @@ class EKF_C():
         return self.x
     
 class TargetEstimation():
-    def __init__(self, A, B, C, Bd, Cd):
+    def __init__(self, A, B, C, Qy, Qu, Bd, Cd):
         self.A = A
         self.B = B
         self.C = C
+        self.Qy = Qy
+        self.Qu = Qu
         self.Bd = Bd
         self.Cd = Cd
         self.nz = A.shape[0]
@@ -279,9 +313,6 @@ class TargetEstimation():
         self.nu = B.shape[1]
         self.nd = Bd.shape[1]
         loaded_setup = joblib.load("sim_setup.pkl")
-        self.Qy = loaded_setup["Qy"]
-        self.Qu = loaded_setup["Qu"]
-        self.Qdu = loaded_setup["Qdu"]
         self.u_min = loaded_setup["u_min"]
         self.u_max = loaded_setup["u_max"]
         self.y_min = loaded_setup["y_min"]
@@ -296,7 +327,6 @@ class TargetEstimation():
         self.d0 = cp.Parameter(self.ny)
         self.y_sp = cp.Parameter(self.ny)
         self.u_sp = cp.Parameter(self.nu)
-        self.u_prev = cp.Parameter(self.nu)
         
         constraints_s = [self.z_s == self.A @ self.z_s + self.B @ self.u_s + self.Bd @ self.d0]
         constraints_s += [self.y_s == self.C @ self.z_s + self.Cd @ self.d0]
@@ -306,15 +336,69 @@ class TargetEstimation():
         cost_s = 0
         cost_s += cp.quad_form(self.y_s - self.y_sp, self.Qy)
         cost_s += cp.quad_form(self.u_s - self.u_sp, self.Qu)
-        cost_s += cp.quad_form(self.u_s - self.u_prev, self.Qdu)
 
         self.te = cp.Problem(cp.Minimize(cost_s), constraints_s)
         
-    def get_target(self, d0, y_sp, u_sp, u_prev):
+    def get_target(self, d0, y_sp, u_sp):
         self.d0.value = d0.flatten()
         self.y_sp.value = y_sp.flatten()
         self.u_sp.value = u_sp.flatten()
-        self.u_prev.value = u_prev.flatten()
+        # solve the problem
+        self.te.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)
+        
+        if self.te.status != cp.OPTIMAL:
+            print("Target estimation problem is not optimal")
+            print(self.te.status)
+            print(self.te.solver_stats.solve_time)
+            print(self.te.solver_stats.num_iters)
+            raise RuntimeError("Solver did not return an optimal solution")
+            
+        return self.z_s.value, self.y_s.value, self.u_s.value
+    
+class TargetEnergyEstimation():
+    def __init__(self, A, B, C, Qe, Bd, Cd):
+        self.A = A
+        self.B = B
+        self.C = C
+        self.Qe = Qe
+        self.Bd = Bd
+        self.Cd = Cd
+        self.nz = A.shape[0]
+        self.ny = C.shape[0]
+        self.nu = B.shape[1]
+        self.nd = Bd.shape[1]
+        loaded_setup = joblib.load("sim_setup.pkl")
+        self.u_min = loaded_setup["u_min"]
+        self.u_max = loaded_setup["u_max"]
+        self.y_min = loaded_setup["y_min"]
+        self.y_max = loaded_setup["y_max"]
+        
+        self.build_problem()
+
+    def build_problem(self):
+        self.z_s = cp.Variable(self.nz)
+        self.y_s = cp.Variable(self.ny)
+        self.u_s = cp.Variable(self.nu)
+        self.d0 = cp.Parameter(self.ny)
+        self.y_sp = cp.Parameter(self.ny)
+        self.u_sp = cp.Parameter(self.nu)
+        
+        constraints_s = [self.z_s == self.A @ self.z_s + self.B @ self.u_s + self.Bd @ self.d0]
+        constraints_s += [self.y_s == self.C @ self.z_s + self.Cd @ self.d0]
+        constraints_s += [self.u_min <= self.u_s, self.u_s <= self.u_max]
+        constraints_s += [self.y_min <= self.y_s, self.y_s <= self.y_max]
+        constraints_s += [self.y_s[0] == self.y_sp[0]]
+        constraints_s += [self.u_s[0] == self.u_sp[0]]
+
+        cost_s = 0
+        cost_s += self.u_s[2]
+
+        self.te = cp.Problem(cp.Minimize(cost_s), constraints_s)
+        
+    def get_target(self, d0, y_sp, u_sp):
+        self.d0.value = d0.flatten()
+        self.y_sp.value = y_sp.flatten()
+        self.u_sp.value = u_sp.flatten()
         # solve the problem
         self.te.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)
         
@@ -330,10 +414,13 @@ class TargetEstimation():
         
     
 class MPC():
-    def __init__(self, A, B, C, Bd, Cd):
+    def __init__(self, A, B, C, Qy, Qu, Qdu, Bd, Cd):
         self.A = A
         self.B = B
         self.C = C
+        self.Qy = Qy
+        self.Qu = Qu
+        self.Qdu = Qdu
         self.Bd = Bd
         self.Cd = Cd
         self.nz = A.shape[0]
@@ -341,10 +428,7 @@ class MPC():
         self.nu = B.shape[1]
         self.nd = Bd.shape[1]
         loaded_setup = joblib.load("sim_setup.pkl")
-        Qy = loaded_setup["Qy"]
         Qz = C.T@Qy@C + 1e-8 * np.eye(A.shape[0])
-        self.Qu = loaded_setup["Qu"]
-        self.Qdu = loaded_setup["Qdu"]
         self.N = loaded_setup["N"]
         self.u_min = loaded_setup["u_min"]
         self.u_max = loaded_setup["u_max"]
@@ -411,18 +495,17 @@ class MPC():
         return self.u[:, 0].value
     
 class TaylorTargetEstimation():
-    def __init__(self, A, B, Bd, Cd):
+    def __init__(self, A, B, Qy, Qu, Bd, Cd):
         self.A = A
         self.B = B
+        self.Qy = Qy
+        self.Qu = Qu
         self.Bd = Bd
         self.Cd = Cd
         self.nz = A.shape[0]
         self.nu = B.shape[1]
         self.nd = Bd.shape[1]
         loaded_setup = joblib.load("sim_setup.pkl")
-        self.Qy = loaded_setup["Qy"]
-        self.Qu = loaded_setup["Qu"]
-        self.Qdu = loaded_setup["Qdu"]
         self.u_min = loaded_setup["u_min"]
         self.u_max = loaded_setup["u_max"]
         self.y_min = loaded_setup["y_min"]
@@ -442,7 +525,6 @@ class TaylorTargetEstimation():
         self.z_k = cp.Parameter(self.nz)
         self.C_k = cp.Parameter((self.ny, self.nz))
         self.u_sp = cp.Parameter(self.nu)
-        self.u_prev = cp.Parameter(self.nu)
         
         constraints_s = [self.z_s == self.A @ self.z_s + self.B @ self.u_s + self.Bd @ self.d0]
         constraints_s += [self.y_s == self.C_k @ self.z_s + self.Cd @ self.d0 + self.y_k - self.C_k @ self.z_k]
@@ -452,17 +534,76 @@ class TaylorTargetEstimation():
         
         cost_s = cp.quad_form(self.y_s - self.y_sp, self.Qy)
         cost_s += cp.quad_form(self.u_s - self.u_sp, self.Qu)
-        cost_s += cp.quad_form(self.u_s - self.u_prev, self.Qdu)
         self.te = cp.Problem(cp.Minimize(cost_s), constraints_s)
-        
-    def get_target(self, d0, y_sp, u_sp, u_prev, y_k, z_k, C_k):
+    
+    def get_target(self, d0, y_sp, u_sp, y_k, z_k, C_k):
         self.d0.value = d0.flatten()
         self.y_sp.value = y_sp.flatten()
         self.y_k.value = y_k.flatten()
         self.z_k.value = z_k.flatten()
         self.C_k.value = C_k
         self.u_sp.value = u_sp.flatten()
-        self.u_prev.value = u_prev.flatten()
+        # solve the problem
+        self.te.solve(solver=cp.GUROBI)#,TimeLimit=60,BarIterLimit=1e6)
+        
+        if self.te.status != cp.OPTIMAL:
+            print("Target estimation problem is not optimal")
+            print(self.te.status)
+            print(self.te.solver_stats.solve_time)
+            print(self.te.solver_stats.num_iters)
+            raise RuntimeError("Solver did not return an optimal solution")
+            
+        return self.z_s.value, self.y_s.value, self.u_s.value
+
+class TaylorTargetEnergyEstimation():
+    def __init__(self, A, B, Qe, Bd, Cd):
+        self.A = A
+        self.B = B
+        self.Qe = Qe
+        self.Bd = Bd
+        self.Cd = Cd
+        self.nz = A.shape[0]
+        self.nu = B.shape[1]
+        self.nd = Bd.shape[1]
+        loaded_setup = joblib.load("sim_setup.pkl")
+        self.u_min = loaded_setup["u_min"]
+        self.u_max = loaded_setup["u_max"]
+        self.y_min = loaded_setup["y_min"]
+        self.y_max = loaded_setup["y_max"]
+        self.ny = self.y_max.shape[0]
+        
+        self.build_problem()
+
+    def build_problem(self):
+        
+        self.z_s = cp.Variable(self.nz)
+        self.y_s = cp.Variable(self.ny)
+        self.u_s = cp.Variable(self.nu)
+        self.d0 = cp.Parameter(self.ny)
+        self.y_sp = cp.Parameter(self.ny)
+        self.y_k = cp.Parameter(self.ny)
+        self.z_k = cp.Parameter(self.nz)
+        self.C_k = cp.Parameter((self.ny, self.nz))
+        self.u_sp = cp.Parameter(self.nu)
+        
+        constraints_s = [self.z_s == self.A @ self.z_s + self.B @ self.u_s + self.Bd @ self.d0]
+        constraints_s += [self.y_s == self.C_k @ self.z_s + self.Cd @ self.d0 + self.y_k - self.C_k @ self.z_k]
+        constraints_s += [self.u_min <= self.u_s, self.u_s <= self.u_max]
+        constraints_s += [self.y_min <= self.y_s, self.y_s <= self.y_max]
+        constraints_s += [self.u_s[0] == self.u_sp[0]]
+        constraints_s += [self.y_s[0] == self.y_sp[0]]
+
+        
+        cost_s = self.u_s[2]
+        self.te = cp.Problem(cp.Minimize(cost_s), constraints_s)
+        
+    def get_target(self, d0, y_sp, u_sp, y_k, z_k, C_k):
+        self.d0.value = d0.flatten()
+        self.y_sp.value = y_sp.flatten()
+        self.y_k.value = y_k.flatten()
+        self.z_k.value = z_k.flatten()
+        self.C_k.value = C_k
+        self.u_sp.value = u_sp.flatten()
         # solve the problem
         self.te.solve(solver=cp.GUROBI)#,TimeLimit=60,BarIterLimit=1e6)
         
@@ -476,17 +617,18 @@ class TaylorTargetEstimation():
         return self.z_s.value, self.y_s.value, self.u_s.value
     
 class TaylorMPC():
-    def __init__(self, A, B, Bd, Cd):
+    def __init__(self, A, B, Qy, Qu, Qdu, Bd, Cd):
         self.A = A
         self.B = B
+        self.Qy = Qy
+        self.Qu = Qu
+        self.Qdu = Qdu
         self.Bd = Bd
         self.Cd = Cd
         self.nz = A.shape[0]
         self.nu = B.shape[1]
         self.nd = Bd.shape[1]
         loaded_setup = joblib.load("sim_setup.pkl")
-        self.Qu = loaded_setup["Qu"]
-        self.Qdu = loaded_setup["Qdu"]
         self.N = loaded_setup["N"]
         self.u_min = loaded_setup["u_min"]
         self.u_max = loaded_setup["u_max"]
@@ -494,7 +636,7 @@ class TaylorMPC():
         self.y_max = loaded_setup["y_max"]
         self.ny = self.y_max.shape[0]
         
-    def build_problem(self, Qz):
+    def build_problem(self):
         '''
         Build the MPC problem using cvxpy
         '''
@@ -507,7 +649,7 @@ class TaylorMPC():
         self.z_k = cp.Parameter(self.nz)
         self.C_k = cp.Parameter((self.ny, self.nz))
         self.Qz_param = cp.Parameter((self.nz, self.nz), PSD=True)
-        self.linear_term_z = cp.Parameter(self.nz)  # This will be Qz @ z_ref
+        self.linear_term_z = cp.Parameter(self.nz)  # This will be Qz @ z_ref (used as linear_term_z.T @ z)
         self.u_sp = cp.Parameter(self.nu)
 
         # optimized variables
@@ -529,6 +671,7 @@ class TaylorMPC():
                 cost += cp.quad_form(self.u_sp - self.u[:, 0], self.Qu)
             else:
                 # Expand quad_form for DPP: (z - z_ref)^T @ Qz @ (z - z_ref) = z^T @ Qz @ z - 2*z_ref^T @ Qz @ z + const
+                # Note: linear_term_z = Qz @ z_ref, so linear_term_z.T @ z = (Qz @ z_ref).T @ z = z_ref.T @ Qz @ z (when Qz symmetric)
                 cost += cp.quad_form(z[:, k], self.Qz_param) - 2 * self.linear_term_z.T @ z[:, k]
                 cost += cp.quad_form(self.u[:, k] - self.u[:, k-1], self.Qdu)
                 cost += cp.quad_form(self.u_sp - self.u[:, k], self.Qu)
@@ -547,7 +690,7 @@ class TaylorMPC():
         self.z_k.value = z_k.flatten()
         self.C_k.value = C_k
         self.Qz_param.value = Qz
-        self.linear_term_z.value = Qz @ z_ref.flatten()
+        self.linear_term_z.value = Qz @ z_ref.flatten()  # Compute Qz @ z_ref for efficiency (equivalent to z_ref.T @ Qz when transposed)
         self.u_sp.value = u_sp.flatten()
         # solve the problem
         self.mpc.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)#, BarConvTol=1e-6)

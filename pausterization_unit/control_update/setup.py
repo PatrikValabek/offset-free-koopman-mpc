@@ -22,7 +22,7 @@ u_max = scalerU.transform(u_max_ns.reshape(1, -1))[0]
 sim_time = 500
 change_interval = 100
 
-ref_y_matrix = np.array([[59.4503, 74.440544, 61.206383], [61.26848, 71.997475, 63.062172], [48.651257, 59.68051, 48.512825], [59.4503, 74.440544, 61.206383], [59.4503, 74.440544, 61.206383]])
+ref_y_matrix = np.array([[58, 74.440544, 61.206383], [65, 71.997475, 63.062172], [48, 59.68051, 48.512825], [55, 74.440544, 61.206383], [59, 74.440544, 61.206383]])
 
 reference_ns = np.zeros((ny, sim_time))
 for i in range(0, sim_time, change_interval):
@@ -33,7 +33,7 @@ for i in range(0, sim_time, change_interval):
 
 reference = scaler.transform(reference_ns.T).T
 
-reference_u_ns = np.array([[50.0, 50.0, 20.0]])
+reference_u_ns = np.array([[50.0, 50.0, 0.0]])
 reference_u = scalerU.transform(reference_u_ns.reshape(1, -1))[0]
 
 # ---------------------------- Initial conditions ------------------------------
@@ -61,10 +61,28 @@ R =  0.5
 
 N = 60
 # For ny and nu = 3, Qy and Qu as np.array with explicit values, equivalent to eye(3) + 5
-Qy = np.array([
+Qy_te = np.array([
     [5.0, 0.0, 0.0],
     [0.0, 0.0, 0.0],
     [0.0, 0.0, 0.0]
+])
+Qu_te = np.array([
+    [5.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0]
+])
+
+Qe_te = np.array([
+    [0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0],
+    [0.0, 0.0, 1.0]
+])
+
+
+Qy = np.array([
+    [5.0, 0.0, 0.0],
+    [0.0, 0.1, 0.0],
+    [0.0, 0.0, 0.1]
 ])
 Qu = np.array([
     [5.0, 0.0, 0.0],
@@ -103,6 +121,9 @@ sim_setup = {
     'Qy': Qy,
     'Qu': Qu,
     'Qdu': Qdu,
+    'Qy_te': Qy_te,
+    'Qu_te': Qu_te,
+    'Qe_te': Qe_te,
     'u_min': u_min,
     'u_max': u_max,
     'y_min': y_min,
