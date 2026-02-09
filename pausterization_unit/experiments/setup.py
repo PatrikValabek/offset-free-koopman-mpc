@@ -19,10 +19,10 @@ u_max = scalerU.transform(u_max_ns.reshape(1, -1))[0]
 
 
 # ---------------------------- Build references --------------------------------
-change_interval = 60
-sim_time = change_interval*4
+sim_time = 500
+change_interval = 100
 
-ref_y_matrix = np.array([[59.3842, 73.3138, 60.7038], [66.8622, 78.0059, 68.3284],  [44.5748, 64.0762, 44.8680],[59.3842, 73.3138, 60.7038]])
+ref_y_matrix = np.array([[58, 74.440544, 61.206383], [65, 71.997475, 63.062172], [51, 59.68051, 48.512825], [65, 74.440544, 61.206383], [58, 74.440544, 61.206383]])
 
 reference_ns = np.zeros((ny, sim_time))
 for i in range(0, sim_time, change_interval):
@@ -33,14 +33,16 @@ for i in range(0, sim_time, change_interval):
 
 reference = scaler.transform(reference_ns.T).T
 
+reference_u_ns = np.array([[50.0, 50.0, 0.0]])
+reference_u = scalerU.transform(reference_u_ns.reshape(1, -1))[0]
 
 # ---------------------------- Initial conditions ------------------------------
 # Start from first steady state
 
-y_start_ns = np.array([[59.3842, 73.3138, 60.7038]])
+y_start_ns = np.array([[60.0, 70.0, 62.0]])
 y_start = scaler.transform(y_start_ns.reshape(1, -1))
 
-u_previous_ns = np.array([[50.0, 50.0, 20.0]])
+u_previous_ns = np.array([[70.0, 90.0, 30.0]])
 u_previous = scalerU.transform(u_previous_ns.reshape(1, -1))[0]
 
 
@@ -48,13 +50,51 @@ u_previous = scalerU.transform(u_previous_ns.reshape(1, -1))[0]
 # Disturbance dimension: track outputs as measurable, no explicit disturbance states here
 nd = ny
 
-Q = 0.5
-R = 0.1
 P0 = 1
+Q = 0.1
+# Q = np.block([
+#     [np.eye(nx) * 0.1,  np.zeros((nx, nd))],   # Trust state model
+#     [np.zeros((nd, nx)), np.eye(nd) * 1.0]      # Disturbance adapts fast
+# ])
+Qd = 1
+R =  0.5
 
 N = 60
-Qy = np.eye(ny) 
-Qu = np.eye(nu)
+# For ny and nu = 3, Qy and Qu as np.array with explicit values, equivalent to eye(3) + 5
+Qy_te = np.array([
+    [5.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0]
+])
+Qu_te = np.array([
+    [5.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0]
+])
+
+Qe_te = np.array([
+    [0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0],
+    [0.0, 0.0, 1.0]
+])
+
+
+Qy = np.array([
+    [5.0, 0.0, 0.0],
+    [0.0, 0.1, 0.0],
+    [0.0, 0.0, 0.1]
+])
+Qu = np.array([
+    [5.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0],
+    [0.0, 0.0, 0.0]
+])
+Qdu = np.array([
+    [1.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0],
+    [0.0, 0.0, 1.0]
+])
+
 
 u_min = scalerU.transform(u_min_ns.reshape(1, -1))[0]
 u_max = scalerU.transform(u_max_ns.reshape(1, -1))[0]
@@ -75,10 +115,15 @@ sim_setup = {
     'u_previous_ns': u_previous_ns,
     'P0': P0,
     'Q': Q,
+    'Qd': Qd,
     'R': R,
     'N': N,
     'Qy': Qy,
     'Qu': Qu,
+    'Qdu': Qdu,
+    'Qy_te': Qy_te,
+    'Qu_te': Qu_te,
+    'Qe_te': Qe_te,
     'u_min': u_min,
     'u_max': u_max,
     'y_min': y_min,
@@ -86,6 +131,8 @@ sim_setup = {
     'sim_time': sim_time,
     'reference': reference,
     'reference_ns': reference_ns,
+    'reference_u': reference_u,
+    'reference_u_ns': reference_u_ns,
     'notes': 'Pausterization unit setup',
 }
 

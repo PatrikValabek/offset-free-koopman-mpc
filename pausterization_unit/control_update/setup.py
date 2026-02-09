@@ -22,7 +22,7 @@ u_max = scalerU.transform(u_max_ns.reshape(1, -1))[0]
 sim_time = 500
 change_interval = 100
 
-ref_y_matrix = np.array([[58, 74.440544, 61.206383], [65, 71.997475, 63.062172], [48, 59.68051, 48.512825], [55, 74.440544, 61.206383], [59, 74.440544, 61.206383]])
+ref_y_matrix = np.array([[58, 74.440544, 61.206383], [63, 71.997475, 63.062172], [53, 59.68051, 48.512825], [63, 74.440544, 61.206383], [58, 74.440544, 61.206383]])
 
 reference_ns = np.zeros((ny, sim_time))
 for i in range(0, sim_time, change_interval):
@@ -56,7 +56,7 @@ Q = 0.1
 #     [np.eye(nx) * 0.1,  np.zeros((nx, nd))],   # Trust state model
 #     [np.zeros((nd, nx)), np.eye(nd) * 1.0]      # Disturbance adapts fast
 # ])
-Qd = 0.1
+Qd = 1
 R =  0.5
 
 N = 60
