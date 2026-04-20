@@ -19,10 +19,10 @@ u_max = scalerU.transform(u_max_ns.reshape(1, -1))[0]
 
 
 # ---------------------------- Build references --------------------------------
-sim_time = 500
+sim_time = 400
 change_interval = 100
 
-ref_y_matrix = np.array([[58, 74.440544, 61.206383], [63, 71.997475, 63.062172], [53, 59.68051, 48.512825], [63, 74.440544, 61.206383], [58, 74.440544, 61.206383]])
+ref_y_matrix = np.array([[60, 74.440544, 61.206383], [65, 71.997475, 63.062172], [55, 59.68051, 48.512825], [60, 74.440544, 61.206383], [60, 74.440544, 61.206383]])
 
 reference_ns = np.zeros((ny, sim_time))
 for i in range(0, sim_time, change_interval):
@@ -33,7 +33,7 @@ for i in range(0, sim_time, change_interval):
 
 reference = scaler.transform(reference_ns.T).T
 
-reference_u_ns = np.array([[50.0, 50.0, 0.0]])
+reference_u_ns = np.array([[75.0, 50.0, 0.0]])
 reference_u = scalerU.transform(reference_u_ns.reshape(1, -1))[0]
 
 # ---------------------------- Initial conditions ------------------------------
@@ -56,8 +56,9 @@ Q = 0.1
 #     [np.eye(nx) * 0.1,  np.zeros((nx, nd))],   # Trust state model
 #     [np.zeros((nd, nx)), np.eye(nd) * 1.0]      # Disturbance adapts fast
 # ])
-Qd = 1
+Qd = 0.1
 R =  0.5
+
 
 N = 60
 # For ny and nu = 3, Qy and Qu as np.array with explicit values, equivalent to eye(3) + 5

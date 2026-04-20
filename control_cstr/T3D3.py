@@ -152,14 +152,19 @@ def main() -> None:
     y_setpoint = loaded_setup['reference'][:, 0]
     u_previous = loaded_setup['u_previous']
     u_previous_ns = loaded_setup.get('u_previous_ns')
+    u_sp = loaded_setup['reference_u'][:, 0]
 
     z_est_ = np.hstack(((inv(T_real) @ get_x(y_start)).T, np.zeros((1, nd))))
     P0 = loaded_setup['P0']
-    Q = loaded_setup['Q']  # process noise
-    R = loaded_setup['R']  # measurement noise
+    Q = loaded_setup['Q']
+    R = loaded_setup['R']
+
+    # Output disturbance formulation (Bd=0, Cd=I).
+    Cd = np.eye(ny)
+    Bd = np.zeros((nz, nd))
 
     A_ = np.block([
-        [A, np.zeros((nz, nd))],
+        [A, Bd],
         [np.zeros((nd, nz)), np.eye(nd)],
     ])
     B_ = np.vstack([
@@ -167,20 +172,25 @@ def main() -> None:
         np.zeros((nd, nu)),
     ])
 
-    EKF = helper.EKF(A_, B_, z_est_, P0, problem, Q, R, 8, T_real)
-
-    # -----------------------------
-    # Target calculation
-    # -----------------------------
-    target_estimation = helper.TaylorTargetEstimation(A, B)
-
     J = helper.evaluate_jacobian(
         problem.nodes[4],
         torch.from_numpy(T_real @ z_est_[0, :nz]).float(),
     ) @ T_real
+    C_ = np.hstack([J, Cd])
+
+    # TVKF with time-varying C_k (rebuilt every step via .step()).
+    TVKF = helper.TVKF(A_, B_, C_, z_est_, P0, Q, R)
+
+    # -----------------------------
+    # Target calculation
+    # -----------------------------
+    target_estimation = helper.TaylorTargetEstimation(
+        A, B, loaded_setup['Qy_te'], loaded_setup['Qu_te'], Bd, Cd
+    )
 
     z_s, y_s, u_s = target_estimation.get_target(
-        z_est_[:, nz:], y_setpoint, get_y(T_real @ z_est_[0, :nz]), z_est_[0, :nz], J
+        z_est_[:, nz:], y_setpoint, u_sp,
+        get_y(T_real @ z_est_[0, :nz]), z_est_[0, :nz], J,
     )
     print(target_estimation.te.status)
     print('Optimal y:', scaler.inverse_transform(y_s.reshape(1, -1)))
@@ -192,6 +202,8 @@ def main() -> None:
     # MPC problem formulation
     # -----------------------------
     Qy = loaded_setup['Qy']
+    Qu = loaded_setup['Qu']
+    Qdu = loaded_setup['Qdu']
     J = helper.evaluate_jacobian(
         problem.nodes[4],
         torch.from_numpy(T_real @ z_est_[0, :nz]).float(),
@@ -199,10 +211,11 @@ def main() -> None:
     Qz = J.T @ Qy @ J
     Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
 
-    mpc = helper.TaylorMPC(A, B)
-    mpc.build_problem(Qz_psd)
+    mpc = helper.TaylorMPC(A, B, Qy, Qu, Qdu, Bd, Cd)
+    mpc.build_problem()
     u_opt = mpc.get_u_optimal(
-        z_est_[0, :nz], z_est_[:, nz:], u_previous, z_ref, get_y(T_real @ z_est_[0, :nz]), z_est_[0, :nz], J
+        z_est_[0, :nz], z_est_[:, nz:], u_previous, z_ref, u_s,
+        get_y(T_real @ z_est_[0, :nz]), z_est_[0, :nz], J, Qz_psd,
     )
     print(u_opt)
     print(mpc.mpc.status)
@@ -224,7 +237,8 @@ def main() -> None:
 
     start_time_target = time.time()
     z_s, y_s, u_s = target_estimation.get_target(
-        z_est_[:, nz:], y_setpoint, get_y(T_real @ z_est_[0, :nz]), z_est_[0, :nz], J
+        z_est_[:, nz:], y_setpoint, u_sp,
+        get_y(T_real @ z_est_[0, :nz]), z_est_[0, :nz], J,
     )
     end_time_target = time.time()
     total_time_target += end_time_target - start_time_target
@@ -242,29 +256,28 @@ def main() -> None:
 
     for k in range(sim_time):
         y_setpoint = loaded_setup['reference'][:, k]
-        idx_prev = max(k - 1, 0)
+        u_sp = loaded_setup['reference_u'][:, k]
 
-        # T3: Target estimation linearizes at current state estimate
+        # T3 + D3: both target estimation and MPC linearize at the *current state estimate*.
         J = helper.evaluate_jacobian(
             problem.nodes[4],
             torch.from_numpy(T_real @ z_sim[:nz, k]).float(),
         ) @ T_real
-        
+
         start_time_target = time.time()
         zs_sim[:, k], ys_sim[:, k], u_s = target_estimation.get_target(
-            z_sim[nz:, k], 
-            y_setpoint, 
-            get_y(T_real @ z_sim[:nz, k]), 
-            z_sim[:nz, k], 
-            J
+            z_sim[nz:, k],
+            y_setpoint,
+            u_sp,
+            get_y(T_real @ z_sim[:nz, k]),
+            z_sim[:nz, k],
+            J,
         )
         end_time_target = time.time()
         total_time_target += end_time_target - start_time_target
 
-        # D3: MPC also linearizes at current state estimate (same J)
         Qz = J.T @ Qy @ J
         Qz_psd = Qz + 1e-8 * np.eye(Qz.shape[0])
-        mpc.build_problem(Qz_psd)
 
         start_time_mpc = time.time()
         u_opt = mpc.get_u_optimal(
@@ -272,9 +285,11 @@ def main() -> None:
             z_sim[nz:, k],
             u_prev,
             zs_sim[:, k],
+            u_s,
             get_y(T_real @ z_sim[:nz, k]),
             z_sim[:nz, k],
             J,
+            Qz_psd,
         )
         end_time_mpc = time.time()
         total_time_mpc += end_time_mpc - start_time_mpc
@@ -288,8 +303,21 @@ def main() -> None:
         )
         y_sim[:, k + 1] = scaler.transform(y_sim_descaled[:, k + 1].reshape(1, -1))[0]
 
-        # state estimation
-        z_sim[:, k + 1] = EKF.step(u_sim[:, k], y_sim[:, k + 1]).flatten()
+        # TVKF measurement update: refresh C_k = [J_kf, Cd] at the *current state estimate*
+        # (same philosophy as T3 target linearization — always linearize where we are now).
+        J_kf = helper.evaluate_jacobian(
+            problem.nodes[4],
+            torch.from_numpy(T_real @ z_sim[:nz, k]).float(),
+        ) @ T_real
+        C_k = np.hstack([J_kf, Cd])
+        z_sim[:, k + 1] = TVKF.step(
+            u_sim[:, k],
+            y_sim[:, k + 1],
+            get_y(T_real @ z_sim[:nz, k]),
+            z_sim[:nz, k],
+            J_kf,
+            C_k,
+        ).flatten()
 
         u_prev = u_sim[:, k]
 
@@ -302,7 +330,7 @@ def main() -> None:
     reference = loaded_setup['reference']
     
     # Compute objective in scaled units (matching notebook)
-    Qu = loaded_setup['Qu']
+    Qdu = loaded_setup['Qdu']
     objective_value = 0.0
     state_error_cost = 0.0
     control_increment_cost = 0.0
@@ -311,7 +339,7 @@ def main() -> None:
         prev_u = u_sim[:, k - 1] if k > 0 else u_sim[:, k]
         u_diff = u_sim[:, k] - prev_u
         y_term = float(y_diff.T @ Qy @ y_diff)
-        u_term = float(u_diff.T @ Qu @ u_diff)
+        u_term = float(u_diff.T @ Qdu @ u_diff)
         state_error_cost += y_term
         control_increment_cost += u_term
         objective_value += y_term + u_term

@@ -159,10 +159,13 @@ ref_x_matrix = np.vstack(references_x_list)  # shape (len(u_targets), 8)
 
 # Build piecewise-constant references for outputs and full state
 reference_ns = np.zeros((ny, sim_time))
+reference_u_ns = np.zeros((nu, sim_time))
 for i in range(0, sim_time, change_interval):
     idx = i // change_interval
     y_val = ref_y_matrix[idx]
     reference_ns[:, i:i+change_interval] = y_val.reshape(-1, 1)
+    # Matching u setpoint for each segment (the input that produced that y_ss).
+    reference_u_ns[:, i:i+change_interval] = u_targets[idx].reshape(-1, 1)
 
 # Identity scaling for this scenario (ns == scaled)
 class _IdentityScaler:
@@ -174,6 +177,7 @@ scaler = joblib.load('../data/scaler.pkl')
 scalerU = joblib.load('../data/scalerU.pkl')
 
 reference = scaler.transform(reference_ns.T).T
+reference_u = scalerU.transform(reference_u_ns.T).T
 
 
 # ---------------------------- Initial conditions ------------------------------
@@ -193,16 +197,22 @@ u_previous = scalerU.transform(u_previous_ns.reshape(1, -1))[0]
 nd = ny
 
 P0 = np.eye(nx + nd)
-Q = np.eye(nx + nd) * 0.1
-# Q = np.block([
-#     [np.eye(nx) * 0.1,  np.zeros((nx, nd))],   # Trust state model
-#     [np.zeros((nd, nx)), np.eye(nd) * 1.0]      # Disturbance adapts fast
-# ])
+# Scalar pieces that assemble Q (used by notebooks that want to tune separately).
+Q_state_scalar = 0.1   # variance on the lifted state dynamics
+Qd_scalar = 1.0        # disturbance random-walk variance (higher = adapts faster)
+Q = np.block([
+    [np.eye(nx) * Q_state_scalar,  np.zeros((nx, nd))],
+    [np.zeros((nd, nx)), np.eye(nd) * Qd_scalar],
+])
+Qd = np.eye(nd) * Qd_scalar  # exposed for scripts that want it standalone
 R = np.eye(ny) * 0.5
 
 N = 20
-Qy = np.eye(ny) * 5.0
-Qu = np.eye(nu) * 0.1
+Qy = np.eye(ny) * 5.0           # output tracking weight (MPC stage + target)
+Qu = np.eye(nu) * 0.0           # input-setpoint weight (in both target and MPC)
+Qdu = np.eye(nu) * 0.1          # input-rate (delta-u) weight (MPC)
+Qy_te = Qy.copy()               # target-estimator output weight
+Qu_te = Qu * 0.0                # target-estimator u weight (0 = free u at target)
 
 u_min = scalerU.transform(u_min_ns.reshape(1, -1))[0]
 u_max = scalerU.transform(u_max_ns.reshape(1, -1))[0]
@@ -230,6 +240,10 @@ sim_setup = {
     'N': N,
     'Qy': Qy,
     'Qu': Qu,
+    'Qdu': Qdu,
+    'Qd': Qd_scalar,
+    'Qy_te': Qy_te,
+    'Qu_te': Qu_te,
     'u_min': u_min,
     'u_max': u_max,
     'y_min': y_min,
@@ -237,6 +251,8 @@ sim_setup = {
     'sim_time': sim_time,
     'reference': reference,
     'reference_ns': reference_ns,
+    'reference_u': reference_u,
+    'reference_u_ns': reference_u_ns,
     'notes': 'CSTRSeriesRecycle setup with achievable steady-state references (y=[C_B2, T2])',
 }
 

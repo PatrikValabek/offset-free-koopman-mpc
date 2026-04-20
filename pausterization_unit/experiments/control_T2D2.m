@@ -65,16 +65,16 @@ pct23.setTag('FSV',1);
 
 % set close the device
 % pct23.close()
-N = 240;
+N = 400;
 
 y = zeros(N,3);
 y_sp = zeros(N,3);
 u_sp = zeros(N,3);
 u = zeros(N,3);
-u_prev = [50,50,25];
+u_prev = [75,100,25];
 
-pct23.setTag('Pump1',50);
-pct23.setTag('Pump2',50);
+pct23.setTag('Pump1',75);
+pct23.setTag('Pump2',100);
 pct23.setTag('Heater',20);
 
 double(pct23.getTag('T4').value)

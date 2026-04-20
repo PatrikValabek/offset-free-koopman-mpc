@@ -437,55 +437,25 @@ We index target mappings by T1--T3 and dynamic mappings by D1--D4 as in \eqref{e
 
 \subsection{Simulation Results for Two Reactor System}
 
-We index target mappings by T1--T3 and dynamic mappings by D1--D4 as in \eqref{eq:target-mappings}--\eqref{eq:dyn-mappings}. The simulation setups below pair one target mapping with one dynamic mapping:
+We index target mappings by T1--T3 and dynamic mappings by D1--D4 as in \eqref{eq:target-mappings}--\eqref{eq:dyn-mappings}. Table~\ref{tab:setups-matrix-reactor-1} compares previous diagonal entries (CT, T2D2, T3D3) with reruns from the current scripts.
 
 \begin{table}[h]
   \centering
-  \caption{Simulation setups matrix, with Qy much higher Qu; Qy = diag(5) Qu = diag(0.1). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is \(100\).}
+  \caption[Two-reactor CSTR: previous vs.\ updated objectives]{Two-reactor CSTR: normalized closed-loop objective with NMPC benchmark \(100\). Diagonal combinations CT (\(T1\!\times\!D1\)), T2D2 (\(T2\!\times\!D2\)), and T3D3 (\(T3\!\times\!D3\)). \emph{Previous}: entries from the earlier full \(3\times 4\) TM/DM matrices. \emph{Updated}: \(100\,J/J_{\mathrm{NMPC}}\) from \texttt{control\_cstr} (\path{CT.py}, \path{T2D2.py}, \path{T3D3.py}) with the same weighting as tuning~\textsc{i}; em dashes mark tunings \textsc{ii}--\textsc{iii} not yet rerun.}
   \label{tab:setups-matrix-reactor-1}
-  \begin{tabular}{lcccc}
-      \toprule
-      & \multicolumn{4}{c}{DM} \\
-      \cmidrule(lr){2-5}
-      TM & D1 & D2 & D3 & D4 \\
-      \midrule
-      T1 & 365.0 & x & x & x \\
-      T2 & x & 251.5 & 250.7 & 255.5 \\
-      T3 & x & 259.0 & 265.1 & 263.2 \\
-      \bottomrule
-  \end{tabular}
-\end{table}
-
-\begin{table}[h]
-  \centering
-  \caption{Simulation setups matrix, with Qy and Qu with equal diagonal values (\(1\)). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is \(100\).}
   \label{tab:setups-matrix-reactor-2}
-  \begin{tabular}{lcccc}
-      \toprule
-      & \multicolumn{4}{c}{DM} \\
-      \cmidrule(lr){2-5}
-      TM & D1 & D2 & D3 & D4 \\
-      \midrule
-      T1 & 184.5 & x & x & x \\
-      T2 & x & 146.2 & 146.8 & 146.2 \\
-      T3 & x & 150.6 & 153.9 & 150.6 \\
-      \bottomrule
-  \end{tabular}
-\end{table}
-
-\begin{table}[h]
-  \centering
-  \caption{Simulation setups matrix, with Qy much lower Qu; Qy = diag(0.1) Qu = diag(5). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is \(100\).}
   \label{tab:setups-matrix-reactor-3}
-  \begin{tabular}{lcccc}
+  \begin{tabular}{@{}l rrr @{\hspace{2.2em}} rrr@{}}
       \toprule
-      & \multicolumn{4}{c}{DM} \\
-      \cmidrule(lr){2-5}
-      TM & D1 & D2 & D3 & D4 \\
+      & \multicolumn{3}{c}{\textbf{Previous}} & \multicolumn{3}{c}{\textbf{Updated}} \\
+      \cmidrule(lr){2-4} \cmidrule(lr){5-7}
+      \textbf{Tuning} & CT & T2D2 & T3D3 & CT & T2D2 & T3D3 \\
       \midrule
-      T1 & 130.4 & x & x & x \\
-      T2 & x & 112.1 & 112.5 & 112.2 \\
-      T3 & x & 115.5 & 116.1 & 115.6 \\
+      \textsc{i}: $Q_y=\mathrm{diag}(5)$, $Q_u=\mathrm{diag}(0.1)$ & 365.0 & 251.5 & 265.1 & 314.9 & 260.5 & 285.7 \\
+      \addlinespace[0.35em]
+      \textsc{ii}: $Q_y=Q_u=I$ & 184.5 & 146.2 & 153.9 & --- & --- & --- \\
+      \addlinespace[0.35em]
+      \textsc{iii}: $Q_y=\mathrm{diag}(0.1)$, $Q_u=\mathrm{diag}(5)$ & 130.4 & 112.1 & 116.1 & --- & --- & --- \\
       \bottomrule
   \end{tabular}
 \end{table}

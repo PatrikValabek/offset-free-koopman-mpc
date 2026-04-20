@@ -170,7 +170,7 @@ def build_mpc(model: do_mpc.model.Model, loaded_setup: Dict, reference_column: n
     # For quadratic form: (y_scaled)^T Qy_scaled (y_scaled) = (y/std)^T Qy_scaled (y/std)
     # To get equivalent penalty in unscaled space: Qy_unscaled = Qy_scaled / std^2
     Qy_scaled = loaded_setup["Qy"]
-    Qu_scaled = loaded_setup["Qu"]
+    Qu_scaled = loaded_setup["Qdu"]
     
     # Get standard deviations from scalers (for StandardScaler: scale_ attribute)
     std_y = scaler.scale_  # shape (8,)
@@ -386,7 +386,7 @@ def compute_closed_loop_objective(
     u_sim = scalerU.transform(u_history.T).T
 
     Qy = loaded_setup["Qy"]
-    Qu = loaded_setup["Qu"]
+    Qu = loaded_setup["Qdu"]
 
     n_steps = min(500, y_history.shape[1])
     objective_value = 0.0

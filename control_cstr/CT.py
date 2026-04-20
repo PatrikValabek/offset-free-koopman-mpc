@@ -187,6 +187,7 @@ def main() -> None:
     y_setpoint = loaded_setup['reference'][:, 0]
     u_previous = loaded_setup['u_previous']
     u_previous_ns = loaded_setup.get('u_previous_ns')
+    u_sp = loaded_setup['reference_u'][:, 0]
 
     # Initial state estimate includes disturbance
     z_est_ = np.hstack(((inv(T_real) @ get_x_from_y(problem, y_start)).T, np.zeros((1, nd))))
@@ -195,28 +196,37 @@ def main() -> None:
     Q = loaded_setup['Q']
     R = loaded_setup['R']
 
+    # Output disturbance formulation (Bd=0, Cd=I).
+    Cd = np.eye(ny)
+    Bd = np.zeros((nz, nd))
+
     A_ = np.block([
-        [A, np.zeros((nz, nd))],
+        [A, Bd],
         [np.zeros((nd, nz)), np.eye(nd)],
     ])
     B_ = np.vstack([
         B,
         np.zeros((nd, nu)),
     ])
-    C_ = np.hstack([
-        C, np.eye(nd),
-    ])
+    C_ = np.hstack([C, Cd])
 
     KF = helper.KF(A_, B_, C_, z_est_, P0, Q, R)
 
-    # Target calc
-    target_estimation = helper.TargetEstimation(A, B, C)
-    z_s, y_s, u_s = target_estimation.get_target(z_est_[:, nz:], y_setpoint)
+    # Target calc (new API: pass weights and disturbance matrices).
+    target_estimation = helper.TargetEstimation(
+        A, B, C, loaded_setup['Qy_te'], loaded_setup['Qu_te'], Bd, Cd
+    )
+    z_s, y_s, u_s = target_estimation.get_target(z_est_[:, nz:], y_setpoint, u_sp)
     z_ref = z_s
 
-    # MPC problem
-    mpc = helper.MPC(A, B, C)
-    _ = mpc.get_u_optimal(z_est_[:, :nz], z_est_[:, nz:], u_previous, z_ref)
+    # MPC problem (new API). Note the argument order of get_u_optimal:
+    #   (z0, d0, u_ref, u_prev, z_ref)
+    mpc = helper.MPC(
+        A, B, C,
+        loaded_setup['Qy'], loaded_setup['Qu'], loaded_setup['Qdu'],
+        Bd, Cd,
+    )
+    _ = mpc.get_u_optimal(z_est_[:, :nz], z_est_[:, nz:], u_s, u_previous, z_ref)
 
     # Closed-loop simulation
     sim_time = int(loaded_setup['sim_time'])
@@ -248,13 +258,17 @@ def main() -> None:
         u_sim_ns[:, 0] = scalerU.inverse_transform(u_sim[:, 0].reshape(1, -1))[0]
 
     for k in range(0, sim_time):
+        u_sp = loaded_setup['reference_u'][:, k]
+
         # Target update
         zs_sim[:, k], ys_sim[:, k], u_s = target_estimation.get_target(
-            z_sim[nz:, k], loaded_setup["reference"][:, k]
+            z_sim[nz:, k], loaded_setup["reference"][:, k], u_sp
         )
 
         # MPC
-        u_opt = mpc.get_u_optimal(z_sim[:nz, k], z_sim[nz:, k], u_prev, zs_sim[:, k])
+        u_opt = mpc.get_u_optimal(
+            z_sim[:nz, k], z_sim[nz:, k], u_s, u_prev, zs_sim[:, k]
+        )
         u_sim[:, k] = u_opt
         u_sim_ns[:, k] = scalerU.inverse_transform(u_sim[:, k].reshape(1, -1))[0]
 
@@ -272,7 +286,7 @@ def main() -> None:
 
     # Compute objective in scaled units (matching notebook)
     reference = loaded_setup['reference']
-    Qu = loaded_setup['Qu']
+    Qdu = loaded_setup['Qdu']
     Qy = loaded_setup['Qy']
     objective_value = 0.0
     state_error_cost = 0.0
@@ -282,7 +296,7 @@ def main() -> None:
         prev_u = u_sim[:, k - 1] if k > 0 else u_sim[:, k]
         u_diff = u_sim[:, k] - prev_u
         y_term = float(y_diff.T @ Qy @ y_diff)
-        u_term = float(u_diff.T @ Qu @ u_diff)
+        u_term = float(u_diff.T @ Qdu @ u_diff)
         state_error_cost += y_term
         control_increment_cost += u_term
         objective_value += y_term + u_term

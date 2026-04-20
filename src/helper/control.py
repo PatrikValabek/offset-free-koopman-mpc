@@ -34,32 +34,64 @@ class KF():
         return self.x
 
 class TVKF():
+    """
+    Time-Varying Kalman Filter for a Koopman-style augmented system with
+    output disturbance and a measurement equation that is linearized every
+    step around a (possibly moving) linearization point x_lp.
+
+    Augmented state z = [x (nz); d (nd)]
+    Dynamics (linear, time-invariant):
+        z[k+1] = A z[k] + B u[k]
+    where A, B are the augmented Koopman matrices:
+        A = [[A_k, Bd], [0, I]],  B = [[B_k], [0]]
+
+    Measurement (time-varying linearization of a nonlinear h(x)):
+        y = h(x) + Cd d
+        y ~= J (x - x_lp) + h(x_lp) + Cd d
+           = C_k z + c
+    where
+        C_k = [J, Cd]    (ny x (nz+nd))
+        c   = y_lp - J x_lp   with  y_lp = h(x_lp)    (ny,)
+
+    The `step()` method expects:
+        u   : input,                  shape (nu,) or (nu,1)
+        y   : measurement,            shape (ny,) or (ny,1)
+        y_lp: h(x_lp), the nonlinear output at x_lp, shape (ny,) or (1,ny)
+        x_lp: linearization point (in Koopman coords), shape (nz,)
+        J   : Jacobian of h wrt x, evaluated at x_lp, shape (ny, nz)
+        C_k : [J, Cd], shape (ny, nz+nd)
+    """
     def __init__(self, A, B, C, x0, P0, Q, R):
         self.A = A
         self.B = B
         self.C = C
-        self.c = 0
+        ny = C.shape[0]
+        self.c = np.zeros((ny, 1))
         self.Q = Q
         self.R = R
-        self.x = x0
-        self.P = P0  
-        
+        self.x = np.asarray(x0, dtype=float).reshape(-1, 1)
+        self.P = P0
+
     def predict(self, u):
-        self.x = self.A @ self.x.reshape(-1,1) + self.B @ u.reshape(-1,1)
+        u = np.asarray(u, dtype=float).reshape(-1, 1)
+        self.x = self.A @ self.x + self.B @ u
         self.P = self.A @ self.P @ self.A.T + self.Q
         return self.x, self.P
-    
+
     def update(self, y):
-        y_pred = self.C@self.x.reshape(-1,1) + self.c.reshape(-1,1)
-        # self.C_k @ z[:, k] + self.Cd @ self.d0 + self.y_k - self.C_k @ self.z_k
+        y = np.asarray(y, dtype=float).reshape(-1, 1)
+        y_pred = self.C @ self.x + self.c
         S = self.C @ self.P @ self.C.T + self.R
         K = self.P @ self.C.T @ np.linalg.inv(S)
-        self.x = self.x + K @ (y - y_pred.T).T
-        self.P = (np.eye(self.P.shape[0]) - K @ self.C) @ self.P
-        
+        self.x = self.x + K @ (y - y_pred)
+        I = np.eye(self.P.shape[0])
+        self.P = (I - K @ self.C) @ self.P
+
     def step(self, u, y, y_lp, x_lp, J, C_k):
         self.C = C_k
-        self.c = y_lp - J @ x_lp
+        y_lp = np.asarray(y_lp, dtype=float).reshape(-1)
+        x_lp = np.asarray(x_lp, dtype=float).reshape(-1)
+        self.c = (y_lp - J @ x_lp).reshape(-1, 1)
         self.predict(u)
         self.update(y)
         return self.x

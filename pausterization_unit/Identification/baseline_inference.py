@@ -49,13 +49,13 @@ def load_model():
     Returns problem object with loaded weights.
     """
     # Model parameters (must match training configuration)
-    nz = 35  # latent state dimension
+    nz = 24  # latent state dimension
     ny = 3   # output dimension (T1, T2, T4)
     nu = 3   # input dimension (u1, u2, u3)
     nsteps = 80  # prediction horizon
     
     # Network architecture (must match training)
-    cons = 5
+    cons = 1
     layers = [6*cons,12*cons,18*cons,24*cons]
     layers_dec  = [24*cons,18*cons,12*cons,6*cons]
     matrix_C = False
