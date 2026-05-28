@@ -1,0 +1,80 @@
+---
+description: Rules for writing academic papers in LaTeX — variable descriptions and notation consistency
+globs: **/*.tex
+alwaysApply: false
+---
+
+# LaTeX Paper Writing — Equations and Notation
+
+## Variable Description Rule
+
+Every symbol that appears in an equation must be described **exactly once**, at its first appearance, using a `where` clause immediately after the equation block.
+
+- List symbols in the order they appear in the equation.
+- Use the form: `where $x \in \mathbb{R}^n$ is ...`
+- Do **not** re-describe a symbol that was already defined in a previous equation in the same section.
+- If a symbol is defined in a constraint/parameter line of the equation (e.g. `d = \hat{d}(t)`), it still needs a prose description in the `where` clause.
+
+**Example:**
+
+```latex
+% ✅ GOOD — all new symbols described after the equation
+z_{k+1} = A z_k + B u_k
+where $z_k \in \mathbb{R}^{n_z}$ is the lifted state, $u_k \in \mathbb{R}^{n_u}$ the control input,
+and $A$, $B$ are the system matrices of the LTI Koopman model.
+
+% ❌ BAD — A and B left undescribed
+z_{k+1} = A z_k + B u_k
+where $z_k$ is the lifted state and $u_k$ the control input.
+```
+
+## Notation Clash Detection
+
+Before writing or editing equations, check for the following conflicts and **flag them in chat** before making any changes:
+
+1. **Same symbol, different meaning** — e.g. `$d$` used as a disturbance in one equation and as a dimension in another.
+2. **Same concept, different symbol** — e.g. the output setpoint written as `$y_\text{sp}$` in one place and `$r$` in another.
+3. **Overloaded subscripts/superscripts** — e.g. `$u_k$` used for both time index and a different quantity.
+
+When a clash is detected:
+- Stop and describe the conflict clearly in chat.
+- Quote the two conflicting usages with their equation labels.
+- Ask the user which symbol/convention to keep before proceeding.
+
+## General Conventions for This Paper
+
+**This section is the single source of truth for notation. Keep it up to date.**
+
+After every edit that introduces or renames a symbol (writing a `where` clause, adding an equation, renaming a variable), **immediately update this section** by adding or editing the relevant line. Do this as part of the same response — do not wait to be asked.
+
+Format: `- $symbol$ — meaning (first defined in \label{...})`
+
+---
+
+- `$z$` — lifted (Koopman) state
+- `$y$` — original system output
+- `$u$` — control input
+- `$\hat{d}(t)$` — additive output disturbance estimate (Kalman filter)
+- `$\bar{z}, \bar{u}, \bar{y}$` — steady-state lifted state, input, and output
+- `$k$` — discrete time index within prediction horizon
+- `$N$` — prediction horizon length
+- `$Q_\text{y}$` — output tracking weight matrix
+- `$Q_\text{z}$` — lifted-state tracking weight matrix
+- `$Q_\text{u}$` — input increment weight matrix
+- `$A, B, C$` — state-space matrices of the LTI Koopman model
+- `$u_{\min}, u_{\max}$` — input constraint bounds
+- `$y_{\min}, y_{\max}$` — output constraint bounds
+- `$y_\text{sp}(t)$` — output setpoint
+- `$T_\text{s}$` — sampling period
+- `$\Delta u_k$` — control input increment at step $k$
+- `$n_x, n_u, n_y, n_d$` — dimensions of original state, input, output, and disturbance (first defined in `\label{eq:of:ss}`)
+- `$n_z, n_u, n_y$` — dimensions of lifted state, input, and output
+- `$x$`, `$d_k$` — original system state and estimated constant disturbance in the offset-free augmented model (first defined in `\label{eq:of:ss}`)
+- `$B_d$`, `$C_d$` — disturbance input and output matrices (first defined in `\label{eq:of:ss}`)
+- `$\mathbb{N}_0^{N-1}$` — prediction step index set $\{0, 1, \ldots, N-1\}$ (first defined in `\label{eq:of:mpc:z}`)
+- `$\hat{z}(t)$` — Kalman filter lifted state estimate at current time (first defined in `\label{eq:of:mpc:init}`)
+- `$u_{-1}$` — input applied at the previous sampling instant, i.e. $u(t - T_\text{s})$ (first defined in `\label{eq:of:mpc:init}`)
+- `$u_0^*$` — optimal first element of the MPC input sequence (first defined in `\label{eq:of:mpc}`)
+- `$h(\cdot)$` — nonlinear output mapping $h : \mathbb{R}^{n_z} \to \mathbb{R}^{n_y}$ (first defined in `\label{eq:linearization}`)
+- `$\bar{z}(t-T_\text{s})$` — steady-state lifted state from the previous sampling instant (first defined in `\label{eq:linearization:target}`)
+- `$J_{\bar{z}(t-T_\text{s})}$`, `$J_{\hat{z}(t)}$` — Jacobians of $h$ at the previous target and current state estimate (first defined in `\label{eq:linearization}`)

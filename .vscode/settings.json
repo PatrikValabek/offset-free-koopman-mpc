@@ -1,5 +1,12 @@
 {
     "python-envs.defaultEnvManager": "ms-python.python:conda",
     "python-envs.defaultPackageManager": "ms-python.python:conda",
-    "python-envs.pythonProjects": []
+    "python-envs.pythonProjects": [],
+    "grammarly.files.include": [
+        "**/readme.md",
+        "**/README.md",
+        "**/*.txt",
+        "**/*.tex"
+    ],
+    "grammarly.selectors": []
 }

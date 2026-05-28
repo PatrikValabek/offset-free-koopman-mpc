@@ -260,10 +260,10 @@ def main() -> None:
         idx_prev = max(k - 1, 0)
 
         # T2: target update linearizes at previous target zs_sim[:, idx_prev]
-        J = helper.evaluate_jacobian(
-            problem.nodes[4],
-            torch.from_numpy(T_real @ zs_sim[:, idx_prev]).float(),
-        ) @ T_real
+        # J = helper.evaluate_jacobian(
+        #     problem.nodes[4],
+        #     torch.from_numpy(T_real @ zs_sim[:, idx_prev]).float(),
+        # ) @ T_real
         start_time_target = time.time()
         zs_sim[:, k], ys_sim[:, k], u_s = target_estimation.get_target(
             z_sim[nz:, k],
@@ -308,17 +308,17 @@ def main() -> None:
         # TVKF needs a fresh linearization (Jacobian + output at the new target) for the
         # measurement update at step k+1. Follow the T2D2_10 notebook: linearize at the
         # *current* target zs_sim[:, k].
-        J_kf = helper.evaluate_jacobian(
+        J = helper.evaluate_jacobian(
             problem.nodes[4],
             torch.from_numpy(T_real @ zs_sim[:, k]).float(),
         ) @ T_real
-        C_k = np.hstack([J_kf, Cd])
+        C_k = np.hstack([J, Cd])
         z_sim[:, k + 1] = TVKF.step(
             u_sim[:, k],
             y_sim[:, k + 1],
             get_y(T_real @ zs_sim[:, k]),
             zs_sim[:, k],
-            J_kf,
+            J,
             C_k,
         ).flatten()
 

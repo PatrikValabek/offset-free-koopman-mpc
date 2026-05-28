@@ -215,43 +215,94 @@
 \label{sec:Preliminaries}
  
 \subsection{Offset-Free MPC}
+In this subsection, we will present a standard offset free model predictive control framework, introduced by\todo{cite pannocchia}. This approach consist of state estimation - observer, target optimization and dynamic optimization. 
+The whole approach is used to introduce integral action into model predictive control to help mitigate plant-model missmatch and ensure offset free control. If this compensation would not be used, the plant with this controller would not reach a desired reference (other than at origin), due to predictions using different model than actual plant. 
 
-\subsection{Nonlinear MPC}
+The offset-free augmented system can be written in the following state-space form, including the disturbance input matrix $B_d$ and disturbance output matrix $C_d$:
+\begin{equation}
+  \label{eq:of:ss}
+  \begin{bmatrix}
+    x_{k+1} \\
+    d_{k+1}
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+    A & B_d \\
+    0 & I
+  \end{bmatrix}
+  \begin{bmatrix}
+    x_k \\
+    d_k
+  \end{bmatrix}
+  +
+  \begin{bmatrix}
+    B \\
+    0
+  \end{bmatrix}
+  u_k,
+  \qquad
+  y_k =
+  \begin{bmatrix}
+    C & C_d
+  \end{bmatrix}
+  \begin{bmatrix}
+    x_k \\
+    d_k
+  \end{bmatrix}
+\end{equation}
+where $x_k$ is the original system state, $d_k$ is the estimated constant disturbance, $u_k$ is the control input, $y_k$ is the output, $A$, $B$, and $C$ are the original state-space matrices, $B_d$ and $C_d$ encode how the disturbance enters the state and output equations, and $I$ is the identity matrix.
+Here, $n_x$, $n_u$, $n_y$, and $n_d$ denote the state, input, output, and disturbance dimensions, respectively, so that $x_k \in \mathbb{R}^{n_x}$, $u_k \in \mathbb{R}^{n_u}$, $y_k \in \mathbb{R}^{n_y}$, $d_k \in \mathbb{R}^{n_d}$, $A \in \mathbb{R}^{n_x \times n_x}$, $B \in \mathbb{R}^{n_x \times n_u}$, $C \in \mathbb{R}^{n_y \times n_x}$, $B_d \in \mathbb{R}^{n_x \times n_d}$, $C_d \in \mathbb{R}^{n_y \times n_d}$, and $I \in \mathbb{R}^{n_d \times n_d}$.
+For the offset free behavior, the number of the disturbances $n_d$ must be lower or equal to the number of the measurements $n_y$. Also it is necessary to note that the number of offset free tracking is achievable only in the number of disturbances that are estimated. For the system where $n_d = n_y$ system and choice of the matrices $B_d$ and $C_d$ there is a necessary condition, that:
+\begin{equation}
+  \label{eq:of:rank}
+  \operatorname{rank}
+  \begin{bmatrix}
+    I - A & -B_d \\
+    C & C_d
+  \end{bmatrix}
+  = n_x + n_y.
+\end{equation}
 
-\subsection{Koopman Operator for Control}
+When solving the MPC, both states and disturbance are approximated by observer. 
 
-\subsection{Koopman MPC}
+\subsection{Koopman Operator}
+The koopman operator theory was introduced by \todo{cite} and further popularize by \todo{cite}. The theory enables to exactly model nonlinear systems linearly, by lifting its current states/measurements into infinite dimensional variables, where the governing operator for the evolving system is linear. 
 
-\subsection{State Estimation - Observer}
+\todo{fancy smenši exuation}
 
-\section{Koopman MPC with Offset-Free - Baseline}
+Over the years many approximations of the koopman operator from the data were proposed, starting with simple DMD, extended to the EDMD and recently the neural networks were used to best approximate the lifting functions so the system behaves linearly. The algorithms were as well developed not only for autonomous systems but for the systems with control as well \todo{cite and elaborate}. Koopman operator in the MPC was introduced by \todo{cite Korda}, and in recent years almost every kind of MPC was transfor to accept some kind of Koopman Operator, mostly represented as an LTI system in the state space form. The offset free wersion is no exception, in the work of \todo{Zotero, kukni papere, prosím ešte aj naskenuj ďalšie}.
+
+For the purpose of this work we are using the DeepKoopman Approximation introduced by \todo{cite, Lusch}, transformed for the nonautonomous system. We use two kinds of approximations. Firstly the LTI approximation and secondly the approximation, where only the lifted system evolves linearly, but its projection is nonlinear (as it should be from the definition of Koopman operator). The architectures of those systems can be seen below. \todo{images}
+
+\section{Koopman MPC with Offset-Free}
 \label{sec:easy-mpc}
-In this section, we will present a standard offset free optimal framework consisting of Target Optimization, State Estimation - Observer and MPC. As observer is standard Kalman filter or extended Kalman filter, we will discuss mainly remaining two optimization problems. Both remaining components had to be designed in a way that they are able to work with the Koopman operator. The main goal of this section is to show that the standard formulation can be easily transformed for the offset-free MPC use.
+In this subsection, we will present a standard offset free model predictive control framework using approximation of Koopman operator as a linear time invariant (LTI) model. As observer is standard Kalman filter, we will discuss mainly remaining two optimization problems. 
+As we use the LTI approximation of Koopman operator, we can use the standard MPC formulation with linear constraints and objective function. The control structure is shown in Figure~\ref{fig:close_loop}.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/close_loop.pdf}
-  \caption{Closed-loop control structure.}
+  \caption{Closed-loop control structure.\todo{prerobiť tak aby znormalizoval fonty a haty, rozdeliť d a z}}
   \label{fig:close_loop}
 \end{figure}
 
-\subsection{Target Optimization}
+The target optimization problem computes the steady-state targets $\bar{u}, \bar{z}, \bar{y}$ that minimizes the difference between reference $y_\text{ref}$ and feasible output $\bar{y}$ in steady state. The problem is formulated as: 
 
 \begin{subequations}
   \label{eq:target:opt}
   \begin{align}
-    \min_{\bar{u}, \bar{z}, \bar{y}} \quad & \; (\bar{y} - y_\text{ref})^\intercal Q_\text{y} (\bar{y} - y_\text{ref}) \label{eq:target:opt:obj} \\
-    \text{s.t.} \quad & \; \bar{z} = A\bar{z} + B\bar{u} \label{eq:target:opt:z} \\
-    & \; \bar{y} = C\bar{z} + d \label{eq:target:opt:y} \\
-    & \; u_{\min} \leq \bar{u} \leq u_{\max} \label{eq:target:opt:u} \\
-    & \; y_{\min} \leq \bar{y} \leq y_{\max} \label{eq:target:opt:ycon} \\
-    & \; d = \hat{d}(t), \quad y_\text{ref} = y_\text{sp} \label{eq:target:opt:params}
+    \min_{\bar{u}, \bar{z}, \bar{y}} \quad & \; (\bar{y} - y_\text{ref})^\intercal Q_\text{y} (\bar{y} - y_\text{ref}) \label{eq:target:opt:obj}, \\
+    \text{s.t.} \quad & \; \bar{z} = A\bar{z} + B\bar{u} \label{eq:target:opt:z}, \\
+    & \; \bar{y} = C\bar{z} + d \label{eq:target:opt:y}, \\
+    & \; u_{\min} \leq \bar{u} \leq u_{\max} \label{eq:target:opt:u}, \\
+    & \; y_{\min} \leq \bar{y} \leq y_{\max} \label{eq:target:opt:ycon}, \\
+    & \; d = \hat{d}(t), \quad y_\text{ref} = y_\text{sp}(t), \label{eq:target:opt:params}
   \end{align}
 \end{subequations}
+where $\bar{u} \in \mathbb{R}^{n_u}$, $\bar{z} \in \mathbb{R}^{n_z}$, and $\bar{y} \in \mathbb{R}^{n_y}$ are the steady-state input, lifted state, and output, respectively; $Q_\text{y} \succ 0$ is the output tracking weight matrix; $A \in \mathbb{R}^{n_z \times n_z}$, $B \in \mathbb{R}^{n_z \times n_u}$, $C \in \mathbb{R}^{n_y \times n_z}$ are the state-space matrices of the LTI Koopman model; $d = \hat{d}(t) \in \mathbb{R}^{n_y}$ is the additive output disturbance estimate provided by the Kalman filter; $y_\text{ref} = y_\text{sp}(t)$ is the output setpoint; and $u_{\min}, u_{\max}$, $y_{\min}, y_{\max}$ are the input and output constraint bounds.
 
+Given the steady-state target $(\bar{u}, \bar{z}, \bar{y})$, the MPC problem is solved at each sampling instant to compute the optimal input sequence over the horizon $N$:
 
-
-\subsection{MPC}
 \begin{subequations}
   \label{eq:of:mpc}
   \begin{align}
@@ -261,16 +312,32 @@ In this section, we will present a standard offset free optimal framework consis
     & \; \Delta u_k = u_k - u_{k-1}, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:of:mpc:du} \\
     & \; u_{\min} \leq u_k \leq u_{\max}, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:of:mpc:u} \\
     & \; y_{\min} \leq y_k \leq y_{\max}, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:of:mpc:ycon} \\
-    & \; z_0 = \hat{z}(t), \quad d = \hat{d}(t), \quad u_{-1} = u(t-T_\text{s}) \label{eq:of:mpc:init}
+    & \; z_0 = \hat{z}(t), \quad d = \hat{d}(t), \quad u_{-1} = u(t-T_\text{s}), \label{eq:of:mpc:init}
   \end{align}
 \end{subequations}
+where $\hat{z}(t) \in \mathbb{R}^{n_z}$ is the lifted state estimate provided by the Kalman filter; and $u_{-1} = u(t - T_\text{s})$ is the input applied at the previous sampling instant, used to compute the first increment $\Delta u_0$. Following the receding-horizon principle, only the first element $u_0^*$ of the optimal sequence is applied to the plant.
 
-\subsection{Closed-Loop Control Structure}
 
-\section{Koopman MPC with Offset-Free - Proposed}
 
-Main drawback that we observe in a current Koopman MPC (offset-free, robust, or any other), is that the optimization is done without leveraging knowledge of the lifted space. Of course we are predicting in the lifted space, but in objective function we are using original space, that is created derived as linear transformation of the lifted space \(y_k = Cz_k\). This transformation is not linear by nature \(y_k = h(z_k)\), but to use linear MPC, we think we had no other choice. Some papers are not using this transformation directly, but after closer look, they are usually using equivalent transformations, for example expanding lifted space with measurements, but dynamic in lifted space is linear, so transformations to achieve back this measurements is linear. We will show that we can use the lifted space directly in the objective function, showing how to handle the lifted space and transformation of an objective function.
+\section{Methodology}
+
+Main drawback that we observe in a current Koopman MPC (offset-free, robust, or any other), is that the optimization is done without fully leveraging knowledge of the lifted space. 
+Of course we are predicting in the lifted space, but in objective function we are using original space, that is created derived as linear transformation of the lifted space \(y_k = Cz_k\). This transformation is not linear by nature \(y_k = h(z_k)\), but to use linear MPC, we think we had no other choice. Some papers are not using this transformation directly, but after closer look, they are usually using equivalent transformations, for example expanding lifted space with measurements, but dynamic in lifted space is linear, so transformations to achieve back this measurements is linear. 
+We will show that we can use the lifted space directly in the objective function, showing how to handle the lifted space and transformation of an objective function.
 We can fully eliminate the neccessity of the back transformation used in objective function in MPC, but we still need them to compute the target for the lifted space. In this case and case of constraints, we use a first order Taylor expansion, to better approximate the transformation. 
+
+
+\subsection{Linearization of Output Mapping}
+For the control problem, we are not able to completely eliminate the neccessity of the transformation from the lifted space back to the original space. For this, we linearize the output mapping with first order taylor expansion. 
+For the purpose of this work we experimented with linearization. at two different points: linearization at the previous target and linearization at the current state estimate.
+\begin{subequations}
+  \label{eq:linearization}
+  \begin{align}
+    y_k &= h(z_k) \approx h\!\left(\bar{z}(t-T_\text{s})\right) + J_{\bar{z}(t-T_\text{s})}\!\left(z_k - \bar{z}(t-T_\text{s})\right), \label{eq:linearization:target} \\
+    y_k &= h(z_k) \approx h\!\left(\hat{z}(t)\right) + J_{\hat{z}(t)}\!\left(z_k - \hat{z}(t)\right), \label{eq:linearization:state}
+  \end{align}
+\end{subequations}
+where $h : \mathbb{R}^{n_z} \to \mathbb{R}^{n_y}$ is the nonlinear output mapping; $\bar{z}(t-T_\text{s})$ is the steady-state lifted state computed by the target optimizer at the previous sampling instant; $J_{\bar{z}(t-T_\text{s})}$ and $J_{\hat{z}(t)}$ are the Jacobians of $h$ evaluated at $\bar{z}(t-T_\text{s})$ and $\hat{z}(t)$, respectively.
 
 \subsection{Target Optimization}
 
@@ -315,6 +382,8 @@ This allows us to use and tune our problem using matrix \(\ui{Q}{y}\), which is 
 This is a significant change from the standard Koopman MPC, where the objective function is defined in the original space. 
 
 \subsection{Closed-Loop Control Structure}
+
+\subsection{State Estimation - Time Varying Kalman Filter}
 
 \section{Block Diagonal Deep Koopman Transformation}
 \todo{split this section into theory and simulation evaluation, bevare notation conflict zbar}

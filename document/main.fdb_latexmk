@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1776693443 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" "main.pdf" "main" 1776693445 0
-  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" 1776693438 38922 11e710ccaedf06ddd900b74c201ea44c ""
+["pdflatex"] 1779975044 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" "main.pdf" "main" 1779975046 0
+  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" 1779975042 45504 ad50134c73f2b40292096575a8cadb44 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/jknappen/ec/tcrm0600.tfm" 1136768653 1536 12e8c510d3e158fdd0e9a42e75118bd9 ""
@@ -272,10 +272,10 @@
   "figures/PU.png" 1762158012 2519716 9335d2b30dae44d552a2e94370ddab99 ""
   "figures/close_loop.pdf" 1744223130 16786 b1610c0819bf5ea4d4c46e19340bf684 ""
   "figures/scheme_heat_exchanger.pdf" 1762158028 18203 0a561d44abc583b23ed1f00f1953d251 ""
-  "main.aux" 1776693445 12628 01527e46b35637f079ad0f2c88ac46b0 "pdflatex"
-  "main.out" 1776693445 5682 fadb43de5a7f0044190fda75f8d5ac48 "pdflatex"
-  "main.spl" 1776693444 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "main.tex" 1776693438 38922 11e710ccaedf06ddd900b74c201ea44c ""
+  "main.aux" 1779975046 12938 634e9f5081e1b8299b692603ee9f614d "pdflatex"
+  "main.out" 1779975046 5041 2db49927e3f1d9eeef5c51ad2aaaa9a8 "pdflatex"
+  "main.spl" 1779975044 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "main.tex" 1779975042 45504 ad50134c73f2b40292096575a8cadb44 ""
   (generated)
   "main.aux"
   "main.log"

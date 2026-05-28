@@ -49,15 +49,18 @@ def load_model():
     Returns problem object with loaded weights.
     """
     # Model parameters (must match training configuration)
-    nz = 24  # latent state dimension
-    ny = 2   # output dimension (T1, T2, T4)
-    nu = 2   # input dimension (u1, u2, u3)
-    nsteps = 80  # prediction horizon
-    
-    # Network architecture (must match training)
+# model parameters
+    nz = 18 #35
+    ny = 2
+    nu = 2
+
+    nsteps = 60   # number of prediction horizon steps in the loss function
+    bs = 80         # batch size
+
     cons = 1
     layers = [6*cons,12*cons,18*cons,24*cons]
     layers_dec  = [24*cons,18*cons,12*cons,6*cons]
+
     matrix_C = False
     
     global problem, f_u, K, scaler, scalerU
