@@ -23,9 +23,9 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Koopman Operator}{2}{subsection.2.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {3}Koopman MPC with Offset-Free}{3}{section.3}\protected@file@percent }
 \newlabel{sec:easy-mpc}{{3}{3}{Koopman MPC with Offset-Free}{section.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Closed-loop control structure.{{\color  {red} TODO: prerobiť tak aby znormalizoval fonty a haty, rozdeliť d a z }} \relax }}{3}{figure.caption.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Basic closed-loop control structure.\relax }}{3}{figure.caption.1}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{fig:close_loop}{{1}{3}{Closed-loop control structure.\todo {prerobiť tak aby znormalizoval fonty a haty, rozdeliť d a z}\relax }{figure.caption.1}{}}
+\newlabel{fig:close_loop}{{1}{3}{Basic closed-loop control structure.\relax }{figure.caption.1}{}}
 \newlabel{eq:target:opt}{{3}{3}{Koopman MPC with Offset-Free}{equation.3.3}{}}
 \newlabel{eq:target:opt:obj}{{3a}{4}{Koopman MPC with Offset-Free}{equation.3.1}{}}
 \newlabel{eq:target:opt:z}{{3b}{4}{Koopman MPC with Offset-Free}{equation.3.2}{}}
@@ -64,60 +64,52 @@
 \newlabel{eq:cs:mpc:ycon}{{7f}{6}{MPC}{equation.4.6}{}}
 \newlabel{eq:cs:mpc:init}{{7g}{6}{MPC}{equation.4.7}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Closed-Loop Control Structure}{7}{subsection.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}State Estimation - Time Varying Kalman Filter}{7}{subsection.4.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Block Diagonal Deep Koopman Transformation}{7}{section.5}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Comparison of structure of problem to solver time and control performance.\relax }}{8}{table.caption.2}\protected@file@percent }
-\newlabel{tab:block-diagonal}{{1}{8}{Comparison of structure of problem to solver time and control performance.\relax }{table.caption.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Simulation Setup}{8}{section.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}Simulation Results}{8}{section.7}\protected@file@percent }
-\newlabel{sec:Results}{{7}{8}{Simulation Results}{section.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Output mappings for target and prediction}{8}{subsection.7.1}\protected@file@percent }
-\newlabel{eq:target-mappings}{{12}{8}{Output mappings for target and prediction}{equation.7.12}{}}
-\newlabel{eq:dyn-mappings}{{13}{9}{Output mappings for target and prediction}{equation.7.13}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Simulation Results for Two Tanks System}{9}{subsection.7.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Simulation setups matrix, with Qy much higher Qu; Qy = diag(5) Qu = diag(0.1). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). Fill cells with the identifier/value for each tested combination. NMPC benchmark is 100.\relax }}{9}{table.caption.3}\protected@file@percent }
-\newlabel{tab:setups-matrix-tanks-1}{{2}{9}{Simulation setups matrix, with Qy much higher Qu; Qy = diag(5) Qu = diag(0.1). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). Fill cells with the identifier/value for each tested combination. NMPC benchmark is 100.\relax }{table.caption.3}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Simulation setups matrix, with Qy and Qu with equal diagonal values (\(5\)). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is 100.\relax }}{9}{table.caption.4}\protected@file@percent }
-\newlabel{tab:setups-matrix-tanks-2}{{3}{9}{Simulation setups matrix, with Qy and Qu with equal diagonal values (\(5\)). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is 100.\relax }{table.caption.4}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Simulation setups matrix, with Qy much lower Qu; Qy = diag(0.1) Qu = diag(5). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is 100.\relax }}{10}{table.caption.5}\protected@file@percent }
-\newlabel{tab:setups-matrix-tanks-3}{{4}{10}{Simulation setups matrix, with Qy much lower Qu; Qy = diag(0.1) Qu = diag(5). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is 100.\relax }{table.caption.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Simulation Results for Two Reactor System}{10}{subsection.7.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Two-reactor CSTR: previous vs.\ updated objectives}}{10}{table.caption.6}\protected@file@percent }
-\newlabel{tab:setups-matrix-reactor-1}{{5}{10}{Two-reactor CSTR: previous vs.\ updated objectives}{table.caption.6}{}}
-\newlabel{tab:setups-matrix-reactor-2}{{5}{10}{Two-reactor CSTR: previous vs.\ updated objectives}{table.caption.6}{}}
-\newlabel{tab:setups-matrix-reactor-3}{{5}{10}{Two-reactor CSTR: previous vs.\ updated objectives}{table.caption.6}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {8}Pasteurization Unit: Experimental Device}{11}{section.8}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Pasteurization unit experimental apparatus.\relax }}{11}{figure.caption.7}\protected@file@percent }
-\newlabel{fig:PU}{{2}{11}{Pasteurization unit experimental apparatus.\relax }{figure.caption.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}System Configuration}{11}{subsection.8.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Schematic representation of the heat exchanger configuration.\relax }}{12}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:scheme_heat_exchanger}{{3}{12}{Schematic representation of the heat exchanger configuration.\relax }{figure.caption.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Control Configuration}{13}{subsection.8.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}Data Acquisition and Control Platform}{13}{subsection.8.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {9}Experimental Results}{13}{section.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {10}Discussion}{13}{section.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {11}Conclusion}{13}{section.11}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Closed-loop control with nonlinear output mapping with linearization at previous target\relax }}{7}{algorithm.1}\protected@file@percent }
+\newlabel{alg:closed-loop}{{1}{7}{Closed-loop control with nonlinear output mapping with linearization at previous target\relax }{algorithm.1}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces Closed-loop control with nonlinear output mapping (linearization at current state estimate)\relax }}{8}{algorithm.2}\protected@file@percent }
+\newlabel{alg:closed-loop-state}{{2}{8}{Closed-loop control with nonlinear output mapping (linearization at current state estimate)\relax }{algorithm.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}State Estimation - Time Varying Kalman Filter}{8}{subsection.4.5}\protected@file@percent }
+\newlabel{sec:tvkf}{{4.5}{8}{State Estimation - Time Varying Kalman Filter}{subsection.4.5}{}}
+\newlabel{eq:tvkf:aug}{{9}{8}{State Estimation - Time Varying Kalman Filter}{equation.4.9}{}}
+\newlabel{eq:tvkf:meas}{{10}{8}{State Estimation - Time Varying Kalman Filter}{equation.4.10}{}}
+\newlabel{eq:tvkf:predict}{{11}{9}{State Estimation - Time Varying Kalman Filter}{equation.4.11}{}}
+\newlabel{eq:tvkf:predict:z}{{11a}{9}{State Estimation - Time Varying Kalman Filter}{equation.4.1}{}}
+\newlabel{eq:tvkf:predict:P}{{11b}{9}{State Estimation - Time Varying Kalman Filter}{equation.4.2}{}}
+\newlabel{eq:tvkf:update}{{12}{9}{State Estimation - Time Varying Kalman Filter}{equation.4.12}{}}
+\newlabel{eq:tvkf:update:S}{{12a}{9}{State Estimation - Time Varying Kalman Filter}{equation.4.1}{}}
+\newlabel{eq:tvkf:update:K}{{12b}{9}{State Estimation - Time Varying Kalman Filter}{equation.4.2}{}}
+\newlabel{eq:tvkf:update:z}{{12c}{9}{State Estimation - Time Varying Kalman Filter}{equation.4.3}{}}
+\newlabel{eq:tvkf:update:P}{{12d}{9}{State Estimation - Time Varying Kalman Filter}{equation.4.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Block Diagonal Deep Koopman Transformation}{9}{subsection.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Identification}{10}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Control Results}{10}{section.6}\protected@file@percent }
+\newlabel{sec:Results}{{6}{10}{Control Results}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}The effect of block-diagonal transformation}{10}{subsection.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Comparison of structure of problem to solver time and control performance.\relax }}{10}{table.caption.2}\protected@file@percent }
+\newlabel{tab:block-diagonal}{{1}{10}{Comparison of structure of problem to solver time and control performance.\relax }{table.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Simulation setups}{11}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Simulation Results for Two Reactor System}{11}{subsection.6.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Two-reactor CSTR: previous vs.\ updated objectives}}{11}{table.caption.3}\protected@file@percent }
+\newlabel{tab:setups-matrix-reactor-1}{{2}{11}{Two-reactor CSTR: previous vs.\ updated objectives}{table.caption.3}{}}
+\newlabel{tab:setups-matrix-reactor-2}{{2}{11}{Two-reactor CSTR: previous vs.\ updated objectives}{table.caption.3}{}}
+\newlabel{tab:setups-matrix-reactor-3}{{2}{11}{Two-reactor CSTR: previous vs.\ updated objectives}{table.caption.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Discussion}{11}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{11}{section.8}\protected@file@percent }
 \@writefile{toc}{\let\numberline\tmptocnumberline}
-\@writefile{toc}{\contentsline {section}{\numberline {Appendix \nobreakspace  {}A}System Models}{13}{appendix.A}\protected@file@percent }
-\newlabel{app:models}{{Appendix \nobreakspace  {}A}{13}{System Models}{appendix.A}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {Appendix \nobreakspace  {}A.1}Two Tanks System}{14}{subsection.A.1}\protected@file@percent }
-\newlabel{eq:two-tanks}{{A.1}{14}{Two Tanks System}{equation.A.1}{}}
-\newlabel{eq:q12}{{A.2}{14}{Two Tanks System}{equation.A.2}{}}
-\newlabel{eq:qout}{{A.3}{14}{Two Tanks System}{equation.A.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {Appendix \nobreakspace  {}A.2}Two Reactor System}{14}{subsection.A.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {Appendix \nobreakspace  {}A.2.1}Chemical Reactions}{14}{subsubsection.A.2.1}\protected@file@percent }
-\newlabel{eq:rxn1}{{A.5}{14}{Chemical Reactions}{equation.A.5}{}}
-\newlabel{eq:rxn2}{{A.6}{14}{Chemical Reactions}{equation.A.6}{}}
-\newlabel{eq:rxn3}{{A.7}{14}{Chemical Reactions}{equation.A.7}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {A.6}{\ignorespaces Two-tank system parameters and operational constraints.\relax }}{15}{table.caption.9}\protected@file@percent }
-\newlabel{tab:two-tanks-params}{{A.6}{15}{Two-tank system parameters and operational constraints.\relax }{table.caption.9}{}}
-\newlabel{eq:arrhenius}{{A.8}{15}{Chemical Reactions}{equation.A.8}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {Appendix \nobreakspace  {}A.2.2}Dynamic Model}{15}{subsubsection.A.2.2}\protected@file@percent }
-\newlabel{eq:cstr-series}{{A.11}{16}{Dynamic Model}{equation.A.11}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {A.7}{\ignorespaces CSTR series physical and thermodynamic parameters.\relax }}{17}{table.caption.10}\protected@file@percent }
-\newlabel{tab:cstr-physical}{{A.7}{17}{CSTR series physical and thermodynamic parameters.\relax }{table.caption.10}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {A.8}{\ignorespaces Arrhenius kinetic parameters for reactions R1--R3.\relax }}{17}{table.caption.11}\protected@file@percent }
-\newlabel{tab:cstr-kinetics}{{A.8}{17}{Arrhenius kinetic parameters for reactions R1--R3.\relax }{table.caption.11}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {A.9}{\ignorespaces CSTR series operational constraints and initial conditions.\relax }}{17}{table.caption.12}\protected@file@percent }
-\newlabel{tab:cstr-constraints}{{A.9}{17}{CSTR series operational constraints and initial conditions.\relax }{table.caption.12}{}}
-\gdef \@abspage@last{18}
+\@writefile{toc}{\contentsline {section}{\numberline {Appendix \nobreakspace  {}A}System Models}{12}{appendix.A}\protected@file@percent }
+\newlabel{app:models}{{Appendix \nobreakspace  {}A}{12}{System Models}{appendix.A}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {Appendix \nobreakspace  {}A.1}Two Reactor System}{12}{subsection.A.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {Appendix \nobreakspace  {}A.1.1}Chemical Reactions}{12}{subsubsection.A.1.1}\protected@file@percent }
+\newlabel{eq:rxn1}{{A.1}{12}{Chemical Reactions}{equation.A.1}{}}
+\newlabel{eq:rxn2}{{A.2}{12}{Chemical Reactions}{equation.A.2}{}}
+\newlabel{eq:rxn3}{{A.3}{12}{Chemical Reactions}{equation.A.3}{}}
+\newlabel{eq:arrhenius}{{A.4}{12}{Chemical Reactions}{equation.A.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {Appendix \nobreakspace  {}A.1.2}Dynamic Model}{12}{subsubsection.A.1.2}\protected@file@percent }
+\newlabel{eq:cstr-series}{{A.7}{13}{Dynamic Model}{equation.A.7}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {A.3}{\ignorespaces CSTR series physical and thermodynamic parameters.\relax }}{14}{table.caption.4}\protected@file@percent }
+\newlabel{tab:cstr-physical}{{A.3}{14}{CSTR series physical and thermodynamic parameters.\relax }{table.caption.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {A.4}{\ignorespaces Arrhenius kinetic parameters for reactions R1--R3.\relax }}{14}{table.caption.5}\protected@file@percent }
+\newlabel{tab:cstr-kinetics}{{A.4}{14}{Arrhenius kinetic parameters for reactions R1--R3.\relax }{table.caption.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {A.5}{\ignorespaces CSTR series operational constraints and initial conditions.\relax }}{14}{table.caption.6}\protected@file@percent }
+\newlabel{tab:cstr-constraints}{{A.5}{14}{CSTR series operational constraints and initial conditions.\relax }{table.caption.6}{}}
+\gdef \@abspage@last{15}

@@ -26,6 +26,7 @@
 \usepackage{caption}
 %\usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{mathtools}
 \usepackage{siunitx}
 \usepackage{subfigure}
@@ -42,6 +43,9 @@
 \usepackage{float}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
 
 \DeclareMathOperator{\argmin}{arg\;min}
 \DeclareMathOperator{\vol}{vol}
@@ -272,7 +276,11 @@ The koopman operator theory was introduced by \todo{cite} and further popularize
 
 Over the years many approximations of the koopman operator from the data were proposed, starting with simple DMD, extended to the EDMD and recently the neural networks were used to best approximate the lifting functions so the system behaves linearly. The algorithms were as well developed not only for autonomous systems but for the systems with control as well \todo{cite and elaborate}. Koopman operator in the MPC was introduced by \todo{cite Korda}, and in recent years almost every kind of MPC was transfor to accept some kind of Koopman Operator, mostly represented as an LTI system in the state space form. The offset free wersion is no exception, in the work of \todo{Zotero, kukni papere, prosím ešte aj naskenuj ďalšie}.
 
-For the purpose of this work we are using the DeepKoopman Approximation introduced by \todo{cite, Lusch}, transformed for the nonautonomous system. We use two kinds of approximations. Firstly the LTI approximation and secondly the approximation, where only the lifted system evolves linearly, but its projection is nonlinear (as it should be from the definition of Koopman operator). The architectures of those systems can be seen below. \todo{images}
+For the purpose of this work we are using the DeepKoopman Approximation introduced by \todo{cite, Lusch}, transformed for the nonautonomous system. We use two kinds of approximations. Firstly the LTI approximation and secondly the approximation, where only the lifted system evolves linearly, but its projection is nonlinear (as it should be from the definition of Koopman operator). 
+\begin{remark}
+  For the 
+\end{remark}
+The architectures of those systems can be seen below. \todo{images}
 
 \section{Koopman MPC with Offset-Free}
 \label{sec:easy-mpc}
@@ -282,7 +290,7 @@ As we use the LTI approximation of Koopman operator, we can use the standard MPC
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/close_loop.pdf}
-  \caption{Closed-loop control structure.\todo{prerobiť tak aby znormalizoval fonty a haty, rozdeliť d a z}}
+  \caption{Basic closed-loop control structure.}
   \label{fig:close_loop}
 \end{figure}
 
@@ -300,6 +308,10 @@ The target optimization problem computes the steady-state targets $\bar{u}, \bar
   \end{align}
 \end{subequations}
 where $\bar{u} \in \mathbb{R}^{n_u}$, $\bar{z} \in \mathbb{R}^{n_z}$, and $\bar{y} \in \mathbb{R}^{n_y}$ are the steady-state input, lifted state, and output, respectively; $Q_\text{y} \succ 0$ is the output tracking weight matrix; $A \in \mathbb{R}^{n_z \times n_z}$, $B \in \mathbb{R}^{n_z \times n_u}$, $C \in \mathbb{R}^{n_y \times n_z}$ are the state-space matrices of the LTI Koopman model; $d = \hat{d}(t) \in \mathbb{R}^{n_y}$ is the additive output disturbance estimate provided by the Kalman filter; $y_\text{ref} = y_\text{sp}(t)$ is the output setpoint; and $u_{\min}, u_{\max}$, $y_{\min}, y_{\max}$ are the input and output constraint bounds.
+
+\begin{remark}
+  For this 
+\end{remark}
 
 Given the steady-state target $(\bar{u}, \bar{z}, \bar{y})$, the MPC problem is solved at each sampling instant to compute the optimal input sequence over the horizon $N$:
 
@@ -366,7 +378,7 @@ The proposed MPC problem is formulated as:
   \begin{align}
     \min_{u_0, \ldots, u_{N-1}} \; & \; \sum_{k=0}^{N-1} (z_k - \bar{z})^\intercal Q_\text{z} (z_k - \bar{z}) + \sum_{k=0}^{N-1} \Delta u_k^\intercal Q_\text{u} \Delta u_k, \label{eq:cs:mpc:obj} \\
     \text{s.t.}\;\;\;\; & \; z_{k+1} = A z_k + B u_k, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:cs:mpc:z} \\
-    & \; y_k = H(z_0) z_k + h(z_0) - H(z_0)z_0 + d, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:cs:mpc:y} \\
+    & \; y_k = H(\ui{z}{LP}) z_k + h(\ui{z}{LP}) - H(\ui{z}{LP})\ui{z}{LP} + d, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:cs:mpc:y} \\
     & \; \Delta u_k = u_k - u_{k-1}, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:cs:mpc:du} \\
     & \; u_{\min} \leq u_k \leq u_{\max}, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:cs:mpc:u} \\
     & \; y_{\min} \leq y_k \leq y_{\max}, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:cs:mpc:ycon} \\
@@ -383,10 +395,110 @@ This is a significant change from the standard Koopman MPC, where the objective 
 
 \subsection{Closed-Loop Control Structure}
 
-\subsection{State Estimation - Time Varying Kalman Filter}
+The close loop structure is similar to the previous with the few tweaks. There is an addition of the linearization block. Also there is a time varying Kalman filter as an observer and the optimization problems have a different formulation.
 
-\section{Block Diagonal Deep Koopman Transformation}
-\todo{split this section into theory and simulation evaluation, bevare notation conflict zbar}
+For the linearization at previous target the algorithm is:
+\begin{algorithm}[H]
+  \caption{Closed-loop control with nonlinear output mapping with linearization at previous target}
+  \label{alg:closed-loop}
+  \begin{algorithmic}[1]
+    \REQUIRE Koopman lifting function $g(\cdot)$, initial measurement $y(0)$
+    \STATE \textbf{Initialization:} $\hat{z}(0) \leftarrow g(y(0))$, $\hat{d}(0) \leftarrow 0$; solve~\eqref{eq:cs:target} with $\ui{z}{LP} = \hat{z}(0)$ and $\hat{d}(0)$ to obtain $\bar{z}_{-1}$
+    \LOOP
+      \STATE \textbf{Measurement:} Obtain $y(t)$ from the plant
+      \STATE \textbf{Linearization:} Compute $H(\bar{z}_{-1})$ and $h(\bar{z}_{-1})$ — output mapping linearized at $\ui{z}{LP} = \bar{z}_{-1}$
+      \STATE \textbf{Observer:} Run the time-varying Kalman filter with $y(t)$ and $u(t-T_\text{s})$ to obtain updated estimates $\hat{z}(t)$ and $\hat{d}(t)$
+      \STATE \textbf{Target estimation:} Solve~\eqref{eq:cs:target} with $\hat{d}(t)$ to obtain $\bar{z}(t)$, $\bar{u}(t)$, $\bar{y}(t)$; set $\bar{z}_{-1} \leftarrow \bar{z}(t)$
+      \STATE \textbf{MPC:} Solve~\eqref{eq:cs:mpc} with $\hat{z}(t)$, $\hat{d}(t)$, $\bar{z}(t)$ to obtain the optimal first input $u_0^*$
+      \STATE \textbf{Apply input:} Apply $u(t) = u_0^*$ to the plant
+    \ENDLOOP
+  \end{algorithmic}
+\end{algorithm}
+where $g : \mathbb{R}^{n_y} \to \mathbb{R}^{n_z}$ is the Koopman lifting function that provides the initial lifted-state estimate, and $\hat{d}(0) = 0$ initialises the disturbance estimate at zero.
+
+For the linearization at current estimate, it is:
+
+\begin{algorithm}[H]
+  \caption{Closed-loop control with nonlinear output mapping (linearization at current state estimate)}
+  \label{alg:closed-loop-state}
+  \begin{algorithmic}[1]
+    \REQUIRE Koopman lifting function $g(\cdot)$, initial measurement $y(0)$
+    \STATE \textbf{Initialization:} $\hat{z}(0) \leftarrow g(y(0))$, $\hat{d}(0) \leftarrow 0$%; solve~\eqref{eq:cs:target} with $\ui{z}{LP} = \hat{z}(0)$ and $\hat{d}(0)$ to obtain $\bar{z}_{-1}$
+    \LOOP
+      \STATE \textbf{Measurement:} Obtain $y(t)$ from the plant
+      \STATE \textbf{Observer:} Run the time-varying Kalman filter with $y(t)$ and $u(t-T_\text{s})$ to obtain updated estimates $\hat{z}(t)$ and $\hat{d}(t)$
+      \STATE \textbf{Linearization:} Compute $H(\hat{z}(t))$ and $h(\hat{z}(t))$ — output mapping linearized at $\ui{z}{LP} = \hat{z}(t)$ \todo{when this is hapenning?}
+      \STATE \textbf{Target estimation:} Solve~\eqref{eq:cs:target} with $\hat{d}(t)$ to obtain $\bar{z}(t)$, $\bar{u}(t)$, $\bar{y}(t)$; set $\bar{z}_{-1} \leftarrow \bar{z}(t)$
+      \STATE \textbf{MPC:} Solve~\eqref{eq:cs:mpc} with $\hat{z}(t)$, $\hat{d}(t)$, $\bar{z}(t)$ to obtain the optimal first input $u_0^*$
+      \STATE \textbf{Apply input:} Apply $u(t) = u_0^*$ to the plant
+    \ENDLOOP
+  \end{algorithmic}
+\end{algorithm}
+
+\subsection{State Estimation - Time Varying Kalman Filter}
+\label{sec:tvkf}
+
+The observer estimates the augmented state $\tilde{z}_k = [z_k^\intercal,\; d_k^\intercal]^\intercal$ from the
+noisy output $y_k$ and the applied input $u_k$.
+The augmented linear dynamics are identical to~\eqref{eq:of:ss} with $x_k$ replaced by the
+lifted Koopman state $z_k$:
+\begin{equation}
+  \label{eq:tvkf:aug}
+  \tilde{z}_{k+1} = \tilde{A}\,\tilde{z}_k + \tilde{B}\,u_k,
+  \qquad
+  \tilde{A} =
+  \begin{bmatrix} A & B_d \\ 0 & I \end{bmatrix},
+  \quad
+  \tilde{B} =
+  \begin{bmatrix} B \\ 0 \end{bmatrix},
+\end{equation}
+where $\tilde{z}_k \in \mathbb{R}^{n_z + n_d}$ is the augmented state stacking the lifted Koopman state
+$z_k \in \mathbb{R}^{n_z}$ and the output disturbance estimate $d_k \in \mathbb{R}^{n_d}$, $\tilde{A} \in \mathbb{R}^{(n_z+n_d)\times(n_z+n_d)}$ and $\tilde{B} \in \mathbb{R}^{(n_z+n_d)\times n_u}$ are the augmented system matrices.
+
+Because the output map is nonlinear, the measurement equation is re-linearised at each
+sampling instant around a chosen linearisation point $\ui{z}{LP}$:
+\begin{equation}
+  \label{eq:tvkf:meas}
+  y_k \approx \tilde{C}_k\,\tilde{z}_k + c_k,
+  \qquad
+  \tilde{C}_k = \bigl[H(\ui{z}{LP}),\; C_d\bigr],
+  \quad
+  c_k = h(\ui{z}{LP}) - H(\ui{z}{LP})\,\ui{z}{LP},
+\end{equation}
+where $\tilde{C}_k \in \mathbb{R}^{n_y \times (n_z + n_d)}$ is the time-varying output matrix formed by
+stacking the Jacobian $H(\ui{z}{LP}) \in \mathbb{R}^{n_y \times n_z}$ of $h$ at the linearisation point
+and the disturbance output matrix $C_d$, and $c_k \in \mathbb{R}^{n_y}$ is the linearisation offset.
+
+With the linear prediction model~\eqref{eq:tvkf:aug} and the time-varying output
+matrix~\eqref{eq:tvkf:meas}, the filter runs the standard predict–update recursion at each
+step $k$:
+
+\noindent\textbf{Predict:}
+\begin{subequations}
+  \label{eq:tvkf:predict}
+  \begin{align}
+    \hat{\tilde{z}}_{k|k-1} &= \tilde{A}\,\hat{\tilde{z}}_{k-1|k-1} + \tilde{B}\,u_{k-1}, \label{eq:tvkf:predict:z} \\
+    P_{k|k-1} &= \tilde{A}\,P_{k-1|k-1}\,\tilde{A}^\intercal + Q, \label{eq:tvkf:predict:P}
+  \end{align}
+\end{subequations}
+where $\hat{\tilde{z}}_{k|k-1} \in \mathbb{R}^{n_z+n_d}$ is the prior augmented-state estimate,
+$P_{k|k-1} \in \mathbb{R}^{(n_z+n_d)\times(n_z+n_d)}$ is the prior error covariance, and
+$Q \succeq 0$ is the process noise covariance matrix.
+
+\noindent\textbf{Update:}
+\begin{subequations}
+  \label{eq:tvkf:update}
+  \begin{align}
+    S_k &= \tilde{C}_k\,P_{k|k-1}\,\tilde{C}_k^\intercal + R, \label{eq:tvkf:update:S} \\
+    K_k &= P_{k|k-1}\,\tilde{C}_k^\intercal\,S_k^{-1}, \label{eq:tvkf:update:K} \\
+    \hat{\tilde{z}}_{k|k} &= \hat{\tilde{z}}_{k|k-1} + K_k\!\left(y_k - \tilde{C}_k\,\hat{\tilde{z}}_{k|k-1} - c_k\right), \label{eq:tvkf:update:z} \\
+    P_{k|k} &= \left(I - K_k\,\tilde{C}_k\right)P_{k|k-1}, \label{eq:tvkf:update:P}
+  \end{align}
+\end{subequations}
+where $S_k \in \mathbb{R}^{n_y \times n_y}$ is the innovation covariance, $K_k \in \mathbb{R}^{(n_z+n_d)\times n_y}$ is the Kalman gain, $\hat{\tilde{z}}_{k|k}$ is the posterior augmented-state estimate whose upper $n_z$ entries give $\hat{z}(t)$ and lower $n_d$ entries give $\hat{d}(t)$, $P_{k|k}$ is the posterior error covariance, and $R \succ 0$ is the measurement noise covariance matrix.
+
+\subsection{Block Diagonal Deep Koopman Transformation}
+\todo{bevare notation conflict zbar}
 During our work, we encounter a several problems with the suboptimal or infeasible solutions using Koopman MPC using Gurobi solver. For the enhancement of the performaance, we are proposing a block diagonal structure of the matrix \(A\). This transformation can be done after obtaining the Koopman operator, with finding the transformation matrix \(T\) that transforms the Koopman operator to the block diagonal form:
 \begin{equation}
   \bar{A} = T^{-1} A T.
@@ -399,6 +511,20 @@ When computing the Jackobian, we are transforming the original Jackobian \(H(z_k
 \begin{equation}
   \bar{H}(z_k) = H(z_k) T = H(T\bar{z}_k) T.
 \end{equation}
+
+For fair comparison, this transformation is applied to every identified model through this work, not only for Koopman models. The effects of this transformation are discussed in the result section of this work.
+
+\section{Identification}
+
+\todo{Specific parameters for each model that was identified and identification error comparison}
+
+\section{Control Results}
+\label{sec:Results}
+
+In the following, we make precise the output mappings sketched in the notes and list the combinations (setups) evaluated in the simulations.
+
+\subsection{The effect of block-diagonal transformation}
+
 After this transformation we are able to enhace the performance in optimization as can be seen in Table~\ref{tab:block-diagonal}. This table is done using the formulation of Koopman MPC which can be seen in Sec.~\ref{sec:easy-mpc}. The table shows the decrease in a computational times. Also with this formulation we are able to obtain optimal solution \(100\%\) time during simulation. Contrary, the full Koopman MPC formulation is able to obtain optimal solution only \(26.7\%\) of the time with the rest of the time giving warning, that the solution is suboptimal. We can see also increase in a control performance, which is measured by the objective function value, which is in optimal case arounf \(6\%\) lower. Also the settling time for both levels is lower. 
 \begin{table}[h]
   \centering
@@ -414,95 +540,89 @@ After this transformation we are able to enhace the performance in optimization 
   \end{tabular}
 \end{table}
 
+
 The second option how to obtain the block diagonal structure is to learn the Koopman operator directly in the block diagonal form. This can be done by limiting the number of learnable parameters in a Koopman matrix during training to those that are in the block diagonal form. This also speeds the training as less parameters are learned.
 
 To obtain an optimal performance, which is neccessary for the real time control, we are proposing to use the block diagonal structure of the Koopman operator. There is no neccessity to use the full Koopman operator, as the block diagonal structure is able to capture the same dynamics of the system and favors the optimization performance. The way this structure is obtained, during or after the training, is not important, as long as the Koopman operator is in the block diagonal form.
 
-\section{Simulation Setup}
 
-\section{Simulation Results}
-\label{sec:Results}
+\subsection{Simulation setups}
+% We consider three alternatives for computing the steady-state output corresponding to a candidate steady-state lifted state \(\bar z_k\) and disturbance estimate \(\hat d_k\):
+% \begin{subequations}
+%   \label{eq:target-mappings}
+%   \begin{align}
+%     \text{T1:}\quad & \bar y_k = C\,\bar z_k + \hat d_k, \\[-0.2em]
+%     \text{T2:}\quad & \bar y_k = h\!\left(\bar z_{k-1}\right) + J_{\bar z_{k-1}}\,\big(\bar z_k - \bar z_{k-1}\big) + \hat d_k, \\[-0.2em]
+%     \text{T3:}\quad & \bar y_k = h\!\left(\hat z_k\right) + J_{\hat z_k}\,\big(\bar z_k - \hat z_k\big) + \hat d_k.
+%   \end{align}
+% \end{subequations}
+% Here, \(h(\cdot)\) denotes the measurement/lifted-to-output map, and \(J_{z}\) its Jacobian evaluated at \(z\).
 
-In the following, we make precise the output mappings sketched in the notes and list the combinations (setups) evaluated in the simulations.
+% For dynamic prediction over the horizon, with disturbance held at the current estimate \(\hat d_k\), we use four alternatives for the output of a predicted lifted state \(z_{k+i}\):
+% \begin{subequations}
+%   \label{eq:dyn-mappings}
+%   \begin{align}
+%     \text{D1:}\quad & y_{k+i} = C\, z_{k+i} + \hat d_k, \\[-0.2em]
+%     \text{D2:}\quad & y_{k+i} = h\!\left(\bar z_{k-1}\right) + J_{\bar z_{k-1}}\,\big(\bar z_{k+i} - \bar z_{k-1}\big) + \hat d_k, \\[-0.2em]
+%     \text{D3:}\quad & y_{k+i} = h\!\left(\hat z_k\right) + J_{\hat z_k}\,\big(\bar z_{k+i} - \hat z_k\big) + \hat d_k, \\[-0.2em]
+%     \text{D4:}\quad & y_{k+i} = h\!\left(\bar z_k\right) + J_{\bar z_k}\,\big( z_{k+i} - \bar z_k\big) + \hat d_k.
+%   \end{align}
+% \end{subequations}
 
-\subsection{Output mappings for target and prediction}
+% \subsection{Simulation Results for Two Tanks System}
 
-We consider three alternatives for computing the steady-state output corresponding to a candidate steady-state lifted state \(\bar z_k\) and disturbance estimate \(\hat d_k\):
-\begin{subequations}
-  \label{eq:target-mappings}
-  \begin{align}
-    \text{T1:}\quad & \bar y_k = C\,\bar z_k + \hat d_k, \\[-0.2em]
-    \text{T2:}\quad & \bar y_k = h\!\left(\bar z_{k-1}\right) + J_{\bar z_{k-1}}\,\big(\bar z_k - \bar z_{k-1}\big) + \hat d_k, \\[-0.2em]
-    \text{T3:}\quad & \bar y_k = h\!\left(\hat z_k\right) + J_{\hat z_k}\,\big(\bar z_k - \hat z_k\big) + \hat d_k.
-  \end{align}
-\end{subequations}
-Here, \(h(\cdot)\) denotes the measurement/lifted-to-output map, and \(J_{z}\) its Jacobian evaluated at \(z\).
+% We index target mappings by T1--T3 and dynamic mappings by D1--D4 as in \eqref{eq:target-mappings}--\eqref{eq:dyn-mappings}. The simulation setups below pair one target mapping with one dynamic mapping:
 
-For dynamic prediction over the horizon, with disturbance held at the current estimate \(\hat d_k\), we use four alternatives for the output of a predicted lifted state \(z_{k+i}\):
-\begin{subequations}
-  \label{eq:dyn-mappings}
-  \begin{align}
-    \text{D1:}\quad & y_{k+i} = C\, z_{k+i} + \hat d_k, \\[-0.2em]
-    \text{D2:}\quad & y_{k+i} = h\!\left(\bar z_{k-1}\right) + J_{\bar z_{k-1}}\,\big(\bar z_{k+i} - \bar z_{k-1}\big) + \hat d_k, \\[-0.2em]
-    \text{D3:}\quad & y_{k+i} = h\!\left(\hat z_k\right) + J_{\hat z_k}\,\big(\bar z_{k+i} - \hat z_k\big) + \hat d_k, \\[-0.2em]
-    \text{D4:}\quad & y_{k+i} = h\!\left(\bar z_k\right) + J_{\bar z_k}\,\big( z_{k+i} - \bar z_k\big) + \hat d_k.
-  \end{align}
-\end{subequations}
+% \begin{table}[h]
+%   \centering
+%   \caption{Simulation setups matrix, with Qy much higher Qu; Qy = diag(5) Qu = diag(0.1). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). Fill cells with the identifier/value for each tested combination. NMPC benchmark is 100.}
+%   \label{tab:setups-matrix-tanks-1}
+%   \begin{tabular}{lcccc}
+%       \toprule
+%       & \multicolumn{4}{c}{DM} \\
+%       \cmidrule(lr){2-5}
+%       TM & D1 & D2 & D3 & D4 \\
+%       \midrule
+%       T1 & 124.19 & x & x & x \\
+%       T2 & x & 104.86 & 107.47 & 103.79 \\
+%       T3 & x & 105.34 & 108.11 & 103.89 \\
+%       \bottomrule
+%   \end{tabular}
+% \end{table}
 
-\subsection{Simulation Results for Two Tanks System}
+% \begin{table}[h]
+%   \centering
+%   \caption{Simulation setups matrix, with Qy and Qu with equal diagonal values (\(5\)). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is 100.}
+%   \label{tab:setups-matrix-tanks-2}
+%   \begin{tabular}{lcccc}
+%       \toprule
+%       & \multicolumn{4}{c}{DM} \\
+%       \cmidrule(lr){2-5}
+%       TM & D1 & D2 & D3 & D4 \\
+%       \midrule
+%       T1 & 112.90 & x & x & x \\
+%       T2 & x & 108.86 & 106.44 & 107.52 \\
+%       T3 & x & 106.24 & 108.94 & 105.33 \\
+%       \bottomrule
+%   \end{tabular}
+% \end{table}
 
-We index target mappings by T1--T3 and dynamic mappings by D1--D4 as in \eqref{eq:target-mappings}--\eqref{eq:dyn-mappings}. The simulation setups below pair one target mapping with one dynamic mapping:
-
-\begin{table}[h]
-  \centering
-  \caption{Simulation setups matrix, with Qy much higher Qu; Qy = diag(5) Qu = diag(0.1). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). Fill cells with the identifier/value for each tested combination. NMPC benchmark is 100.}
-  \label{tab:setups-matrix-tanks-1}
-  \begin{tabular}{lcccc}
-      \toprule
-      & \multicolumn{4}{c}{DM} \\
-      \cmidrule(lr){2-5}
-      TM & D1 & D2 & D3 & D4 \\
-      \midrule
-      T1 & 124.19 & x & x & x \\
-      T2 & x & 104.86 & 107.47 & 103.79 \\
-      T3 & x & 105.34 & 108.11 & 103.89 \\
-      \bottomrule
-  \end{tabular}
-\end{table}
-
-\begin{table}[h]
-  \centering
-  \caption{Simulation setups matrix, with Qy and Qu with equal diagonal values (\(5\)). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is 100.}
-  \label{tab:setups-matrix-tanks-2}
-  \begin{tabular}{lcccc}
-      \toprule
-      & \multicolumn{4}{c}{DM} \\
-      \cmidrule(lr){2-5}
-      TM & D1 & D2 & D3 & D4 \\
-      \midrule
-      T1 & 112.90 & x & x & x \\
-      T2 & x & 108.86 & 106.44 & 107.52 \\
-      T3 & x & 106.24 & 108.94 & 105.33 \\
-      \bottomrule
-  \end{tabular}
-\end{table}
-
-\begin{table}[h]
-  \centering
-  \caption{Simulation setups matrix, with Qy much lower Qu; Qy = diag(0.1) Qu = diag(5). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is 100.}
-  \label{tab:setups-matrix-tanks-3}
-  \begin{tabular}{lcccc}
-      \toprule
-      & \multicolumn{4}{c}{DM} \\
-      \cmidrule(lr){2-5}
-      TM & D1 & D2 & D3 & D4 \\
-      \midrule
-      T1 & 147.49 & x & x & x \\
-      T2 & x & 189.52 & 176.33 & 190.96 \\
-      T3 & x & 143.29 & 143.86 & 143.47 \\
-      \bottomrule
-  \end{tabular}
-\end{table}
+% \begin{table}[h]
+%   \centering
+%   \caption{Simulation setups matrix, with Qy much lower Qu; Qy = diag(0.1) Qu = diag(5). Columns: dynamic mappings (D1--D4). Rows: target mappings (T1--T3). NMPC benchmark is 100.}
+%   \label{tab:setups-matrix-tanks-3}
+%   \begin{tabular}{lcccc}
+%       \toprule
+%       & \multicolumn{4}{c}{DM} \\
+%       \cmidrule(lr){2-5}
+%       TM & D1 & D2 & D3 & D4 \\
+%       \midrule
+%       T1 & 147.49 & x & x & x \\
+%       T2 & x & 189.52 & 176.33 & 190.96 \\
+%       T3 & x & 143.29 & 143.86 & 143.47 \\
+%       \bottomrule
+%   \end{tabular}
+% \end{table}
 
 \subsection{Simulation Results for Two Reactor System}
 
@@ -643,58 +763,60 @@ We index target mappings by T1--T3 and dynamic mappings by D1--D4 as in \eqref{e
 %   \end{tabular}
 % \end{table}
 
-\newpage
+% \newpage
 
-\section{Pasteurization Unit: Experimental Device}
+% \section{Pasteurization Unit: Experimental Device}
 
-The experimental validation of the proposed control strategy is conducted on a laboratory-scale pasteurization unit, a thermal processing system designed for educational and research purposes. This apparatus, depicted in Figure~\ref{fig:PU}, represents a complex multivariable thermal system commonly encountered in food processing industries, where precise temperature regulation is crucial for product quality and safety.
+% The experimental validation of the proposed control strategy is conducted on a laboratory-scale pasteurization unit, a thermal processing system designed for educational and research purposes. This apparatus, depicted in Figure~\ref{fig:PU}, represents a complex multivariable thermal system commonly encountered in food processing industries, where precise temperature regulation is crucial for product quality and safety.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.95\linewidth]{figures/PU.png}
-  \caption{Pasteurization unit experimental apparatus.}
-  \label{fig:PU}
-\end{figure}
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.95\linewidth]{figures/PU.png}
+%   \caption{Pasteurization unit experimental apparatus.}
+%   \label{fig:PU}
+% \end{figure}
 
-\subsection{System Configuration}
+% \subsection{System Configuration}
 
-The pasteurization unit comprises a tubular heat exchanger configuration with counter-current flow arrangement, as illustrated schematically in Figure~\ref{fig:scheme_heat_exchanger}. The system consists of two primary fluid circuits: the product circuit and the heating medium circuit. The product fluid is pumped through a helical tube nested within a cylindrical shell, where it exchanges thermal energy with hot water circulating in the shell side.
+% The pasteurization unit comprises a tubular heat exchanger configuration with counter-current flow arrangement, as illustrated schematically in Figure~\ref{fig:scheme_heat_exchanger}. The system consists of two primary fluid circuits: the product circuit and the heating medium circuit. The product fluid is pumped through a helical tube nested within a cylindrical shell, where it exchanges thermal energy with hot water circulating in the shell side.
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.75\linewidth]{figures/scheme_heat_exchanger.pdf}
-  \caption{Schematic representation of the heat exchanger configuration.}
-  \label{fig:scheme_heat_exchanger}
-\end{figure}
+% \begin{figure}[H]
+%   \centering
+%   \includegraphics[width=0.75\linewidth]{figures/scheme_heat_exchanger.pdf}
+%   \caption{Schematic representation of the heat exchanger configuration.}
+%   \label{fig:scheme_heat_exchanger}
+% \end{figure}
 
-The unit features eight manipulated variables that can be adjusted for process control:
-\begin{itemize}
-    \item \texttt{Pump1}: Product feed flow rate control (\%)
-    \item \texttt{Pump2}: Heating medium circulation rate (\%)
-    \item \texttt{Heater}: Electric heater power for the heating medium (\%)
-    \item \texttt{DV}: Diversion valve position
-    \item \texttt{FSV}: Feed selection valve
-    \item \texttt{CWV}: Cooling water valve position
-    \item \texttt{TAFV}, \texttt{TBFV}: Tank flow control valves
-\end{itemize}
+% The unit features eight manipulated variables that can be adjusted for process control:
+% \begin{itemize}
+%     \item \texttt{Pump1}: Product feed flow rate control (\%)
+%     \item \texttt{Pump2}: Heating medium circulation rate (\%)
+%     \item \texttt{Heater}: Electric heater power for the heating medium (\%)
+%     \item \texttt{DV}: Diversion valve position
+%     \item \texttt{FSV}: Feed selection valve
+%     \item \texttt{CWV}: Cooling water valve position
+%     \item \texttt{TAFV}, \texttt{TBFV}: Tank flow control valves
+% \end{itemize}
 
-The system is instrumented with multiple sensors providing real-time measurements, including four temperature sensors (\texttt{T1}--\texttt{T4}) positioned at strategic locations along the product and heating circuits, a flow meter (\texttt{F1}) measuring product flow rate, a level sensor (\texttt{L1}) for tank monitoring, and additional auxiliary measurements for comprehensive process monitoring.
+% The system is instrumented with multiple sensors providing real-time measurements, including four temperature sensors (\texttt{T1}--\texttt{T4}) positioned at strategic locations along the product and heating circuits, a flow meter (\texttt{F1}) measuring product flow rate, a level sensor (\texttt{L1}) for tank monitoring, and additional auxiliary measurements for comprehensive process monitoring.
 
-\subsection{Control Configuration}
+% \subsection{Control Configuration}
 
-For the experimental implementation, the control objective focuses on regulating the outlet product temperature (\texttt{T4}) to track desired setpoint trajectories. The primary manipulated variable is the heating medium flow rate (\texttt{Pump2}), which directly influences the thermal energy transferred to the product stream. Additionally, a cascade control structure is employed for the heater, where the electric heater power is modulated to maintain a constant heating medium inlet temperature (\texttt{T2}), providing a stable thermal source. The product feed rate (\texttt{Pump1}) acts as a measurable disturbance, creating varying thermal loads that challenge the controller's disturbance rejection capabilities.
+% For the experimental implementation, the control objective focuses on regulating the outlet product temperature (\texttt{T4}) to track desired setpoint trajectories. The primary manipulated variable is the heating medium flow rate (\texttt{Pump2}), which directly influences the thermal energy transferred to the product stream. Additionally, a cascade control structure is employed for the heater, where the electric heater power is modulated to maintain a constant heating medium inlet temperature (\texttt{T2}), providing a stable thermal source. The product feed rate (\texttt{Pump1}) acts as a measurable disturbance, creating varying thermal loads that challenge the controller's disturbance rejection capabilities.
 
-The system exhibits typical characteristics of thermal processes, including significant time delays, nonlinear behavior due to temperature-dependent fluid properties, and strong coupling between flow rates and temperatures. These features make it an ideal testbed for evaluating advanced control strategies such as the proposed offset-free Koopman MPC framework.
+% The system exhibits typical characteristics of thermal processes, including significant time delays, nonlinear behavior due to temperature-dependent fluid properties, and strong coupling between flow rates and temperatures. These features make it an ideal testbed for evaluating advanced control strategies such as the proposed offset-free Koopman MPC framework.
 
-\subsection{Data Acquisition and Control Platform}
+% \subsection{Data Acquisition and Control Platform}
 
-The experimental apparatus is integrated with a distributed control system accessible through the ELab platform, which provides remote monitoring and control capabilities via a web-based SCADA interface. The control algorithms are implemented in MATLAB/Simulink environment with a sampling period of \SI{1}{\second}, enabling real-time control execution. All process variables are logged continuously for post-experiment analysis and performance evaluation.
+% The experimental apparatus is integrated with a distributed control system accessible through the ELab platform, which provides remote monitoring and control capabilities via a web-based SCADA interface. The control algorithms are implemented in MATLAB/Simulink environment with a sampling period of \SI{1}{\second}, enabling real-time control execution. All process variables are logged continuously for post-experiment analysis and performance evaluation.
 
 
-\section{Experimental Results}
+% \section{Experimental Results}
 
 \section{Discussion}
 \section{Conclusion}
+
+\newpage
 
 \appendix
 
@@ -703,50 +825,50 @@ The experimental apparatus is integrated with a distributed control system acces
 
 In this appendix, we provide detailed mathematical descriptions of the two benchmark nonlinear systems used to evaluate the proposed offset-free Koopman MPC schemes: a two-tank system with hydraulic flows and a two-reactor CSTR series with recycle and parallel reactions.
 
-\subsection{Two Tanks System}
+% \subsection{Two Tanks System}
 
-The two-tank system consists of two interconnected tanks with liquid heights \(h_1\) and \(h_2\). Each tank receives an inflow (control inputs \(u_1\) and \(u_2\), respectively), and liquid can flow between tanks and out of the system through gravity-driven mechanisms. The continuous-time nonlinear dynamics are described by:
-\begin{subequations}
-  \label{eq:two-tanks}
-  \begin{align}
-    \frac{dh_1}{dt} &= \frac{1}{A_1}\left(u_1 - q_{12}\right), \\
-    \frac{dh_2}{dt} &= \frac{1}{A_2}\left(u_2 + q_{12} - q_{\text{out}}\right),
-  \end{align}
-\end{subequations}
-where \(A_1\) and \(A_2\) are the cross-sectional areas of tanks 1 and 2, respectively. The inter-tank flow \(q_{12}\) and the outlet flow \(q_{\text{out}}\) follow nonlinear hydraulic relationships:
-\begin{align}
-  q_{12} &= k_1 \, \text{sgn}(h_1 - h_2) \, \sqrt{|h_1 - h_2|}, \label{eq:q12}\\
-  q_{\text{out}} &= k_2 \, \sqrt{h_2}, \label{eq:qout}
-\end{align}
-with \(k_1\) and \(k_2\) being flow coefficients. The outputs are the measured tank heights:
-\begin{equation}
-  y = \begin{bmatrix} h_1 \\ h_2 \end{bmatrix}.
-\end{equation}
+% The two-tank system consists of two interconnected tanks with liquid heights \(h_1\) and \(h_2\). Each tank receives an inflow (control inputs \(u_1\) and \(u_2\), respectively), and liquid can flow between tanks and out of the system through gravity-driven mechanisms. The continuous-time nonlinear dynamics are described by:
+% \begin{subequations}
+%   \label{eq:two-tanks}
+%   \begin{align}
+%     \frac{dh_1}{dt} &= \frac{1}{A_1}\left(u_1 - q_{12}\right), \\
+%     \frac{dh_2}{dt} &= \frac{1}{A_2}\left(u_2 + q_{12} - q_{\text{out}}\right),
+%   \end{align}
+% \end{subequations}
+% where \(A_1\) and \(A_2\) are the cross-sectional areas of tanks 1 and 2, respectively. The inter-tank flow \(q_{12}\) and the outlet flow \(q_{\text{out}}\) follow nonlinear hydraulic relationships:
+% \begin{align}
+%   q_{12} &= k_1 \, \text{sgn}(h_1 - h_2) \, \sqrt{|h_1 - h_2|}, \label{eq:q12}\\
+%   q_{\text{out}} &= k_2 \, \sqrt{h_2}, \label{eq:qout}
+% \end{align}
+% with \(k_1\) and \(k_2\) being flow coefficients. The outputs are the measured tank heights:
+% \begin{equation}
+%   y = \begin{bmatrix} h_1 \\ h_2 \end{bmatrix}.
+% \end{equation}
 
-The system is discretized with a sampling time \(T_s = 1\,\text{s}\) using a Runge--Kutta integration scheme. The physical parameters and operational constraints used in the simulations are summarized in Table~\ref{tab:two-tanks-params}.
+% The system is discretized with a sampling time \(T_s = 1\,\text{s}\) using a Runge--Kutta integration scheme. The physical parameters and operational constraints used in the simulations are summarized in Table~\ref{tab:two-tanks-params}.
 
-\begin{table}[h]
-  \centering
-  \caption{Two-tank system parameters and operational constraints.}
-  \label{tab:two-tanks-params}
-  \begin{tabular}{llc}
-    \toprule
-    \textbf{Parameter} & \textbf{Description} & \textbf{Value} \\
-    \midrule
-    \(A_1\) & Cross-sectional area of tank 1 & \(1.0\,\text{m}^2\) \\
-    \(A_2\) & Cross-sectional area of tank 2 & \(1.0\,\text{m}^2\) \\
-    \(k_1\) & Inter-tank flow coefficient & \(0.5\,\text{m}^{2.5}/\text{s}\) \\
-    \(k_2\) & Outlet flow coefficient & \(0.3\,\text{m}^{2.5}/\text{s}\) \\
-    \midrule
-    \(h_1^0\), \(h_2^0\) & Initial heights & \(0.5\,\text{m}\) \\
-    \(u_1^0\), \(u_2^0\) & Initial inflows & \(0.0705, 0.4759\,\text{m}^3/\text{s}\) \\
-    \midrule
-    \(u_1 \in\) & Inflow constraint (tank 1) & \([0.0, 0.5]\,\text{m}^3/\text{s}\) \\
-    \(u_2 \in\) & Inflow constraint (tank 2) & \([0.0, 1.0]\,\text{m}^3/\text{s}\) \\
-    \(T_s\) & Sampling time & \(1.0\,\text{s}\) \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+% \begin{table}[h]
+%   \centering
+%   \caption{Two-tank system parameters and operational constraints.}
+%   \label{tab:two-tanks-params}
+%   \begin{tabular}{llc}
+%     \toprule
+%     \textbf{Parameter} & \textbf{Description} & \textbf{Value} \\
+%     \midrule
+%     \(A_1\) & Cross-sectional area of tank 1 & \(1.0\,\text{m}^2\) \\
+%     \(A_2\) & Cross-sectional area of tank 2 & \(1.0\,\text{m}^2\) \\
+%     \(k_1\) & Inter-tank flow coefficient & \(0.5\,\text{m}^{2.5}/\text{s}\) \\
+%     \(k_2\) & Outlet flow coefficient & \(0.3\,\text{m}^{2.5}/\text{s}\) \\
+%     \midrule
+%     \(h_1^0\), \(h_2^0\) & Initial heights & \(0.5\,\text{m}\) \\
+%     \(u_1^0\), \(u_2^0\) & Initial inflows & \(0.0705, 0.4759\,\text{m}^3/\text{s}\) \\
+%     \midrule
+%     \(u_1 \in\) & Inflow constraint (tank 1) & \([0.0, 0.5]\,\text{m}^3/\text{s}\) \\
+%     \(u_2 \in\) & Inflow constraint (tank 2) & \([0.0, 1.0]\,\text{m}^3/\text{s}\) \\
+%     \(T_s\) & Sampling time & \(1.0\,\text{s}\) \\
+%     \bottomrule
+%   \end{tabular}
+% \end{table}
 
 \subsection{Two Reactor System}
 
