@@ -34,7 +34,6 @@
 %\usepackage{algpseudocode}
 \usepackage{booktabs}
 \usepackage{url}
-\usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
@@ -219,7 +218,7 @@
 \label{sec:Preliminaries}
  
 \subsection{Offset-Free MPC}
-In this subsection, we will present a standard offset free model predictive control framework, introduced by\todo{cite pannocchia}. This approach consist of state estimation - observer, target optimization and dynamic optimization. 
+In this subsection, we will present a standard offset free model predictive control framework, introduced by~\cite{pannocchia2003disturbance}. This approach consist of state estimation - observer, target optimization and dynamic optimization. 
 The whole approach is used to introduce integral action into model predictive control to help mitigate plant-model missmatch and ensure offset free control. If this compensation would not be used, the plant with this controller would not reach a desired reference (other than at origin), due to predictions using different model than actual plant. 
 
 The offset-free augmented system can be written in the following state-space form, including the disturbance input matrix $B_d$ and disturbance output matrix $C_d$:
@@ -270,17 +269,29 @@ For the offset free behavior, the number of the disturbances $n_d$ must be lower
 When solving the MPC, both states and disturbance are approximated by observer. 
 
 \subsection{Koopman Operator}
-The koopman operator theory was introduced by \todo{cite} and further popularize by \todo{cite}. The theory enables to exactly model nonlinear systems linearly, by lifting its current states/measurements into infinite dimensional variables, where the governing operator for the evolving system is linear. 
+The koopman operator theory was introduced by~\cite{koopman1931hamiltonian} and further popularize by~\cite{mezic2005spectral}. The theory enables to exactly model nonlinear systems linearly, by lifting its current states/measurements into infinite dimensional variables, where the governing operator for the evolving system is linear. 
 
-\todo{fancy smenši exuation}
+\todo{fancy smenši equation}
 
-Over the years many approximations of the koopman operator from the data were proposed, starting with simple DMD, extended to the EDMD and recently the neural networks were used to best approximate the lifting functions so the system behaves linearly. The algorithms were as well developed not only for autonomous systems but for the systems with control as well \todo{cite and elaborate}. Koopman operator in the MPC was introduced by \todo{cite Korda}, and in recent years almost every kind of MPC was transfor to accept some kind of Koopman Operator, mostly represented as an LTI system in the state space form. The offset free wersion is no exception, in the work of \todo{Zotero, kukni papere, prosím ešte aj naskenuj ďalšie}.
+Over the years many approximations of the koopman operator from the data were proposed, starting with connection of DMD to Koopman operator theory by~\cite{rowley2009spectral}, extended to the EDMD by~\cite{williams2015data} and recently the neural networks were used to best approximate the lifting functions so the system behaves linearly. The algorithms were as well developed not only for autonomous systems but for the systems with control as well~\cite{kaiser2021data} \todo{elaborate hallf a sentence}. Koopman operator met the model predictive control in work of~\cite{korda2018linear}, and in recent years almost every kind of MPC was transformed to accept some kind of Koopman Operator, mostly represented as an LTI system in the state space form. The offset free version is no exception, in the work of \todo{Zotero, kukni papere, prosím ešte aj naskenuj ďalšie}.
 
-For the purpose of this work we are using the DeepKoopman Approximation introduced by \todo{cite, Lusch}, transformed for the nonautonomous system. We use two kinds of approximations. Firstly the LTI approximation and secondly the approximation, where only the lifted system evolves linearly, but its projection is nonlinear (as it should be from the definition of Koopman operator). 
-\begin{remark}
-  For the 
-\end{remark}
-The architectures of those systems can be seen below. \todo{images}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/DK-simulation.pdf}
+  \caption{\todo{}}
+  \label{fig:DK-nonautonomous}
+\end{figure}
+
+For the purpose of this work we are using the Deep Koopman Approximation introduced by~\cite{lusch2018deep}, transformed for the nonautonomous systems, as in Fig.~\ref{fig:DK-nonautonomous}. The control inputs $u$ are used in the scheme directly, without any transformation to preserve the structure necessary for the use in MPC. We use two kinds of approximations of Koopman operator. Firstly the LTI approximation, where the projection funcion is linear (matrix $C$), as in Fig.~\ref{fig:DK-linear} and second the approximation, where only the lifted system evolves linearly, as already shown in Fig.~\ref{fig:DK-nonautonomous}, but its projection is nonlinear (as it should be from the definition of Koopman operator). 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/DK-linear-model.pdf}
+  \caption{\todo{}}
+  \label{fig:DK-linear}
+\end{figure}
+
+% The architectures of those systems can be seen below. \todo{images}
 
 \section{Koopman MPC with Offset-Free}
 \label{sec:easy-mpc}
@@ -980,8 +991,8 @@ The system is discretized with sampling time \(T_s = 1\,\text{s}\) using a Runge
   \end{tabular}
 \end{table}
 
-%\bibliography{bibfile}
- % Reference your .bib file (without .bib extension)
+\bibliographystyle{elsarticle-harv}
+\bibliography{bibfile}
 \end{document}
  
 \endinput

@@ -1,0 +1,55 @@
+\begin{thebibliography}{8}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\href}[2]{#2}
+\providecommand{\path}[1]{#1}
+\providecommand{\DOIprefix}{doi:}
+\providecommand{\ArXivprefix}{arXiv:}
+\providecommand{\URLprefix}{URL: }
+\providecommand{\Pubmedprefix}{pmid:}
+\providecommand{\doi}[1]{\href{http://dx.doi.org/#1}{\path{#1}}}
+\providecommand{\Pubmed}[1]{\href{pmid:#1}{\path{#1}}}
+\providecommand{\bibinfo}[2]{#2}
+\ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
+%Type = Article
+\bibitem[{Kaiser et~al.(2021)Kaiser, Kutz and Brunton}]{kaiser2021data}
+\bibinfo{author}{Kaiser, E.}, \bibinfo{author}{Kutz, J.N.}, \bibinfo{author}{Brunton, S.L.}, \bibinfo{year}{2021}.
+\newblock \bibinfo{title}{Data-driven discovery of koopman eigenfunctions for control}.
+\newblock \bibinfo{journal}{Machine Learning: Science and Technology} \bibinfo{volume}{2}, \bibinfo{pages}{035023}.
+%Type = Article
+\bibitem[{Koopman(1931)}]{koopman1931hamiltonian}
+\bibinfo{author}{Koopman, B.O.}, \bibinfo{year}{1931}.
+\newblock \bibinfo{title}{Hamiltonian systems and transformation in hilbert space}.
+\newblock \bibinfo{journal}{Proceedings of the National Academy of Sciences} \bibinfo{volume}{17}, \bibinfo{pages}{315--318}.
+%Type = Article
+\bibitem[{Korda and Mezi{\'c}(2018)}]{korda2018linear}
+\bibinfo{author}{Korda, M.}, \bibinfo{author}{Mezi{\'c}, I.}, \bibinfo{year}{2018}.
+\newblock \bibinfo{title}{Linear predictors for nonlinear dynamical systems: Koopman operator meets model predictive control}.
+\newblock \bibinfo{journal}{Automatica} \bibinfo{volume}{93}, \bibinfo{pages}{149--160}.
+%Type = Article
+\bibitem[{Lusch et~al.(2018)Lusch, Kutz and Brunton}]{lusch2018deep}
+\bibinfo{author}{Lusch, B.}, \bibinfo{author}{Kutz, J.N.}, \bibinfo{author}{Brunton, S.L.}, \bibinfo{year}{2018}.
+\newblock \bibinfo{title}{Deep learning for universal linear embeddings of nonlinear dynamics}.
+\newblock \bibinfo{journal}{Nature communications} \bibinfo{volume}{9}, \bibinfo{pages}{4950}.
+%Type = Article
+\bibitem[{Mezi{\'c}(2005)}]{mezic2005spectral}
+\bibinfo{author}{Mezi{\'c}, I.}, \bibinfo{year}{2005}.
+\newblock \bibinfo{title}{Spectral properties of dynamical systems, model reduction and decompositions}.
+\newblock \bibinfo{journal}{Nonlinear Dynamics} \bibinfo{volume}{41}, \bibinfo{pages}{309--325}.
+%Type = Article
+\bibitem[{Pannocchia and Rawlings(2003)}]{pannocchia2003disturbance}
+\bibinfo{author}{Pannocchia, G.}, \bibinfo{author}{Rawlings, J.B.}, \bibinfo{year}{2003}.
+\newblock \bibinfo{title}{Disturbance models for offset-free model-predictive control}.
+\newblock \bibinfo{journal}{AIChE journal} \bibinfo{volume}{49}, \bibinfo{pages}{426--437}.
+%Type = Article
+\bibitem[{Rowley et~al.(2009)Rowley, Mezi{\'c}, Bagheri, Schlatter and Henningson}]{rowley2009spectral}
+\bibinfo{author}{Rowley, C.W.}, \bibinfo{author}{Mezi{\'c}, I.}, \bibinfo{author}{Bagheri, S.}, \bibinfo{author}{Schlatter, P.}, \bibinfo{author}{Henningson, D.S.}, \bibinfo{year}{2009}.
+\newblock \bibinfo{title}{Spectral analysis of nonlinear flows}.
+\newblock \bibinfo{journal}{Journal of fluid mechanics} \bibinfo{volume}{641}, \bibinfo{pages}{115--127}.
+%Type = Article
+\bibitem[{Williams et~al.(2015)Williams, Kevrekidis and Rowley}]{williams2015data}
+\bibinfo{author}{Williams, M.O.}, \bibinfo{author}{Kevrekidis, I.G.}, \bibinfo{author}{Rowley, C.W.}, \bibinfo{year}{2015}.
+\newblock \bibinfo{title}{A data--driven approximation of the koopman operator: Extending dynamic mode decomposition}.
+\newblock \bibinfo{journal}{Journal of Nonlinear Science} \bibinfo{volume}{25}, \bibinfo{pages}{1307--1346}.
+
+\end{thebibliography}

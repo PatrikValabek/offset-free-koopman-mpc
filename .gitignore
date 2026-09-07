@@ -1,8 +1,9 @@
 # Data related to the project
-#data/
+# Ignore trained artefacts in the repo-root data folder, but keep the ident dataset.
+/data/*
+!/data/cstr_separator_ident.npz
 figures/
 old/
-data/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

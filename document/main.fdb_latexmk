@@ -1,6 +1,14 @@
 # Fdb version 4
-["pdflatex"] 1780499187 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" "main.pdf" "main" 1780499189 0
-  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" 1780499186 52566 f63a934c53a92be08c17aabbd49d705b ""
+["bibtex main"] 1782464231 "main.aux" "main.bbl" "main" 1782490686 0
+  "./bibfile.bib" 1782376289 57463 2982cbedc49912025f54a62b505b0296 ""
+  "/usr/local/texlive/2023/texmf-dist/bibtex/bst/elsarticle/elsarticle-harv.bst" 1606256092 30002 8c0c5833f37bea3ec214cf315a72975d ""
+  "main.aux" 1782490686 12121 4080d80b906ae57d2903ea3a10d45faa "pdflatex"
+  (generated)
+  "main.bbl"
+  "main.blg"
+  (rewritten before read)
+["pdflatex"] 1782490684 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" "main.pdf" "main" 1782490686 0
+  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" 1782490684 53340 6ef62f3868aab087beb67eb7f2dae89d ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/jknappen/ec/tcrm0600.tfm" 1136768653 1536 12e8c510d3e158fdd0e9a42e75118bd9 ""
@@ -206,7 +214,6 @@
   "/usr/local/texlive/2023/texmf-dist/tex/latex/caption/caption-elsarticle.sto" 1645391520 1752 da113ad4ab9dbdfe80aac4213905d415 ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/caption/caption.sty" 1678653221 55778 14d5c99aa26410e440820bb9ea5b8b3a ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/caption/caption3.sty" 1678653221 71836 1a735454ad10692452eb2f2fc37f3865 ""
-  "/usr/local/texlive/2023/texmf-dist/tex/latex/cite/cite.sty" 1425427964 26218 19edeff8cdc2bcb704e8051dc55eb5a7 ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/elsarticle/elsarticle.cls" 1606256092 44541 9d3456c17502e6602b2ecf2b8f0736e0 ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty" 1579991033 13886 d1306dcf79a944f6988e688c1785f9ce ""
   "/usr/local/texlive/2023/texmf-dist/tex/latex/etoolbox/etoolbox.sty" 1601931149 46845 3b58f70c6e861a13d927bff09d35ecbc ""
@@ -268,11 +275,14 @@
   "/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1695101518 4623355 b8cad38412faebe1ce5b780a45db67bd ""
   "/usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1695101503 7883454 557e60c9a507e5eb9adaf486a9c0de14 ""
   "/usr/local/texlive/2023/texmf.cnf" 1678822455 577 1b2b1af17af2508fb20dd85783af4050 ""
+  "figures/DK-linear-model.pdf" 1782463763 19679 3cf45bef63a6a50bc6e6b85c9e6d2f95 ""
+  "figures/DK-simulation.pdf" 1782463777 20544 092874ab003ee73e2fdf0b21e8157952 ""
   "figures/close_loop.pdf" 1780404637 17017 bfbcca677b0b78bd601e846f05072e8d ""
-  "main.aux" 1780499189 10759 03a224b3c2ed1c65b2eb82b0983b6156 "pdflatex"
-  "main.out" 1780499189 3783 e4d90bb1819d5e3a2f3662ce0570b2a5 "pdflatex"
-  "main.spl" 1780499188 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "main.tex" 1780499186 52566 f63a934c53a92be08c17aabbd49d705b ""
+  "main.aux" 1782490686 12121 4080d80b906ae57d2903ea3a10d45faa "pdflatex"
+  "main.bbl" 1782464231 3671 a248fcffea5683039a8aab8dd66995fc "bibtex main"
+  "main.out" 1782490686 3783 e4d90bb1819d5e3a2f3662ce0570b2a5 "pdflatex"
+  "main.spl" 1782490685 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "main.tex" 1782490684 53340 6ef62f3868aab087beb67eb7f2dae89d ""
   (generated)
   "main.aux"
   "main.log"
