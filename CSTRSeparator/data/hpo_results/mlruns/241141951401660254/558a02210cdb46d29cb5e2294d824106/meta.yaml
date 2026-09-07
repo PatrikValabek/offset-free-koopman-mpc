@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/558a02210cdb46d29cb5e2294d824106/artifacts
+end_time: 1788773539758
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: 558a02210cdb46d29cb5e2294d824106
+run_name: spiffy-hawk-885
+run_uuid: 558a02210cdb46d29cb5e2294d824106
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788773407654
+status: 3
+tags: []
+user_id: patrik

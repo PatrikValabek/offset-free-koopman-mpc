@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/738fa14524fd402f8bc2e3cc8e65daad/artifacts
+end_time: 1788767100097
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: 738fa14524fd402f8bc2e3cc8e65daad
+run_name: merciful-goat-796
+run_uuid: 738fa14524fd402f8bc2e3cc8e65daad
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788767047791
+status: 3
+tags: []
+user_id: patrik

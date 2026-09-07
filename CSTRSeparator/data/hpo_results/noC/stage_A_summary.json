@@ -1,0 +1,18 @@
+{
+  "study_name": "koopman_noC",
+  "best_value": 2.106105327606201,
+  "best_params": {
+    "nz": 32,
+    "encoder_depth": 2,
+    "width_mult": 1.0,
+    "nonlin": "elu",
+    "y_loss_w": 13.295727018943847,
+    "x_loss_w": 3.3437777809707585,
+    "recon_loss_w": 1.7456648315750745,
+    "nsteps": 120,
+    "bs": 40,
+    "lr": 0.0007530643085207749,
+    "seed": 2843
+  },
+  "n_trials": 40
+}

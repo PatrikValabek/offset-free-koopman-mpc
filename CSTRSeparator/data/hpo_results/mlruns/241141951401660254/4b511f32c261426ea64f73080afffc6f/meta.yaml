@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/4b511f32c261426ea64f73080afffc6f/artifacts
+end_time: 1788775350722
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: 4b511f32c261426ea64f73080afffc6f
+run_name: defiant-whale-26
+run_uuid: 4b511f32c261426ea64f73080afffc6f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788775131086
+status: 3
+tags: []
+user_id: patrik

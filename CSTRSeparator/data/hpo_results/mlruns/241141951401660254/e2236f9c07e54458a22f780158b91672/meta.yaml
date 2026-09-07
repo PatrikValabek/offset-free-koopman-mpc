@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/e2236f9c07e54458a22f780158b91672/artifacts
+end_time: 1788774813500
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: e2236f9c07e54458a22f780158b91672
+run_name: fun-doe-604
+run_uuid: e2236f9c07e54458a22f780158b91672
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788774597759
+status: 3
+tags: []
+user_id: patrik

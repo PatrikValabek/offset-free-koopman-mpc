@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/ac41f6e7a23747cdb729bb51b5ee1f95/artifacts
+end_time: 1788772069920
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: ac41f6e7a23747cdb729bb51b5ee1f95
+run_name: funny-vole-974
+run_uuid: ac41f6e7a23747cdb729bb51b5ee1f95
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788771990468
+status: 3
+tags: []
+user_id: patrik

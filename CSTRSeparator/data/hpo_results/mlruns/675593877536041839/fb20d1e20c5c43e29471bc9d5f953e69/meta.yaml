@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/fb20d1e20c5c43e29471bc9d5f953e69/artifacts
+end_time: 1788766918158
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: fb20d1e20c5c43e29471bc9d5f953e69
+run_name: resilient-swan-24
+run_uuid: fb20d1e20c5c43e29471bc9d5f953e69
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788766890930
+status: 3
+tags: []
+user_id: patrik

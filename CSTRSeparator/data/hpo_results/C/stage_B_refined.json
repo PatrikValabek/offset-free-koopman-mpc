@@ -1,0 +1,107 @@
+[
+  {
+    "params": {
+      "nz": 24,
+      "encoder_depth": 2,
+      "width_mult": 1.0,
+      "nonlin": "gelu",
+      "y_loss_w": 1.7519810798188438,
+      "x_loss_w": 1.1184530191749238,
+      "recon_loss_w": 3.459130306783038,
+      "nsteps": 120,
+      "bs": 40,
+      "lr": 0.00037313513553171717,
+      "seed": 2220
+    },
+    "mean_dev_mae_sum": 10.27115567525228,
+    "std_dev_mae_sum": 0.10562326813330954,
+    "mean_test_mae_sum": 12.243582089742025,
+    "seed_runs": [
+      {
+        "seed": 0,
+        "dev_mae_sum": 10.194302558898926,
+        "test_mae_sum": 11.928133964538574
+      },
+      {
+        "seed": 1,
+        "dev_mae_sum": 10.42050838470459,
+        "test_mae_sum": 12.617292404174805
+      },
+      {
+        "seed": 2,
+        "dev_mae_sum": 10.19865608215332,
+        "test_mae_sum": 12.185319900512695
+      }
+    ]
+  },
+  {
+    "params": {
+      "nz": 24,
+      "encoder_depth": 2,
+      "width_mult": 1.0,
+      "nonlin": "gelu",
+      "y_loss_w": 2.541313911926319,
+      "x_loss_w": 1.4145930011684387,
+      "recon_loss_w": 1.949837184502734,
+      "nsteps": 120,
+      "bs": 40,
+      "lr": 0.0003393532024938112,
+      "seed": 907
+    },
+    "mean_dev_mae_sum": 10.505842208862305,
+    "std_dev_mae_sum": 0.3229710250409037,
+    "mean_test_mae_sum": 12.583370526631674,
+    "seed_runs": [
+      {
+        "seed": 0,
+        "dev_mae_sum": 10.198881149291992,
+        "test_mae_sum": 11.962541580200195
+      },
+      {
+        "seed": 1,
+        "dev_mae_sum": 10.366412162780762,
+        "test_mae_sum": 12.515287399291992
+      },
+      {
+        "seed": 2,
+        "dev_mae_sum": 10.95223331451416,
+        "test_mae_sum": 13.272282600402832
+      }
+    ]
+  },
+  {
+    "params": {
+      "nz": 24,
+      "encoder_depth": 1,
+      "width_mult": 1.0,
+      "nonlin": "gelu",
+      "y_loss_w": 7.0505200932746765,
+      "x_loss_w": 1.9578575885031297,
+      "recon_loss_w": 2.5772065455103785,
+      "nsteps": 80,
+      "bs": 40,
+      "lr": 0.000372216844083214,
+      "seed": 3677
+    },
+    "mean_dev_mae_sum": 10.58347225189209,
+    "std_dev_mae_sum": 0.5319612007689453,
+    "mean_test_mae_sum": 13.41433588663737,
+    "seed_runs": [
+      {
+        "seed": 0,
+        "dev_mae_sum": 10.674214363098145,
+        "test_mae_sum": 14.228742599487305
+      },
+      {
+        "seed": 1,
+        "dev_mae_sum": 11.184861183166504,
+        "test_mae_sum": 13.546835899353027
+      },
+      {
+        "seed": 2,
+        "dev_mae_sum": 9.891341209411621,
+        "test_mae_sum": 12.467429161071777
+      }
+    ]
+  }
+]

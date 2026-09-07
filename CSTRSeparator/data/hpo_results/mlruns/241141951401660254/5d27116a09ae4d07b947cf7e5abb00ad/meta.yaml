@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/5d27116a09ae4d07b947cf7e5abb00ad/artifacts
+end_time: 1788770936184
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: 5d27116a09ae4d07b947cf7e5abb00ad
+run_name: colorful-lamb-826
+run_uuid: 5d27116a09ae4d07b947cf7e5abb00ad
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788770875455
+status: 3
+tags: []
+user_id: patrik

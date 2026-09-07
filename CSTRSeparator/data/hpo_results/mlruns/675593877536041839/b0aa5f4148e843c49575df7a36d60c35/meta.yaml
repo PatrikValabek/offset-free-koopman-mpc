@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/b0aa5f4148e843c49575df7a36d60c35/artifacts
+end_time: 1788770473468
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: b0aa5f4148e843c49575df7a36d60c35
+run_name: exultant-hound-365
+run_uuid: b0aa5f4148e843c49575df7a36d60c35
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788770399149
+status: 3
+tags: []
+user_id: patrik

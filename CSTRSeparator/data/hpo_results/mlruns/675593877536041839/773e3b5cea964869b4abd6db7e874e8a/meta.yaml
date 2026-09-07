@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/773e3b5cea964869b4abd6db7e874e8a/artifacts
+end_time: 1788770174959
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: 773e3b5cea964869b4abd6db7e874e8a
+run_name: carefree-bird-974
+run_uuid: 773e3b5cea964869b4abd6db7e874e8a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788770094643
+status: 3
+tags: []
+user_id: patrik

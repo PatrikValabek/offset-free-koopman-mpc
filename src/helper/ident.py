@@ -78,6 +78,40 @@ def real_block_diagonalize(A):
 
     return T_real, A_block
 
+def generate_cstr_yield_steps(step_time: int, how_many: int, constraints, seed: int = 42):
+    """
+    Random steps that push the CSTR–separator across the xB3 yield peak.
+
+    constraints rows: [Q1, Q2, Q3, F10, F20, Fr], each [min, max].
+    A latent conversion intent s∈[0,1] sets low F10 + high Q + high Fr
+    (over-conversion) versus high F10 + low Q + low Fr (under-conversion).
+    F20 is drawn independently in its box.
+    """
+    rng = np.random.default_rng(seed)
+    cons = np.asarray(constraints, dtype=float)
+    n_u = cons.shape[0]
+    steps = np.zeros((how_many * step_time, n_u))
+    q_lo, q_hi = cons[0]
+    f10_lo, f10_hi = cons[3]
+    f20_lo, f20_hi = cons[4]
+    fr_lo, fr_hi = cons[5]
+    q_jitter = 0.25 * (q_hi - q_lo)
+    fr_jitter = 0.15 * (fr_hi - fr_lo)
+
+    for i in range(how_many):
+        s = rng.uniform(0.0, 1.0)
+        f10 = f10_lo + (1.0 - s) * (f10_hi - f10_lo)
+        q_center = q_lo + s * (q_hi - q_lo)
+        fr_center = fr_lo + s * (fr_hi - fr_lo)
+        q1 = np.clip(q_center + rng.uniform(-q_jitter, q_jitter), q_lo, q_hi)
+        q2 = np.clip(q_center + rng.uniform(-q_jitter, q_jitter), q_lo, q_hi)
+        q3 = np.clip(q_center + rng.uniform(-q_jitter, q_jitter), q_lo, q_hi)
+        fr = np.clip(fr_center + rng.uniform(-fr_jitter, fr_jitter), fr_lo, fr_hi)
+        f20 = rng.uniform(f20_lo, f20_hi)
+        steps[i * step_time : (i + 1) * step_time, :] = [q1, q2, q3, f10, f20, fr]
+    return steps
+
+
 def generate_steps(step_time: float, how_many: int, constraints: list, seed: int = 42):
     """
     Get the time points where the range changes. Range should be a numpy array representing a range of values. In left column min, in right column max.

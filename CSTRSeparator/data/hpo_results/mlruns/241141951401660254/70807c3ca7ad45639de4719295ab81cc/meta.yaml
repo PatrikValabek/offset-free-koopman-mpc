@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/70807c3ca7ad45639de4719295ab81cc/artifacts
+end_time: 1788772196967
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: 70807c3ca7ad45639de4719295ab81cc
+run_name: trusting-snake-605
+run_uuid: 70807c3ca7ad45639de4719295ab81cc
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788772069940
+status: 3
+tags: []
+user_id: patrik

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/eabaaec1b3834b01a6918d89f3e303aa/artifacts
+end_time: 1788766863191
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: eabaaec1b3834b01a6918d89f3e303aa
+run_name: blushing-roo-804
+run_uuid: eabaaec1b3834b01a6918d89f3e303aa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788766863173
+status: 4
+tags: []
+user_id: patrik

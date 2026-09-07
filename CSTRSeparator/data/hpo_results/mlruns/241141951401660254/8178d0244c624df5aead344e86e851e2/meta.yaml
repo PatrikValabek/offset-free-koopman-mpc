@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/8178d0244c624df5aead344e86e851e2/artifacts
+end_time: 1788771434033
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: 8178d0244c624df5aead344e86e851e2
+run_name: smiling-conch-803
+run_uuid: 8178d0244c624df5aead344e86e851e2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788771372839
+status: 3
+tags: []
+user_id: patrik

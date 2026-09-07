@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/5f3271cbfb1c4c348e3f8f14be0cf2a9/artifacts
+end_time: 1788769449624
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: 5f3271cbfb1c4c348e3f8f14be0cf2a9
+run_name: clean-midge-930
+run_uuid: 5f3271cbfb1c4c348e3f8f14be0cf2a9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788769341742
+status: 3
+tags: []
+user_id: patrik

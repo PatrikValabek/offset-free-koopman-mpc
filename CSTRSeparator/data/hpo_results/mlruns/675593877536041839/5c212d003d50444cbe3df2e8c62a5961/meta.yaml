@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/5c212d003d50444cbe3df2e8c62a5961/artifacts
+end_time: 1788767993687
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: 5c212d003d50444cbe3df2e8c62a5961
+run_name: polite-bear-925
+run_uuid: 5c212d003d50444cbe3df2e8c62a5961
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788767874470
+status: 3
+tags: []
+user_id: patrik

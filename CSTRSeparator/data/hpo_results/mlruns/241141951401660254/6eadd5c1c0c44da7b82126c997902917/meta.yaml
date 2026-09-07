@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/6eadd5c1c0c44da7b82126c997902917/artifacts
+end_time: 1788775131035
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: 6eadd5c1c0c44da7b82126c997902917
+run_name: bustling-slug-308
+run_uuid: 6eadd5c1c0c44da7b82126c997902917
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788775022536
+status: 3
+tags: []
+user_id: patrik

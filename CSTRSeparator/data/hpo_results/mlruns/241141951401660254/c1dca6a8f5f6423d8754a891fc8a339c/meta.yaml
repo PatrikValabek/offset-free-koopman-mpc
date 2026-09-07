@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/c1dca6a8f5f6423d8754a891fc8a339c/artifacts
+end_time: 1788773130058
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: c1dca6a8f5f6423d8754a891fc8a339c
+run_name: sassy-shad-792
+run_uuid: c1dca6a8f5f6423d8754a891fc8a339c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788772994192
+status: 3
+tags: []
+user_id: patrik

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/2e84e962f8144f659495616257d393c8/artifacts
+end_time: 1788772287101
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: 2e84e962f8144f659495616257d393c8
+run_name: ambitious-mouse-841
+run_uuid: 2e84e962f8144f659495616257d393c8
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788772196986
+status: 3
+tags: []
+user_id: patrik

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/09da337bd8ea4094816df5cbfd2837a8/artifacts
+end_time: 1788771353156
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: 09da337bd8ea4094816df5cbfd2837a8
+run_name: selective-moth-49
+run_uuid: 09da337bd8ea4094816df5cbfd2837a8
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788771243631
+status: 3
+tags: []
+user_id: patrik

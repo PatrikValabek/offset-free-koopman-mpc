@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/054cd79906b44ca6bc0b54d7a62f7cf5/artifacts
+end_time: 1788774597738
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: 054cd79906b44ca6bc0b54d7a62f7cf5
+run_name: luminous-moose-715
+run_uuid: 054cd79906b44ca6bc0b54d7a62f7cf5
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788774416788
+status: 3
+tags: []
+user_id: patrik

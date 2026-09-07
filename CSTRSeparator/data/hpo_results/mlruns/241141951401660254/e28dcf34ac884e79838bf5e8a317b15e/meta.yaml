@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/e28dcf34ac884e79838bf5e8a317b15e/artifacts
+end_time: 1788771524552
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: e28dcf34ac884e79838bf5e8a317b15e
+run_name: placid-fly-340
+run_uuid: e28dcf34ac884e79838bf5e8a317b15e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788771434053
+status: 3
+tags: []
+user_id: patrik

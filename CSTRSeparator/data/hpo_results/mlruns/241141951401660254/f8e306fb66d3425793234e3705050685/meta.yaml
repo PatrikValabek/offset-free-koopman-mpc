@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/f8e306fb66d3425793234e3705050685/artifacts
+end_time: 1788773655478
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: f8e306fb66d3425793234e3705050685
+run_name: unleashed-stork-515
+run_uuid: f8e306fb66d3425793234e3705050685
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788773539781
+status: 3
+tags: []
+user_id: patrik

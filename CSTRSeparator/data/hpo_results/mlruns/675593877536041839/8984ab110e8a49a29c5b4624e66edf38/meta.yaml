@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/8984ab110e8a49a29c5b4624e66edf38/artifacts
+end_time: 1788769621077
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: 8984ab110e8a49a29c5b4624e66edf38
+run_name: sedate-newt-162
+run_uuid: 8984ab110e8a49a29c5b4624e66edf38
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788769449645
+status: 3
+tags: []
+user_id: patrik

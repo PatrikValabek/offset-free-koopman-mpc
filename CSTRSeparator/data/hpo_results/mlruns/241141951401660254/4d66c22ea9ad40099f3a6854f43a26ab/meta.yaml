@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/4d66c22ea9ad40099f3a6854f43a26ab/artifacts
+end_time: 1788772908586
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: 4d66c22ea9ad40099f3a6854f43a26ab
+run_name: hilarious-frog-607
+run_uuid: 4d66c22ea9ad40099f3a6854f43a26ab
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788772780704
+status: 3
+tags: []
+user_id: patrik

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/2cbedfb0f09b4ac6905fa461d10f518d/artifacts
+end_time: 1788772780685
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: 2cbedfb0f09b4ac6905fa461d10f518d
+run_name: tasteful-hawk-382
+run_uuid: 2cbedfb0f09b4ac6905fa461d10f518d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788772632828
+status: 3
+tags: []
+user_id: patrik

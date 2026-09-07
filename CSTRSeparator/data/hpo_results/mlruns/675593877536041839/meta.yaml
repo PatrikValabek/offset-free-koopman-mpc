@@ -1,0 +1,6 @@
+artifact_location: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839
+creation_time: 1788766862875
+experiment_id: '675593877536041839'
+last_update_time: 1788766862875
+lifecycle_stage: active
+name: koopman_cstr_separator_C

@@ -86,20 +86,22 @@ class CSTRSeparator(Model):
 
         # Nominal plant input [Q1, Q2, Q3, F10, F20, Fr]
         self.u_nom = np.array([10.0, 10.0, 10.0, 8.3, 0.5, 4.0], dtype=float)
-        # Wide identification / control box for MVs [Q1, Q2, Q3, F10].
-        # Spans are large enough that random steps leave the Li–Swartz
-        # neighborhood, so linear / local Koopman models drift at new OPs.
+        # Identification box for all six plant inputs.
+        # F10 / Fr / F20 are sized to cross the A→B→C yield peak (xB3
+        # rises then falls). Heats are paired with F10 at generation time.
         self.mv_constraints = np.array(
             [
                 [0.0, 25.0],  # Q1 [kJ/s]
                 [0.0, 25.0],  # Q2 [kJ/s]
                 [0.0, 25.0],  # Q3 [kJ/s]
                 [3.0, 16.0],  # F10 [m³/s]
+                [0.1, 3.0],  # F20 [m³/s]
+                [0.5, 10.0],  # Fr [m³/s]
             ],
             dtype=float,
         )
         self.y_names = ["T1", "T2", "T3", "xB3"]
-        self.u_names = ["Q1", "Q2", "Q3", "F10"]
+        self.u_names = ["Q1", "Q2", "Q3", "F10", "F20", "Fr"]
         # Initial guess near Li Table 5
         self.x0_guess = np.array(
             [

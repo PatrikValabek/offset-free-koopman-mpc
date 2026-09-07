@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/f8f02e1f9ae74b7e91e4c130a71858cd/artifacts
+end_time: 1788767679760
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: f8f02e1f9ae74b7e91e4c130a71858cd
+run_name: delicate-pig-542
+run_uuid: f8f02e1f9ae74b7e91e4c130a71858cd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788767615102
+status: 3
+tags: []
+user_id: patrik

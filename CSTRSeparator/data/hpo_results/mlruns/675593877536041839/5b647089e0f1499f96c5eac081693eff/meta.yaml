@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/5b647089e0f1499f96c5eac081693eff/artifacts
+end_time: 1788768945252
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: 5b647089e0f1499f96c5eac081693eff
+run_name: resilient-ape-78
+run_uuid: 5b647089e0f1499f96c5eac081693eff
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788768832060
+status: 3
+tags: []
+user_id: patrik

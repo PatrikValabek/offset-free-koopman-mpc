@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/8ff748646170493eb5905c49e7e23023/artifacts
+end_time: 1788770285936
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: 8ff748646170493eb5905c49e7e23023
+run_name: valuable-mare-971
+run_uuid: 8ff748646170493eb5905c49e7e23023
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788770174980
+status: 3
+tags: []
+user_id: patrik

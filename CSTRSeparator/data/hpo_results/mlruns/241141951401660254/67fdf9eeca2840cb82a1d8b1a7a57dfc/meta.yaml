@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/67fdf9eeca2840cb82a1d8b1a7a57dfc/artifacts
+end_time: 1788770990452
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: 67fdf9eeca2840cb82a1d8b1a7a57dfc
+run_name: colorful-robin-647
+run_uuid: 67fdf9eeca2840cb82a1d8b1a7a57dfc
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788770936202
+status: 3
+tags: []
+user_id: patrik

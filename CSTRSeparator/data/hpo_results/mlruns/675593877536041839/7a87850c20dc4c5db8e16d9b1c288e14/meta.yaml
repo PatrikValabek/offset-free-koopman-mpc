@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/7a87850c20dc4c5db8e16d9b1c288e14/artifacts
+end_time: 1788767874443
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: 7a87850c20dc4c5db8e16d9b1c288e14
+run_name: bold-lamb-184
+run_uuid: 7a87850c20dc4c5db8e16d9b1c288e14
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788767679778
+status: 3
+tags: []
+user_id: patrik

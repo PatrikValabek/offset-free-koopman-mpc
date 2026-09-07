@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/1a1cc3ad197046e89d7335b84f175e46/artifacts
+end_time: 1788772632807
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: 1a1cc3ad197046e89d7335b84f175e46
+run_name: peaceful-robin-559
+run_uuid: 1a1cc3ad197046e89d7335b84f175e46
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788772528387
+status: 3
+tags: []
+user_id: patrik

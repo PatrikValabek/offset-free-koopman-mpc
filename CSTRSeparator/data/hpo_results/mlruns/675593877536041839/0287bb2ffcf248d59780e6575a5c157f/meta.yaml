@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/0287bb2ffcf248d59780e6575a5c157f/artifacts
+end_time: 1788766982019
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: 0287bb2ffcf248d59780e6575a5c157f
+run_name: worried-dolphin-967
+run_uuid: 0287bb2ffcf248d59780e6575a5c157f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788766918178
+status: 3
+tags: []
+user_id: patrik

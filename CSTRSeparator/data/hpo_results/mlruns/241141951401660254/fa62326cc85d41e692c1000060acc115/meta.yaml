@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/241141951401660254/fa62326cc85d41e692c1000060acc115/artifacts
+end_time: 1788772421785
+entry_point_name: ''
+experiment_id: '241141951401660254'
+lifecycle_stage: active
+run_id: fa62326cc85d41e692c1000060acc115
+run_name: brawny-doe-314
+run_uuid: fa62326cc85d41e692c1000060acc115
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788772287121
+status: 3
+tags: []
+user_id: patrik
