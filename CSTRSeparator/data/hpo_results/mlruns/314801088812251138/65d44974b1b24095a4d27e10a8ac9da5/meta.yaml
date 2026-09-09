@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/65d44974b1b24095a4d27e10a8ac9da5/artifacts
+end_time: 1788902668865
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 65d44974b1b24095a4d27e10a8ac9da5
+run_name: colorful-ray-44
+run_uuid: 65d44974b1b24095a4d27e10a8ac9da5
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788902668854
+status: 4
+tags: []
+user_id: patrik

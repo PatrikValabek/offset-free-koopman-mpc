@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/e6c10702778243c6a5c0e78dec95f110/artifacts
+end_time: 1788878138779
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: e6c10702778243c6a5c0e78dec95f110
+run_name: entertaining-yak-450
+run_uuid: e6c10702778243c6a5c0e78dec95f110
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788877926822
+status: 3
+tags: []
+user_id: patrik

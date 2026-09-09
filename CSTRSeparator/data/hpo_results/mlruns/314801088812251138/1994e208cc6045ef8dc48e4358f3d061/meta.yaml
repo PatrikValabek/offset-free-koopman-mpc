@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/1994e208cc6045ef8dc48e4358f3d061/artifacts
+end_time: 1788863858563
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 1994e208cc6045ef8dc48e4358f3d061
+run_name: bittersweet-slug-71
+run_uuid: 1994e208cc6045ef8dc48e4358f3d061
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788863459797
+status: 3
+tags: []
+user_id: patrik

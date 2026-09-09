@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/dffa928246684ac7876fbdc3c5d7c3ab/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: dffa928246684ac7876fbdc3c5d7c3ab
+run_name: skittish-worm-324
+run_uuid: dffa928246684ac7876fbdc3c5d7c3ab
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788856308899
+status: 1
+tags: []
+user_id: patrik

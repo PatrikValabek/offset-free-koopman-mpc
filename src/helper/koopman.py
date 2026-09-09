@@ -275,6 +275,7 @@ def make_trainer(
         train_metric="train_loss",
         dev_metric="dev_loss",
         test_metric="dev_loss",
+        epoch_verbose=1 if verbose else 10**9,
     )
 
 

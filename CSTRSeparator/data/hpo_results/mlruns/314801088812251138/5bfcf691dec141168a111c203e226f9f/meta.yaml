@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/5bfcf691dec141168a111c203e226f9f/artifacts
+end_time: 1788900386492
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 5bfcf691dec141168a111c203e226f9f
+run_name: bustling-frog-590
+run_uuid: 5bfcf691dec141168a111c203e226f9f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788899854027
+status: 3
+tags: []
+user_id: patrik

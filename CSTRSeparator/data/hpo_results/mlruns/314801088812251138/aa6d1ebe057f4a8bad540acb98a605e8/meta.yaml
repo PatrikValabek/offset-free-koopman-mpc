@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/aa6d1ebe057f4a8bad540acb98a605e8/artifacts
+end_time: 1788933536915
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: aa6d1ebe057f4a8bad540acb98a605e8
+run_name: defiant-fowl-487
+run_uuid: aa6d1ebe057f4a8bad540acb98a605e8
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788932930692
+status: 3
+tags: []
+user_id: patrik

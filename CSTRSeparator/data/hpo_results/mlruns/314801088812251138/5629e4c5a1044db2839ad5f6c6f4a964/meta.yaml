@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/5629e4c5a1044db2839ad5f6c6f4a964/artifacts
+end_time: 1788924651746
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 5629e4c5a1044db2839ad5f6c6f4a964
+run_name: traveling-doe-667
+run_uuid: 5629e4c5a1044db2839ad5f6c6f4a964
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788924114175
+status: 3
+tags: []
+user_id: patrik

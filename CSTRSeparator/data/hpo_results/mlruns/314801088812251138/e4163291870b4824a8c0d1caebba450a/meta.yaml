@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/e4163291870b4824a8c0d1caebba450a/artifacts
+end_time: 1788883927360
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: e4163291870b4824a8c0d1caebba450a
+run_name: gifted-finch-642
+run_uuid: e4163291870b4824a8c0d1caebba450a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788883795017
+status: 3
+tags: []
+user_id: patrik

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/895282807628898427/b7999fec76e54e2290c537808ebbe1dd/artifacts
+end_time: 1788878018171
+entry_point_name: ''
+experiment_id: '895282807628898427'
+lifecycle_stage: active
+run_id: b7999fec76e54e2290c537808ebbe1dd
+run_name: kindly-ram-888
+run_uuid: b7999fec76e54e2290c537808ebbe1dd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788877416126
+status: 3
+tags: []
+user_id: patrik

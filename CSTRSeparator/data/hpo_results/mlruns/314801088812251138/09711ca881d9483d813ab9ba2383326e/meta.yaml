@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/09711ca881d9483d813ab9ba2383326e/artifacts
+end_time: 1788861606885
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 09711ca881d9483d813ab9ba2383326e
+run_name: loud-bat-588
+run_uuid: 09711ca881d9483d813ab9ba2383326e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788861592969
+status: 3
+tags: []
+user_id: patrik

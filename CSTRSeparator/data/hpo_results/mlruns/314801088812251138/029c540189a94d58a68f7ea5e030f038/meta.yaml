@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/029c540189a94d58a68f7ea5e030f038/artifacts
+end_time: 1788911994704
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 029c540189a94d58a68f7ea5e030f038
+run_name: honorable-hound-623
+run_uuid: 029c540189a94d58a68f7ea5e030f038
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788911458648
+status: 3
+tags: []
+user_id: patrik

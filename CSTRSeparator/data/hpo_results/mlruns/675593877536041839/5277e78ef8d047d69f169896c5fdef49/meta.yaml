@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/5277e78ef8d047d69f169896c5fdef49/artifacts
+end_time: 1788857374035
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: 5277e78ef8d047d69f169896c5fdef49
+run_name: judicious-snail-24
+run_uuid: 5277e78ef8d047d69f169896c5fdef49
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788857350231
+status: 3
+tags: []
+user_id: patrik

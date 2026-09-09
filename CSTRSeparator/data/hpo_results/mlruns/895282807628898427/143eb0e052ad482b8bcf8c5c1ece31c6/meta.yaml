@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/895282807628898427/143eb0e052ad482b8bcf8c5c1ece31c6/artifacts
+end_time: 1788876846622
+entry_point_name: ''
+experiment_id: '895282807628898427'
+lifecycle_stage: active
+run_id: 143eb0e052ad482b8bcf8c5c1ece31c6
+run_name: victorious-lynx-905
+run_uuid: 143eb0e052ad482b8bcf8c5c1ece31c6
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788876834620
+status: 3
+tags: []
+user_id: patrik

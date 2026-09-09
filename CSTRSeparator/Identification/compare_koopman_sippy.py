@@ -30,7 +30,19 @@ def load_sippy_order_results() -> list[dict]:
     from sklearn.preprocessing import StandardScaler
 
     sys.path.insert(0, str(IDENT_DIR.parent.parent / "src"))
-    from helper.koopman import load_cstr_separator_data
+
+    def load_cstr_separator_data(data_path: str, n_train: int = 12960, n_dev: int = 2880):
+        data = np.load(data_path, allow_pickle=True)
+        sim = {
+            "Y": np.array(data["Y"], dtype=float),
+            "U": np.array(data["U"], dtype=float),
+        }
+        train = {k: v[:n_train] for k, v in sim.items()}
+        dev = {k: v[n_train : n_train + n_dev] for k, v in sim.items()}
+        test = {k: v[n_train + n_dev :] for k, v in sim.items()}
+        y_names = list(data["y_names"]) if "y_names" in data.files else None
+        u_names = list(data["u_names"]) if "u_names" in data.files else None
+        return sim, train, dev, test, y_names, u_names
 
     def _Vn_mat_dot(y, yest):
         eps = np.asarray(y).reshape(-1) - np.asarray(yest).reshape(-1)

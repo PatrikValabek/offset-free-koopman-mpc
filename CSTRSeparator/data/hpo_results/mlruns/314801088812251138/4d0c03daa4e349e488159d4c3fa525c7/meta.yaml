@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/4d0c03daa4e349e488159d4c3fa525c7/artifacts
+end_time: 1788858123181
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 4d0c03daa4e349e488159d4c3fa525c7
+run_name: luxuriant-roo-135
+run_uuid: 4d0c03daa4e349e488159d4c3fa525c7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788858062431
+status: 4
+tags: []
+user_id: patrik

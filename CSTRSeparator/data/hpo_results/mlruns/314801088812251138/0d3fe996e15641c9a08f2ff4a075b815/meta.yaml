@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/0d3fe996e15641c9a08f2ff4a075b815/artifacts
+end_time: 1788860866025
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 0d3fe996e15641c9a08f2ff4a075b815
+run_name: unequaled-swan-528
+run_uuid: 0d3fe996e15641c9a08f2ff4a075b815
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788860846571
+status: 3
+tags: []
+user_id: patrik

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/8067b3d71da04e7895df3d40ad0ad88e/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 8067b3d71da04e7895df3d40ad0ad88e
+run_name: abundant-fox-619
+run_uuid: 8067b3d71da04e7895df3d40ad0ad88e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788866657558
+status: 1
+tags: []
+user_id: patrik

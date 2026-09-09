@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from numpy.linalg import inv
 import torch
@@ -5,6 +6,11 @@ import cvxpy as cp
 import joblib
 
 from .koopman import evaluate_jacobian
+
+
+def _load_sim_setup():
+    path = os.environ.get("SIM_SETUP_PATH", "sim_setup.pkl")
+    return joblib.load(path)
 
 class KF():
     def __init__(self, A, B, C, x0, P0, Q, R):
@@ -344,7 +350,7 @@ class TargetEstimation():
         self.ny = C.shape[0]
         self.nu = B.shape[1]
         self.nd = Bd.shape[1]
-        loaded_setup = joblib.load("sim_setup.pkl")
+        loaded_setup = _load_sim_setup()
         self.u_min = loaded_setup["u_min"]
         self.u_max = loaded_setup["u_max"]
         self.y_min = loaded_setup["y_min"]
@@ -399,7 +405,7 @@ class TargetEnergyEstimation():
         self.ny = C.shape[0]
         self.nu = B.shape[1]
         self.nd = Bd.shape[1]
-        loaded_setup = joblib.load("sim_setup.pkl")
+        loaded_setup = _load_sim_setup()
         self.u_min = loaded_setup["u_min"]
         self.u_max = loaded_setup["u_max"]
         self.y_min = loaded_setup["y_min"]
@@ -459,7 +465,7 @@ class MPC():
         self.ny = C.shape[0]
         self.nu = B.shape[1]
         self.nd = Bd.shape[1]
-        loaded_setup = joblib.load("sim_setup.pkl")
+        loaded_setup = _load_sim_setup()
         Qz = C.T@Qy@C + 1e-8 * np.eye(A.shape[0])
         self.N = loaded_setup["N"]
         self.u_min = loaded_setup["u_min"]
@@ -515,7 +521,7 @@ class MPC():
         self.u_prev.value = u_prev.flatten()
         self.z_ref.value = z_ref.flatten()
         # solve the problem
-        self.mpc.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)#, BarConvTol=1e-6)
+        self.mpc.solve(solver=cp.GUROBI, TimeLimit=60, BarIterLimit=1e6, Threads=1)
         
         if self.mpc.status != cp.OPTIMAL:
             print("MPC problem is not optimal")
@@ -540,7 +546,7 @@ class MPC_Qy():
         self.ny = C.shape[0]
         self.nu = B.shape[1]
         self.nd = Bd.shape[1]
-        loaded_setup = joblib.load("sim_setup.pkl")
+        loaded_setup = _load_sim_setup()
         self.N = loaded_setup["N"]
         self.u_min = loaded_setup["u_min"]
         self.u_max = loaded_setup["u_max"]
@@ -595,7 +601,7 @@ class MPC_Qy():
         self.u_prev.value = u_prev.flatten()
         self.y_ref.value = y_ref.flatten()
         # solve the problem
-        self.mpc.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)#, BarConvTol=1e-6)
+        self.mpc.solve(solver=cp.GUROBI, TimeLimit=60, BarIterLimit=1e6, Threads=1)
         
         if self.mpc.status != cp.OPTIMAL:
             print("MPC problem is not optimal")
@@ -617,7 +623,7 @@ class TaylorTargetEstimation():
         self.nz = A.shape[0]
         self.nu = B.shape[1]
         self.nd = Bd.shape[1]
-        loaded_setup = joblib.load("sim_setup.pkl")
+        loaded_setup = _load_sim_setup()
         self.u_min = loaded_setup["u_min"]
         self.u_max = loaded_setup["u_max"]
         self.y_min = loaded_setup["y_min"]
@@ -656,7 +662,7 @@ class TaylorTargetEstimation():
         self.C_k.value = C_k
         self.u_sp.value = u_sp.flatten()
         # solve the problem
-        self.te.solve(solver=cp.GUROBI)#,TimeLimit=60,BarIterLimit=1e6)
+        self.te.solve(solver=cp.GUROBI, Threads=1)
         
         if self.te.status != cp.OPTIMAL:
             print("Target estimation problem is not optimal")
@@ -677,7 +683,7 @@ class TaylorTargetEnergyEstimation():
         self.nz = A.shape[0]
         self.nu = B.shape[1]
         self.nd = Bd.shape[1]
-        loaded_setup = joblib.load("sim_setup.pkl")
+        loaded_setup = _load_sim_setup()
         self.u_min = loaded_setup["u_min"]
         self.u_max = loaded_setup["u_max"]
         self.y_min = loaded_setup["y_min"]
@@ -717,7 +723,7 @@ class TaylorTargetEnergyEstimation():
         self.C_k.value = C_k
         self.u_sp.value = u_sp.flatten()
         # solve the problem
-        self.te.solve(solver=cp.GUROBI)#,TimeLimit=60,BarIterLimit=1e6)
+        self.te.solve(solver=cp.GUROBI, Threads=1)
         
         if self.te.status != cp.OPTIMAL:
             print("Target estimation problem is not optimal")
@@ -740,7 +746,7 @@ class TaylorMPC():
         self.nz = A.shape[0]
         self.nu = B.shape[1]
         self.nd = Bd.shape[1]
-        loaded_setup = joblib.load("sim_setup.pkl")
+        loaded_setup = _load_sim_setup()
         self.N = loaded_setup["N"]
         self.u_min = loaded_setup["u_min"]
         self.u_max = loaded_setup["u_max"]
@@ -805,7 +811,7 @@ class TaylorMPC():
         self.linear_term_z.value = Qz @ z_ref.flatten()  # Compute Qz @ z_ref for efficiency (equivalent to z_ref.T @ Qz when transposed)
         self.u_sp.value = u_sp.flatten()
         # solve the problem
-        self.mpc.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)#, BarConvTol=1e-6)
+        self.mpc.solve(solver=cp.GUROBI, TimeLimit=60, BarIterLimit=1e6, Threads=1)
         
         if self.mpc.status != cp.OPTIMAL:
             print("MPC problem is not optimal")
@@ -822,7 +828,7 @@ class TaylorCrossMPC():
         self.B = B
         self.nz = A.shape[0]
         self.nu = B.shape[1]
-        loaded_setup = joblib.load("sim_setup.pkl")
+        loaded_setup = _load_sim_setup()
         self.Qu = loaded_setup["Qu"]
         self.Qy = loaded_setup["Qy"]
         self.N = loaded_setup["N"]
@@ -890,7 +896,7 @@ class TaylorCrossMPC():
         self.Qz_param.value = Qz
         self.alpha.value = y_k.flatten() - (C_k @ z_k).flatten() - (C_ref @ z_ref).flatten() - y_ref.flatten() + (C_ref @ z_p_ref).flatten()
         # solve the problem
-        self.mpc.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)#, BarConvTol=1e-6)
+        self.mpc.solve(solver=cp.GUROBI, TimeLimit=60, BarIterLimit=1e6, Threads=1)
         
         if self.mpc.status != cp.OPTIMAL:
             print("MPC problem is not optimal")

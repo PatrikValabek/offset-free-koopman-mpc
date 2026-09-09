@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/a2cccc62d6654d8aac827b3473acddc9/artifacts
+end_time: 1788888779651
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: a2cccc62d6654d8aac827b3473acddc9
+run_name: smiling-boar-486
+run_uuid: a2cccc62d6654d8aac827b3473acddc9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788888425931
+status: 3
+tags: []
+user_id: patrik

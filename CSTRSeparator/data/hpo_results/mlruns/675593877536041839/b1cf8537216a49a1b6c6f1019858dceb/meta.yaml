@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/b1cf8537216a49a1b6c6f1019858dceb/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: b1cf8537216a49a1b6c6f1019858dceb
+run_name: indecisive-kit-722
+run_uuid: b1cf8537216a49a1b6c6f1019858dceb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788856308903
+status: 1
+tags: []
+user_id: patrik

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/04abec8de7bb491fb799d39c736d9aca/artifacts
+end_time: 1788878425849
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 04abec8de7bb491fb799d39c736d9aca
+run_name: unique-mouse-690
+run_uuid: 04abec8de7bb491fb799d39c736d9aca
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788878288000
+status: 3
+tags: []
+user_id: patrik

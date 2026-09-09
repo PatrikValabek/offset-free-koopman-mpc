@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/27867208dce84d1aad2bb729f19a3d8c/artifacts
+end_time: 1788931756188
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 27867208dce84d1aad2bb729f19a3d8c
+run_name: serious-hen-233
+run_uuid: 27867208dce84d1aad2bb729f19a3d8c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788931756175
+status: 4
+tags: []
+user_id: patrik

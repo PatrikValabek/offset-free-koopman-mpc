@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/4c4e0d5838b24a78b077db089cdaba20/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 4c4e0d5838b24a78b077db089cdaba20
+run_name: victorious-lark-814
+run_uuid: 4c4e0d5838b24a78b077db089cdaba20
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788866518976
+status: 1
+tags: []
+user_id: patrik

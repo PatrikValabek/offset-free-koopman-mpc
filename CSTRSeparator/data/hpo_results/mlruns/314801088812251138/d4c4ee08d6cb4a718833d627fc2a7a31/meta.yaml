@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/d4c4ee08d6cb4a718833d627fc2a7a31/artifacts
+end_time: 1788924107485
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: d4c4ee08d6cb4a718833d627fc2a7a31
+run_name: nosy-boar-105
+run_uuid: d4c4ee08d6cb4a718833d627fc2a7a31
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788923877456
+status: 3
+tags: []
+user_id: patrik

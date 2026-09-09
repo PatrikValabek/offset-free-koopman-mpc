@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/66b3a6b3f5d64fd79d9fef227e2c1c90/artifacts
+end_time: 1788873398829
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 66b3a6b3f5d64fd79d9fef227e2c1c90
+run_name: carefree-sheep-900
+run_uuid: 66b3a6b3f5d64fd79d9fef227e2c1c90
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788873155968
+status: 3
+tags: []
+user_id: patrik

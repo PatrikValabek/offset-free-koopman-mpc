@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/c58ede7c757d48358bfc28c8f60ad684/artifacts
+end_time: 1788871417126
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: c58ede7c757d48358bfc28c8f60ad684
+run_name: angry-asp-495
+run_uuid: c58ede7c757d48358bfc28c8f60ad684
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788871178305
+status: 3
+tags: []
+user_id: patrik

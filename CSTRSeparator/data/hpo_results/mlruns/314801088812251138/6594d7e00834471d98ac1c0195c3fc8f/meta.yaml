@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/6594d7e00834471d98ac1c0195c3fc8f/artifacts
+end_time: 1788896780614
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 6594d7e00834471d98ac1c0195c3fc8f
+run_name: shivering-crab-325
+run_uuid: 6594d7e00834471d98ac1c0195c3fc8f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788896265986
+status: 3
+tags: []
+user_id: patrik

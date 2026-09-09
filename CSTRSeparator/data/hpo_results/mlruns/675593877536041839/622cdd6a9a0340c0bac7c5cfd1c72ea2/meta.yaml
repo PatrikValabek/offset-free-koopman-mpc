@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/622cdd6a9a0340c0bac7c5cfd1c72ea2/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: 622cdd6a9a0340c0bac7c5cfd1c72ea2
+run_name: bright-sow-72
+run_uuid: 622cdd6a9a0340c0bac7c5cfd1c72ea2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788856308913
+status: 1
+tags: []
+user_id: patrik

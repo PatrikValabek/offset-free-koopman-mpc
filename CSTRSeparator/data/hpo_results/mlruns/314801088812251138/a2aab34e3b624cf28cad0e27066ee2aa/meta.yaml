@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/a2aab34e3b624cf28cad0e27066ee2aa/artifacts
+end_time: 1788887969301
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: a2aab34e3b624cf28cad0e27066ee2aa
+run_name: serious-grouse-617
+run_uuid: a2aab34e3b624cf28cad0e27066ee2aa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788887437082
+status: 3
+tags: []
+user_id: patrik

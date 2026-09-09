@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/62cc2fbabe644ef0a49e633045d7f95b/artifacts
+end_time: 1788909375311
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 62cc2fbabe644ef0a49e633045d7f95b
+run_name: clumsy-cow-42
+run_uuid: 62cc2fbabe644ef0a49e633045d7f95b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788908730139
+status: 3
+tags: []
+user_id: patrik

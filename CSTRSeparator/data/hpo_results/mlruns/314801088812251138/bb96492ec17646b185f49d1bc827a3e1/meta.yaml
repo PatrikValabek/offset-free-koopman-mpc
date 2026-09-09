@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/bb96492ec17646b185f49d1bc827a3e1/artifacts
+end_time: 1788865181753
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: bb96492ec17646b185f49d1bc827a3e1
+run_name: nebulous-seal-491
+run_uuid: bb96492ec17646b185f49d1bc827a3e1
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788858134676
+status: 3
+tags: []
+user_id: patrik

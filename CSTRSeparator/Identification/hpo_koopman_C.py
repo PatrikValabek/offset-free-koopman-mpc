@@ -5,12 +5,12 @@ from __future__ import annotations
 
 import argparse
 
-from hpo_common import HPOConfig, TrainConfig, run_stage_a, run_stage_b, run_stage_c
+from hpo_common import HPOConfig, TrainConfig, add_parallel_cli, run_stage_a, run_stage_b, run_stage_c
 
 HPO_CFG = HPOConfig(
     matrix_C=True,
     experiment_name="koopman_cstr_separator_C",
-    study_name="koopman_C",
+    study_name="koopman_C_intnz",
     variant="C",
 )
 
@@ -23,7 +23,7 @@ def main() -> None:
         default="all",
         help="HPO stage to run",
     )
-    parser.add_argument("--n-trials", type=int, default=40, help="Stage A trial count")
+    parser.add_argument("--n-trials", type=int, default=48, help="Stage A trial count")
     parser.add_argument("--top-k", type=int, default=3, help="Stage B top configs")
     parser.add_argument(
         "--seeds",
@@ -36,6 +36,7 @@ def main() -> None:
     parser.add_argument("--patience", type=int, default=300)
     parser.add_argument("--warmup", type=int, default=100)
     parser.add_argument("--verbose", action="store_true")
+    add_parallel_cli(parser)
     args = parser.parse_args()
 
     train_cfg = TrainConfig(
@@ -46,7 +47,14 @@ def main() -> None:
 
     if args.stage in ("A", "all"):
         print("=== Stage A: broad search (C / matrix_C=True) ===")
-        run_stage_a(HPO_CFG, args.n_trials, train_cfg, verbose=args.verbose)
+        run_stage_a(
+            HPO_CFG,
+            args.n_trials,
+            train_cfg,
+            verbose=args.verbose,
+            n_jobs=args.n_jobs,
+            blas_threads=args.blas_threads,
+        )
 
     if args.stage in ("B", "all"):
         print("=== Stage B: seed refinement (C) ===")

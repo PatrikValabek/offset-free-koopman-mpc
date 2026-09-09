@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/337ae37017fc4b32849692a41809a36d/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 337ae37017fc4b32849692a41809a36d
+run_name: righteous-moth-498
+run_uuid: 337ae37017fc4b32849692a41809a36d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788866518985
+status: 1
+tags: []
+user_id: patrik

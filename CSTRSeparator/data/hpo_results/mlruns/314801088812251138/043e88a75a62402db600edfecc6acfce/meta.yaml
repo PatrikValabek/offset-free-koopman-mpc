@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/043e88a75a62402db600edfecc6acfce/artifacts
+end_time: 1788859135961
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 043e88a75a62402db600edfecc6acfce
+run_name: illustrious-duck-467
+run_uuid: 043e88a75a62402db600edfecc6acfce
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788859003051
+status: 3
+tags: []
+user_id: patrik

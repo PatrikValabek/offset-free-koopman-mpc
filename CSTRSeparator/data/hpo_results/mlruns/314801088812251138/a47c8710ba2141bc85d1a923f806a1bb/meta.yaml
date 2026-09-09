@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/a47c8710ba2141bc85d1a923f806a1bb/artifacts
+end_time: 1788925082634
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: a47c8710ba2141bc85d1a923f806a1bb
+run_name: stylish-bird-944
+run_uuid: a47c8710ba2141bc85d1a923f806a1bb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788924651917
+status: 3
+tags: []
+user_id: patrik

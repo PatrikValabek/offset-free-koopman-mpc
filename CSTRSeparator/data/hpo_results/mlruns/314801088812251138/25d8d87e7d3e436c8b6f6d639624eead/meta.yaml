@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/25d8d87e7d3e436c8b6f6d639624eead/artifacts
+end_time: 1788871426117
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 25d8d87e7d3e436c8b6f6d639624eead
+run_name: shivering-bear-443
+run_uuid: 25d8d87e7d3e436c8b6f6d639624eead
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788871417336
+status: 3
+tags: []
+user_id: patrik

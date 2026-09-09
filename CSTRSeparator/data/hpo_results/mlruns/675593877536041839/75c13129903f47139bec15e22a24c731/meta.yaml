@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/75c13129903f47139bec15e22a24c731/artifacts
+end_time: 1788857350140
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: 75c13129903f47139bec15e22a24c731
+run_name: beautiful-cub-11
+run_uuid: 75c13129903f47139bec15e22a24c731
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788856970943
+status: 3
+tags: []
+user_id: patrik

@@ -3,16 +3,22 @@
 
 from __future__ import annotations
 
+import fcntl
 import json
 import os
 
-# Must be set before numpy/torch are imported (macOS OpenMP segfault workaround).
-os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")
-os.environ.setdefault("OMP_NUM_THREADS", "1")
-os.environ.setdefault("MKL_NUM_THREADS", "1")
-os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
-os.environ.setdefault("VECLIB_MAXIMUM_THREADS", "1")
-os.environ.setdefault("NUMEXPR_NUM_THREADS", "1")
+# macOS OpenMP workaround: allow two libomp copies (NumPy + PyTorch).
+# Thread counts: HPO_BLAS_THREADS (default 1). Parallel trials: HPO_N_JOBS.
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+_BLAS_THREADS = os.environ.get("HPO_BLAS_THREADS", "1")
+for _key in (
+    "OMP_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "OPENBLAS_NUM_THREADS",
+    "VECLIB_MAXIMUM_THREADS",
+    "NUMEXPR_NUM_THREADS",
+):
+    os.environ.setdefault(_key, _BLAS_THREADS)
 
 import random
 import sys
@@ -48,8 +54,49 @@ from helper.koopman import (  # noqa: E402
 )
 
 
-def configure_threading() -> None:
-    torch.set_num_threads(1)
+_BLAS_ENV_KEYS = (
+    "OMP_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "OPENBLAS_NUM_THREADS",
+    "VECLIB_MAXIMUM_THREADS",
+    "NUMEXPR_NUM_THREADS",
+)
+
+
+def configure_threading(blas_threads: int | None = None) -> int:
+    """OpenMP workaround + thread counts for this process (and future children).
+
+    ``KMP_DUPLICATE_LIB_OK=TRUE`` is the macOS fix for dual libomp.
+    Prefer ``n_jobs>1`` (separate processes) over many BLAS threads in one
+    process. If both are >1, you will oversubscribe CPUs.
+    """
+    n = int(os.environ.get("HPO_BLAS_THREADS", "1") if blas_threads is None else blas_threads)
+    n = max(1, n)
+    os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+    os.environ["HPO_BLAS_THREADS"] = str(n)
+    for key in _BLAS_ENV_KEYS:
+        os.environ[key] = str(n)
+    torch.set_num_threads(n)
+    try:
+        torch.set_num_interop_threads(max(1, min(n, 4)))
+    except RuntimeError:
+        pass
+    return n
+
+
+def add_parallel_cli(parser) -> None:
+    parser.add_argument(
+        "--n-jobs",
+        type=int,
+        default=int(os.environ.get("HPO_N_JOBS", "8")),
+        help="Parallel Optuna trials (process pool). -1 = all CPUs. Default 8.",
+    )
+    parser.add_argument(
+        "--blas-threads",
+        type=int,
+        default=int(os.environ.get("HPO_BLAS_THREADS", "1")),
+        help="PyTorch/BLAS threads per trial. Use 1 when --n-jobs>1.",
+    )
 
 
 def set_seed(seed: int) -> None:
@@ -81,6 +128,137 @@ class TrialParams:
     seed: int = 42
 
 
+TRIAL_LOG_COLUMNS = [
+    "trial",
+    "nz",
+    "encoder_depth",
+    "width_mult",
+    "nonlin",
+    "nsteps",
+    "bs",
+    "lr",
+    "y_loss_w",
+    "x_loss_w",
+    "recon_loss_w",
+    "seed",
+    "epochs",
+    "dev_mae",
+    "test_mae",
+]
+
+CL_TRIAL_LOG_COLUMNS = TRIAL_LOG_COLUMNS + [
+    "use_block_diag",
+    "cl_of",
+    "cl_tracking",
+    "cl_du",
+]
+
+T2T3_TRIAL_LOG_COLUMNS = TRIAL_LOG_COLUMNS + [
+    "use_block_diag",
+    "cl_of",
+    "t2d2",
+    "t3d3",
+]
+
+
+def trial_log_path(hpo_cfg: HPOConfig) -> Path:
+    return results_dir_for(hpo_cfg) / "trials.tsv"
+
+
+def trial_log_columns(result: dict[str, Any]) -> list[str]:
+    if "t2d2" in result:
+        return T2T3_TRIAL_LOG_COLUMNS
+    if "cl_of" in result:
+        return CL_TRIAL_LOG_COLUMNS
+    return TRIAL_LOG_COLUMNS
+
+
+def _fmt(value: Any, spec: str | None = None) -> str:
+    if value is None or (isinstance(value, float) and not np.isfinite(value)):
+        return ""
+    if spec is None:
+        return str(value)
+    return f"{float(value):{spec}}"
+
+
+def format_trial_row(trial_number: int, params: dict, result: dict[str, Any]) -> str:
+    values = {
+        "trial": trial_number,
+        "nz": params.get("nz"),
+        "encoder_depth": params.get("encoder_depth"),
+        "width_mult": params.get("width_mult"),
+        "nonlin": params.get("nonlin"),
+        "nsteps": params.get("nsteps"),
+        "bs": params.get("bs"),
+        "lr": _fmt(params.get("lr"), ".4g"),
+        "y_loss_w": _fmt(params.get("y_loss_w"), ".3g"),
+        "x_loss_w": _fmt(params.get("x_loss_w"), ".3g"),
+        "recon_loss_w": _fmt(params.get("recon_loss_w"), ".3g"),
+        "seed": params.get("seed"),
+        "epochs": params.get("epochs", result.get("trainer_epochs", "")),
+        "dev_mae": _fmt(result.get("dev_mae_sum"), ".4g"),
+        "test_mae": _fmt(result.get("test_mae_sum"), ".4g"),
+        "use_block_diag": result.get("use_block_diag", params.get("use_block_diag", "")),
+        "cl_of": _fmt(result.get("cl_of"), ".4g"),
+        "cl_tracking": _fmt(result.get("cl_tracking"), ".4g"),
+        "cl_du": _fmt(result.get("cl_du"), ".4g"),
+        "t2d2": _fmt(result.get("t2d2"), ".4g"),
+        "t3d3": _fmt(result.get("t3d3"), ".4g"),
+    }
+    return "\t".join(str(values[c]) for c in trial_log_columns(result))
+
+
+def format_trial_pretty(trial_number: int, params: dict, result: dict[str, Any]) -> str:
+    settings = (
+        f"trial {trial_number:03d}  "
+        f"nz={params.get('nz')} depth={params.get('encoder_depth')} "
+        f"width={params.get('width_mult')} {params.get('nonlin')}  "
+        f"nsteps={params.get('nsteps')} bs={params.get('bs')} "
+        f"epochs={params.get('epochs', result.get('trainer_epochs', ''))} "
+        f"lr={_fmt(params.get('lr'), '.3g')}  "
+        f"y/x/recon={_fmt(params.get('y_loss_w'), '.2g')}/"
+        f"{_fmt(params.get('x_loss_w'), '.2g')}/"
+        f"{_fmt(params.get('recon_loss_w'), '.2g')}"
+    )
+    if "t2d2" in result:
+        return (
+            f"{settings}  block_diag={result.get('use_block_diag')}  "
+            f"->  T2D2+T3D3={_fmt(result.get('cl_of'), '.4g')}  "
+            f"T2D2={_fmt(result.get('t2d2'), '.4g')}  "
+            f"T3D3={_fmt(result.get('t3d3'), '.4g')}  "
+            f"(dev MAE={_fmt(result.get('dev_mae_sum'), '.4g')})"
+        )
+    if "cl_of" in result:
+        return (
+            f"{settings}  block_diag={result.get('use_block_diag')}  "
+            f"->  CL OF={_fmt(result.get('cl_of'), '.4g')}  "
+            f"tracking={_fmt(result.get('cl_tracking'), '.4g')}  "
+            f"du={_fmt(result.get('cl_du'), '.4g')}  "
+            f"(dev MAE={_fmt(result.get('dev_mae_sum'), '.4g')})"
+        )
+    return (
+        f"{settings}  "
+        f"->  dev MAE={_fmt(result.get('dev_mae_sum'), '.4g')}  "
+        f"test MAE={_fmt(result.get('test_mae_sum'), '.4g')}"
+    )
+
+
+def append_trial_log(hpo_cfg: HPOConfig, trial_number: int, params: dict, result: dict[str, Any]) -> None:
+    path = trial_log_path(hpo_cfg)
+    columns = trial_log_columns(result)
+    header = "\t".join(columns) + "\n"
+    row = format_trial_row(trial_number, params, result) + "\n"
+    pretty = format_trial_pretty(trial_number, params, result)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "a", encoding="utf-8") as f:
+        fcntl.flock(f, fcntl.LOCK_EX)
+        if f.tell() == 0:
+            f.write(header)
+        f.write(row)
+        f.flush()
+    print(pretty, flush=True)
+
+
 def results_dir_for(hpo_cfg: HPOConfig) -> Path:
     out = RESULTS_DIR / hpo_cfg.variant
     out.mkdir(parents=True, exist_ok=True)
@@ -101,7 +279,7 @@ def load_dataset(data_path: Path = DATA_PATH):
 
 def sample_trial_params(trial: optuna.Trial) -> TrialParams:
     return TrialParams(
-        nz=trial.suggest_categorical("nz", [4, 6, 8, 10, 12, 16, 20, 24, 32]),
+        nz=trial.suggest_int("nz", 4, 32),
         encoder_depth=trial.suggest_int("encoder_depth", 1, 3),
         width_mult=trial.suggest_categorical("width_mult", [0.5, 1.0, 2.0]),
         nonlin=trial.suggest_categorical("nonlin", ["relu", "elu", "gelu"]),
@@ -258,6 +436,7 @@ def create_objective(
             for i, v in enumerate(result["dev_mae_per_output"]):
                 mlflow.log_metric(f"dev_mae_{y_names[i]}", float(v))
             trial.set_user_attr("test_mae_sum", result["test_mae_sum"])
+            append_trial_log(hpo_cfg, trial.number, asdict(params), result)
             return result["dev_mae_sum"]
 
     return objective
@@ -288,8 +467,10 @@ def run_stage_a(
     n_trials: int,
     train_cfg: TrainConfig,
     verbose: bool = False,
+    n_jobs: int = 1,
+    blas_threads: int = 1,
 ) -> optuna.Study:
-    configure_threading()
+    configure_threading(blas_threads)
     train, dev, test, scaler, scalerU, y_names, _ = load_dataset()
     setup_mlflow(hpo_cfg)
 
@@ -298,6 +479,8 @@ def run_stage_a(
         mlflow.log_param("variant", hpo_cfg.variant)
         mlflow.log_param("matrix_C", hpo_cfg.matrix_C)
         mlflow.log_param("n_trials", n_trials)
+        mlflow.log_param("n_jobs", n_jobs)
+        mlflow.log_param("blas_threads", blas_threads)
         objective = create_objective(
             hpo_cfg,
             train,
@@ -309,7 +492,12 @@ def run_stage_a(
             train_cfg,
             verbose=verbose,
         )
-        study.optimize(objective, n_trials=n_trials, show_progress_bar=True)
+        study.optimize(
+            objective,
+            n_trials=n_trials,
+            n_jobs=n_jobs,
+            show_progress_bar=True,
+        )
 
     summary = {
         "study_name": hpo_cfg.study_name,

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/89978208053941c989134478deacd24d/artifacts
+end_time: 1788856851154
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: 89978208053941c989134478deacd24d
+run_name: fun-wren-570
+run_uuid: 89978208053941c989134478deacd24d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788856784158
+status: 3
+tags: []
+user_id: patrik

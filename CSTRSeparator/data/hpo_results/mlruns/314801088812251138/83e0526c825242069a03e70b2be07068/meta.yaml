@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/83e0526c825242069a03e70b2be07068/artifacts
+end_time: 1788928423703
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 83e0526c825242069a03e70b2be07068
+run_name: funny-hound-775
+run_uuid: 83e0526c825242069a03e70b2be07068
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788928023336
+status: 3
+tags: []
+user_id: patrik

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/b664806d7e58427abece8444a3271cce/artifacts
+end_time: 1788914722329
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: b664806d7e58427abece8444a3271cce
+run_name: nebulous-shoat-435
+run_uuid: b664806d7e58427abece8444a3271cce
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788913984465
+status: 3
+tags: []
+user_id: patrik

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/a1b03cfead4f4a668d258a738174ef3a/artifacts
+end_time: 1788884186170
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: a1b03cfead4f4a668d258a738174ef3a
+run_name: masked-carp-897
+run_uuid: a1b03cfead4f4a668d258a738174ef3a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788884019402
+status: 3
+tags: []
+user_id: patrik

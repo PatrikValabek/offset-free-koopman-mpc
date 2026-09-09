@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/1fd60794c6ed44edb069634c17629902/artifacts
+end_time: 1788862011634
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 1fd60794c6ed44edb069634c17629902
+run_name: wise-sheep-501
+run_uuid: 1fd60794c6ed44edb069634c17629902
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788861995819
+status: 3
+tags: []
+user_id: patrik

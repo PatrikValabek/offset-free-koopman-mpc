@@ -1,0 +1,4 @@
+trial	nz	encoder_depth	width_mult	nonlin	nsteps	bs	lr	y_loss_w	x_loss_w	recon_loss_w	seed	epochs	dev_mae	test_mae	use_block_diag	cl_of	t2d2	t3d3
+1	11	2	1.0	elu	120	40	0.0007531	13.3	3.34	1.75	2854	1000	3.883	3.39	True	8018	4641	3377
+2	11	2	1.0	elu	120	40	0.0007531	13.3	3.34	1.75	2854	1500	3.446	3.218	True	1e+06		
+3	11	2	1.0	elu	120	40	0.0007531	13.3	3.34	1.75	2854	2000	3.308	3.207	True	1e+06		

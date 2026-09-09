@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/1aaddf92fbb34e9c8e2b85e57173a2e2/artifacts
+end_time: 1788872695290
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 1aaddf92fbb34e9c8e2b85e57173a2e2
+run_name: adaptable-loon-184
+run_uuid: 1aaddf92fbb34e9c8e2b85e57173a2e2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788872594900
+status: 3
+tags: []
+user_id: patrik

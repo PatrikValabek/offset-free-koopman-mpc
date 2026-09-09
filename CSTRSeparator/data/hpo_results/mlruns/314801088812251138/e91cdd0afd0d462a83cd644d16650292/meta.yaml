@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/e91cdd0afd0d462a83cd644d16650292/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: e91cdd0afd0d462a83cd644d16650292
+run_name: languid-whale-794
+run_uuid: e91cdd0afd0d462a83cd644d16650292
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788858062425
+status: 1
+tags: []
+user_id: patrik

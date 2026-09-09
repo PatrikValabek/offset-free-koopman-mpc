@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/d0f07c6c3afd481e81b125e79f45c40c/artifacts
+end_time: 1788938339250
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: d0f07c6c3afd481e81b125e79f45c40c
+run_name: thoughtful-fox-823
+run_uuid: d0f07c6c3afd481e81b125e79f45c40c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788937768263
+status: 3
+tags: []
+user_id: patrik

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/a39f237a787d4086929f8669e3afef0c/artifacts
+end_time: 1788883704690
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: a39f237a787d4086929f8669e3afef0c
+run_name: gentle-goose-223
+run_uuid: a39f237a787d4086929f8669e3afef0c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788883613584
+status: 3
+tags: []
+user_id: patrik

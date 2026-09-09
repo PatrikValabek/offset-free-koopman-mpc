@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/cf4c127067f54d24aac574a0bdcb2a03/artifacts
+end_time: 1788920089277
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: cf4c127067f54d24aac574a0bdcb2a03
+run_name: smiling-bass-569
+run_uuid: cf4c127067f54d24aac574a0bdcb2a03
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788919854218
+status: 3
+tags: []
+user_id: patrik

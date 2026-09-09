@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/da2a54c2e905483c8648adf0edf41b5e/artifacts
+end_time: 1788878241096
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: da2a54c2e905483c8648adf0edf41b5e
+run_name: calm-shrike-593
+run_uuid: da2a54c2e905483c8648adf0edf41b5e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788878138838
+status: 3
+tags: []
+user_id: patrik

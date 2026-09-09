@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/895282807628898427/e1f6e24e08d64865895867bc62992450/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '895282807628898427'
+lifecycle_stage: active
+run_id: e1f6e24e08d64865895867bc62992450
+run_name: righteous-shad-828
+run_uuid: e1f6e24e08d64865895867bc62992450
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788877181814
+status: 1
+tags: []
+user_id: patrik

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/cd5b536f2ed34aec9390caa7c8070b52/artifacts
+end_time: 1788919853808
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: cd5b536f2ed34aec9390caa7c8070b52
+run_name: sassy-elk-52
+run_uuid: cd5b536f2ed34aec9390caa7c8070b52
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788919442989
+status: 3
+tags: []
+user_id: patrik

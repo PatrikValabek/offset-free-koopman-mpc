@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/97db32c51652459d994da444db58f675/artifacts
+end_time: 1788863373021
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 97db32c51652459d994da444db58f675
+run_name: nimble-rat-452
+run_uuid: 97db32c51652459d994da444db58f675
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788863108500
+status: 3
+tags: []
+user_id: patrik

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/895282807628898427/a15d927704f64e529f4066d25df5d161/artifacts
+end_time: 1788876678306
+entry_point_name: ''
+experiment_id: '895282807628898427'
+lifecycle_stage: active
+run_id: a15d927704f64e529f4066d25df5d161
+run_name: delicate-carp-686
+run_uuid: a15d927704f64e529f4066d25df5d161
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788876343187
+status: 3
+tags: []
+user_id: patrik

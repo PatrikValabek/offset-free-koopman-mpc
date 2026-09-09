@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/895282807628898427/0ab17a31a4b74ace9ad3bd30bdab031e/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '895282807628898427'
+lifecycle_stage: active
+run_id: 0ab17a31a4b74ace9ad3bd30bdab031e
+run_name: ambitious-kite-469
+run_uuid: 0ab17a31a4b74ace9ad3bd30bdab031e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788875396473
+status: 1
+tags: []
+user_id: patrik

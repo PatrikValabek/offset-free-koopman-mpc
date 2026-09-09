@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/ea09e2f2edfc4920809c56c298e4b509/artifacts
+end_time: 1788870487076
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: ea09e2f2edfc4920809c56c298e4b509
+run_name: powerful-snipe-186
+run_uuid: ea09e2f2edfc4920809c56c298e4b509
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788870325779
+status: 3
+tags: []
+user_id: patrik

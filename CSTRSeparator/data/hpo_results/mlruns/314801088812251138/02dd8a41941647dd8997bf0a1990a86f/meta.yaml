@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/02dd8a41941647dd8997bf0a1990a86f/artifacts
+end_time: 1788901440447
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 02dd8a41941647dd8997bf0a1990a86f
+run_name: dashing-slug-208
+run_uuid: 02dd8a41941647dd8997bf0a1990a86f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788900984028
+status: 3
+tags: []
+user_id: patrik

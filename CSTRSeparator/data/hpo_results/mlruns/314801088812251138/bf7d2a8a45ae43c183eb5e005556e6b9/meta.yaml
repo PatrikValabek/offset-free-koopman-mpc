@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/bf7d2a8a45ae43c183eb5e005556e6b9/artifacts
+end_time: 1788883297289
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: bf7d2a8a45ae43c183eb5e005556e6b9
+run_name: salty-koi-511
+run_uuid: bf7d2a8a45ae43c183eb5e005556e6b9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788882941636
+status: 3
+tags: []
+user_id: patrik

@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/895282807628898427/99f578bd443647dfa6798dcf61a14db8/artifacts
+end_time: 1788876343150
+entry_point_name: ''
+experiment_id: '895282807628898427'
+lifecycle_stage: active
+run_id: 99f578bd443647dfa6798dcf61a14db8
+run_name: amusing-shrike-205
+run_uuid: 99f578bd443647dfa6798dcf61a14db8
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788876291934
+status: 3
+tags: []
+user_id: patrik

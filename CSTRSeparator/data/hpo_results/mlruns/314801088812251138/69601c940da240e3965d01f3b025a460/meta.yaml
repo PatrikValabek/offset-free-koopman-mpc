@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/69601c940da240e3965d01f3b025a460/artifacts
+end_time: 1788895750995
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 69601c940da240e3965d01f3b025a460
+run_name: nosy-squid-276
+run_uuid: 69601c940da240e3965d01f3b025a460
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788895750982
+status: 4
+tags: []
+user_id: patrik

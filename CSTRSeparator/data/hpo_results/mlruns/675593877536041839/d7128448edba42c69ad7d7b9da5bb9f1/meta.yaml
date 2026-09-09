@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/d7128448edba42c69ad7d7b9da5bb9f1/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: d7128448edba42c69ad7d7b9da5bb9f1
+run_name: thoughtful-gull-602
+run_uuid: d7128448edba42c69ad7d7b9da5bb9f1
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788856308904
+status: 1
+tags: []
+user_id: patrik

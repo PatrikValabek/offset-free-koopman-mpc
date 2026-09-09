@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/cfb2e41032994b88ad1776c9cf9c2821/artifacts
+end_time: 1788921368359
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: cfb2e41032994b88ad1776c9cf9c2821
+run_name: aged-frog-483
+run_uuid: cfb2e41032994b88ad1776c9cf9c2821
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788920577433
+status: 3
+tags: []
+user_id: patrik

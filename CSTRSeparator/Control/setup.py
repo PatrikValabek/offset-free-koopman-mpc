@@ -9,8 +9,13 @@ The campaign is a bottoms-quality (xB3) grade change around the Li & Swartz
 nominal point, with temperatures held as operating constraints. Two plant
 disturbances that the controller does not measure are then applied:
 
-  1. Cold fresh feed: T10 drops (utility / feed-preheat upset).
-  2. Leaner fresh feed: xA10 drops (composition / tank-switch upset).
+  1. Cold fresh feed: modest T10 drop (preheat / utility drift).
+  2. Slightly leaner fresh feed: modest xA10 drop (tank switch / impurity).
+
+These magnitudes are chosen so both grade setpoints remain reachable inside
+the identification input box (Q ≤ 25 kJ/s). A 10 K T10 cut at premium F10
+needs ~ρ Cp F10 ΔT ≈ 40 kJ/s of extra heat, which saturates the heaters
+and makes the NMPC benchmark infeasible.
 
 References are plant steady states (achievable at the nominal parameters).
 The disturbances stay on the plant only; the observer / targets / MPC are
@@ -96,8 +101,8 @@ reference_u = scalerU.transform(reference_u_ns.reshape(1, -1))[0]
 # Unmeasured plant disturbances (applied in the closed-loop notebook).
 # Times are sample indices (Ts = 1 s).
 disturbances = [
-    {"k": 600, "attr": "T10", "value": 303.0, "label": "cold feed T10: 313 -> 303 K"},
-    {"k": 850, "attr": "xA10", "value": 0.90, "label": "lean feed xA10: 1.00 -> 0.90"},
+    {"k": 600, "attr": "T10", "value": 310.0, "label": "cold feed T10: 313 -> 310 K"},
+    {"k": 850, "attr": "xA10", "value": 0.97, "label": "lean feed xA10: 1.00 -> 0.97"},
 ]
 
 # ---------------------------- Initial conditions ------------------------------
@@ -120,7 +125,7 @@ Qy_te = np.diag([1.0, 1.0, 1.0, 20.0])
 Qu_te = np.diag([0.2, 0.2, 0.2, 0.5, 0.5, 0.5]) * 0
 
 Qy = np.diag([2.0, 2.0, 2.0, 15.0])
-Qu = np.diag([0.2, 0.2, 0.2, 0.5, 0.5, 0.5])
+Qu = np.diag([0.2, 0.2, 0.2, 0.5, 0.5, 0.5]) * 0
 Qdu = np.diag([0.5, 0.5, 0.5, 1.0, 1.0, 1.0])
 
 ident = np.load((DATA_DIR / "cstr_separator_ident.npz").as_posix(), allow_pickle=True)
@@ -165,8 +170,8 @@ sim_setup = {
     "y_names": y_names,
     "u_names": u_names,
     "notes": (
-        "CSTR-separator N4SID setup: xB3 grade change with unmeasured "
-        "T10 and xA10 feed upsets."
+        "T10 (−3 K) and xA10 (−0.03) feed upsets; both grades remain "
+        "reachable inside the Q/F identification box."
     ),
 }
 

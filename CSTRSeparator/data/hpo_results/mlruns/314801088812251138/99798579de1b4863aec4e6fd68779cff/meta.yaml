@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/99798579de1b4863aec4e6fd68779cff/artifacts
+end_time: 1788929642062
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 99798579de1b4863aec4e6fd68779cff
+run_name: caring-ape-81
+run_uuid: 99798579de1b4863aec4e6fd68779cff
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788929014709
+status: 3
+tags: []
+user_id: patrik

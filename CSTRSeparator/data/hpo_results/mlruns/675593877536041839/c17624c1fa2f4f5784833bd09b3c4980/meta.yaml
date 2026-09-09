@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/675593877536041839/c17624c1fa2f4f5784833bd09b3c4980/artifacts
+end_time: 1788856970858
+entry_point_name: ''
+experiment_id: '675593877536041839'
+lifecycle_stage: active
+run_id: c17624c1fa2f4f5784833bd09b3c4980
+run_name: suave-croc-122
+run_uuid: c17624c1fa2f4f5784833bd09b3c4980
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788856851238
+status: 3
+tags: []
+user_id: patrik

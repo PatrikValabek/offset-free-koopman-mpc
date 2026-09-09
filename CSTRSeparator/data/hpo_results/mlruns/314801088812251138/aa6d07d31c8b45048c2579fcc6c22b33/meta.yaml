@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/aa6d07d31c8b45048c2579fcc6c22b33/artifacts
+end_time: 1788865279876
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: aa6d07d31c8b45048c2579fcc6c22b33
+run_name: upbeat-moose-764
+run_uuid: aa6d07d31c8b45048c2579fcc6c22b33
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788858134667
+status: 3
+tags: []
+user_id: patrik

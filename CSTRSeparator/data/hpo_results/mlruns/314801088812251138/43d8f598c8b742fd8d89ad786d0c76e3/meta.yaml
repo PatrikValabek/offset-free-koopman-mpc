@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/43d8f598c8b742fd8d89ad786d0c76e3/artifacts
+end_time: 1788885141821
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 43d8f598c8b742fd8d89ad786d0c76e3
+run_name: blushing-rat-859
+run_uuid: 43d8f598c8b742fd8d89ad786d0c76e3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788884950675
+status: 3
+tags: []
+user_id: patrik

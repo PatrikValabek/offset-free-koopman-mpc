@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/895282807628898427/a7027054628a40b1820e926113041171/artifacts
+end_time: 1788876689600
+entry_point_name: ''
+experiment_id: '895282807628898427'
+lifecycle_stage: active
+run_id: a7027054628a40b1820e926113041171
+run_name: painted-moose-710
+run_uuid: a7027054628a40b1820e926113041171
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788876678340
+status: 3
+tags: []
+user_id: patrik

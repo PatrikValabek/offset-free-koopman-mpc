@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/aa59f833e4344b69abdccb686be917c0/artifacts
+end_time: 1788902236583
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: aa59f833e4344b69abdccb686be917c0
+run_name: blushing-koi-448
+run_uuid: aa59f833e4344b69abdccb686be917c0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788901996800
+status: 3
+tags: []
+user_id: patrik

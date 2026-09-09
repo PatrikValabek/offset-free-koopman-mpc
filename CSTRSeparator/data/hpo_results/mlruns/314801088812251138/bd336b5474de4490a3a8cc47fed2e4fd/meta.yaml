@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/bd336b5474de4490a3a8cc47fed2e4fd/artifacts
+end_time: 1788915164548
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: bd336b5474de4490a3a8cc47fed2e4fd
+run_name: auspicious-snake-137
+run_uuid: bd336b5474de4490a3a8cc47fed2e4fd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788914722564
+status: 3
+tags: []
+user_id: patrik

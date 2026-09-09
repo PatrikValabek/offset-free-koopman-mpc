@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/c734fa51781642c6b068a8d4e42193ec/artifacts
+end_time: 1788860050251
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: c734fa51781642c6b068a8d4e42193ec
+run_name: amusing-moose-853
+run_uuid: c734fa51781642c6b068a8d4e42193ec
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788859729659
+status: 3
+tags: []
+user_id: patrik

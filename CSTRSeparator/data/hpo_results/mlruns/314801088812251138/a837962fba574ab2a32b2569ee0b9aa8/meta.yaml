@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/a837962fba574ab2a32b2569ee0b9aa8/artifacts
+end_time: 1788872498978
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: a837962fba574ab2a32b2569ee0b9aa8
+run_name: marvelous-pig-513
+run_uuid: a837962fba574ab2a32b2569ee0b9aa8
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788872472563
+status: 3
+tags: []
+user_id: patrik

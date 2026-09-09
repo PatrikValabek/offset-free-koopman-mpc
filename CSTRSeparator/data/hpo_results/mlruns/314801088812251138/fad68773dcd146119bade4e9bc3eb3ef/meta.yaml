@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/fad68773dcd146119bade4e9bc3eb3ef/artifacts
+end_time: 1788884179224
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: fad68773dcd146119bade4e9bc3eb3ef
+run_name: popular-carp-502
+run_uuid: fad68773dcd146119bade4e9bc3eb3ef
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788884019422
+status: 3
+tags: []
+user_id: patrik

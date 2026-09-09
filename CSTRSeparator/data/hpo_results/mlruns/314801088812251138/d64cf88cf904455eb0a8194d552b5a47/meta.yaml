@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/d64cf88cf904455eb0a8194d552b5a47/artifacts
+end_time: 1788864130518
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: d64cf88cf904455eb0a8194d552b5a47
+run_name: resilient-trout-469
+run_uuid: d64cf88cf904455eb0a8194d552b5a47
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788864036326
+status: 3
+tags: []
+user_id: patrik

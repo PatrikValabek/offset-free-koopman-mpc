@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/65ad3a4377a343e29ce0917c20e7c643/artifacts
+end_time: 1788898139291
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 65ad3a4377a343e29ce0917c20e7c643
+run_name: agreeable-grouse-243
+run_uuid: 65ad3a4377a343e29ce0917c20e7c643
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788897573280
+status: 3
+tags: []
+user_id: patrik

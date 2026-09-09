@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/be3f2a40bc1c41728c2bde51a31c789d/artifacts
+end_time: 1788867863001
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: be3f2a40bc1c41728c2bde51a31c789d
+run_name: valuable-sponge-862
+run_uuid: be3f2a40bc1c41728c2bde51a31c789d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788867794360
+status: 3
+tags: []
+user_id: patrik

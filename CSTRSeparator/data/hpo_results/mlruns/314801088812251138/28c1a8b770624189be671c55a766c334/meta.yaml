@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/28c1a8b770624189be671c55a766c334/artifacts
+end_time: 1788860846372
+entry_point_name: ''
+experiment_id: '314801088812251138'
+lifecycle_stage: active
+run_id: 28c1a8b770624189be671c55a766c334
+run_name: amazing-crane-196
+run_uuid: 28c1a8b770624189be671c55a766c334
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1788860715518
+status: 3
+tags: []
+user_id: patrik
