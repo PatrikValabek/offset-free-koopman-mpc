@@ -1,5 +1,5 @@
 artifact_uri: file:///Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRSeparator/data/hpo_results/mlruns/314801088812251138/2f07d437a9254876afdc4bcbc0e39115/artifacts
-end_time: null
+end_time: 1788940714497
 entry_point_name: ''
 experiment_id: '314801088812251138'
 lifecycle_stage: active
@@ -10,6 +10,6 @@ source_name: ''
 source_type: 4
 source_version: ''
 start_time: 1788940148529
-status: 1
+status: 3
 tags: []
 user_id: patrik

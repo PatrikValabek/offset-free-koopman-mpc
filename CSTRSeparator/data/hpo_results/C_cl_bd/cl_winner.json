@@ -1,27 +1,27 @@
 {
-  "trial": 297812,
+  "trial": 344740,
   "params": {
-    "nz": 27,
+    "nz": 24,
     "encoder_depth": 2,
     "width_mult": 0.5,
     "nonlin": "gelu",
-    "y_loss_w": 1.6736159435581075,
-    "x_loss_w": 1.7786868718386686,
-    "recon_loss_w": 4.712577463326533,
+    "y_loss_w": 1.4981118125370525,
+    "x_loss_w": 1.3849913897143105,
+    "recon_loss_w": 4.480763107252839,
     "nsteps": 120,
     "bs": 40,
-    "lr": 0.0011763593051953886,
-    "seed": 8029,
+    "lr": 0.00111824070066909,
+    "seed": 8080,
     "epochs": 4000
   },
   "use_block_diag": true,
   "cl": {
-    "objective": 175.77335004057764,
-    "state_error_cost": 163.13858336743493,
-    "control_increment_cost": 12.634766673142611,
+    "objective": 169.63878839470078,
+    "state_error_cost": 154.30772725741585,
+    "control_increment_cost": 15.331061137284914,
     "control_setpoint_cost": 0.0,
-    "rho_A": 0.9543830968269003
+    "rho_A": 0.9337907634739879
   },
-  "dev_mae_sum": 10.131834030151367,
-  "test_mae_sum": 12.049829483032227
+  "dev_mae_sum": 10.59838581085205,
+  "test_mae_sum": 12.867164611816406
 }

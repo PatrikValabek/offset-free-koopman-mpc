@@ -5,8 +5,9 @@ The Optuna objective is the same closed-loop cost printed in
 ``CSTRSeparator/Control/CT.ipynb``. Identification MAE is logged but is not
 minimized. ``use_block_diag`` is always True (not searched).
 
-Default: new study ``koopman_C_cl_bd``, 2 parallel jobs, run until Ctrl+C.
-Logs: ``hpo_results/C_cl_bd/trials.tsv``.
+Default: new study ``koopman_C_cl_qu`` (Qu on in ``sim_setup.pkl``), 2 parallel
+jobs, run until Ctrl+C. Does not write into ``hpo_results/C_cl_bd/``.
+Logs: ``hpo_results/C_cl_qu/trials.tsv``.
 """
 
 from __future__ import annotations
@@ -50,61 +51,98 @@ from ct_closed_loop import evaluate_or_penalty  # noqa: E402
 
 HPO_CFG = HPOConfig(
     matrix_C=True,
-    experiment_name="koopman_cstr_separator_C_cl",
-    study_name="koopman_C_cl_bd",
-    variant="C_cl_bd",
+    experiment_name="koopman_cstr_separator_C_cl_qu",
+    study_name="koopman_C_cl_qu",
+    variant="C_cl_qu",
 )
 
 TARGET_OF = 250.0
 USE_BLOCK_DIAG = True
 EPOCH_GRID = [500, 1000, 1500, 2000, 3000, 4000]
-
-# Identification params that previously won on MAE (C variant).
-SEED_PARAMS = {
-    "nz": 24,
-    "encoder_depth": 2,
-    "width_mult": 1.0,
-    "nonlin": "gelu",
-    "y_loss_w": 1.7519810798188438,
-    "x_loss_w": 1.1184530191749238,
-    "recon_loss_w": 3.459130306783038,
-    "nsteps": 120,
-    "bs": 40,
-    "lr": 0.00037313513553171717,
-    "seed": 2220,
-}
-
-# Closed-loop winner from the first intnz map search (trial 55).
-BEST_CL_PARAMS = {
-    "nz": 11,
-    "encoder_depth": 2,
-    "width_mult": 0.5,
-    "nonlin": "gelu",
-    "y_loss_w": 1.1687437202646689,
-    "x_loss_w": 1.7642340669321424,
-    "recon_loss_w": 4.703307756752022,
-    "nsteps": 120,
-    "bs": 40,
-    "lr": 0.0006654235663016651,
-    "seed": 4274,
-}
+PREVIOUS_TRIALS_TSV = RESULTS_DIR / "C_cl_bd" / "trials.tsv"
+N_SEED_BEST = 15
+PARAM_KEYS = (
+    "nz",
+    "encoder_depth",
+    "width_mult",
+    "nonlin",
+    "y_loss_w",
+    "x_loss_w",
+    "recon_loss_w",
+    "nsteps",
+    "bs",
+    "lr",
+    "seed",
+)
 
 
-def enqueue_seed_trials(study: optuna.Study) -> None:
-    study.enqueue_trial({**SEED_PARAMS, "epochs": 4000})
-    study.enqueue_trial({**BEST_CL_PARAMS, "epochs": 4000})
-    for nz in (4, 5, 7, 8, 9, 11, 13, 15, 16, 20, 24, 32):
-        study.enqueue_trial({**SEED_PARAMS, "nz": nz, "epochs": 4000})
-    for epochs in EPOCH_GRID:
-        study.enqueue_trial({**BEST_CL_PARAMS, "epochs": epochs})
+def _snap_epochs(raw: object) -> int:
+    try:
+        ep = int(float(raw))
+    except (TypeError, ValueError):
+        return 4000
+    if ep in EPOCH_GRID:
+        return ep
+    return 4000
 
 
-def enqueue_epoch_budget_trials(study: optuna.Study) -> None:
-    """Add epoch-budget trials for the known CL architecture if not already searched."""
-    if any("epochs" in (t.params or {}) for t in study.trials):
-        return
-    for epochs in EPOCH_GRID:
-        study.enqueue_trial({**BEST_CL_PARAMS, "epochs": epochs})
+def _row_to_params(row: dict, epochs: int) -> dict:
+    return {
+        "nz": int(float(row["nz"])),
+        "encoder_depth": int(float(row["encoder_depth"])),
+        "width_mult": float(row["width_mult"]),
+        "nonlin": str(row["nonlin"]),
+        "y_loss_w": float(row["y_loss_w"]),
+        "x_loss_w": float(row["x_loss_w"]),
+        "recon_loss_w": float(row["recon_loss_w"]),
+        "nsteps": int(float(row["nsteps"])),
+        "bs": int(float(row["bs"])),
+        "lr": float(row["lr"]),
+        "seed": int(float(row["seed"])),
+        "epochs": int(epochs),
+    }
+
+
+def enqueue_from_previous_best(study: optuna.Study, tsv_path: Path, n_best: int) -> int:
+    """Re-queue the previous study's best finite-OF configs (same epoch cap, plus 4000)."""
+    if not tsv_path.is_file() or n_best <= 0:
+        return 0
+    lines = tsv_path.read_text(encoding="utf-8").strip().splitlines()
+    if len(lines) < 2:
+        return 0
+    hdr = lines[0].split("\t")
+    ranked: list[tuple[float, dict]] = []
+    for line in lines[1:]:
+        row = dict(zip(hdr, line.split("\t")))
+        try:
+            of = float(row.get("cl_of", "nan"))
+        except ValueError:
+            continue
+        if not np.isfinite(of) or of >= 1e5:
+            continue
+        ranked.append((of, row))
+    ranked.sort(key=lambda item: item[0])
+
+    queued: set[tuple] = set()
+    n = 0
+    for rank, (_of, row) in enumerate(ranked[:n_best]):
+        epochs = _snap_epochs(row.get("epochs"))
+        to_try = [epochs]
+        if rank < 5 and 4000 not in to_try:
+            to_try.append(4000)
+        for ep in to_try:
+            params = _row_to_params(row, ep)
+            key = tuple(params[k] for k in (*PARAM_KEYS, "epochs"))
+            if key in queued:
+                continue
+            queued.add(key)
+            study.enqueue_trial(params)
+            n += 1
+    return n
+
+
+def enqueue_seed_trials(study: optuna.Study, previous_tsv: Path, n_best: int) -> int:
+    return enqueue_from_previous_best(study, previous_tsv, n_best)
 
 
 def fail_stale_running_trials(study: optuna.Study) -> int:
@@ -176,6 +214,17 @@ def main() -> None:
         action="store_true",
         help="Only score the current A/B/C_cstr_separator_C_True.npy (no search).",
     )
+    parser.add_argument(
+        "--previous-tsv",
+        default=str(PREVIOUS_TRIALS_TSV),
+        help="Prior CT study trials.tsv used to enqueue the best configs.",
+    )
+    parser.add_argument(
+        "--n-seed-best",
+        type=int,
+        default=N_SEED_BEST,
+        help="How many previous finite-OF configs to enqueue at the start.",
+    )
     add_parallel_cli(parser)
     args = parser.parse_args()
 
@@ -212,14 +261,14 @@ def main() -> None:
     if n_stale:
         print(f"Marked {n_stale} stale RUNNING trials as FAIL.", flush=True)
     if len(study.trials) == 0:
-        enqueue_seed_trials(study)
+        n_seed = enqueue_seed_trials(study, Path(args.previous_tsv), args.n_seed_best)
         print(
-            f"New study {HPO_CFG.study_name}: block_diag={USE_BLOCK_DIAG}, "
+            f"New study {HPO_CFG.study_name}: queued {n_seed} seeds from "
+            f"{args.previous_tsv}, block_diag={USE_BLOCK_DIAG}, "
             f"n_jobs={args.n_jobs}, n_trials={args.n_trials or 'unlimited'}.",
             flush=True,
         )
     else:
-        enqueue_epoch_budget_trials(study)
         print(
             f"Continuing study {HPO_CFG.study_name} "
             f"({len(study.trials)} existing trials, best OF={safe_best_value(study)}).",

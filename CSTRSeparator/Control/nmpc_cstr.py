@@ -222,12 +222,18 @@ def build_mpc(
     y_ref = [model.tvp[f"{n}_ref"] for n in Y_NAMES]
     u_vars = [model.u[n] for n in U_NAMES]
     u_ref = [model.tvp[f"{n}_ref"] for n in U_NAMES]
-    lterm = 0
+    # do-mpc mterm is f(x, tvp, p) only — input tracking belongs in lterm.
+    y_cost = 0
     for i in range(NY):
-        lterm = lterm + Qy[i, i] * (y_vars[i] - y_ref[i]) ** 2
+        y_cost = y_cost + Qy[i, i] * (y_vars[i] - y_ref[i]) ** 2
+    # Rebuild mterm from x/tvp/p only so CasADi cannot see the input symbols.
+    mterm = ca.Function("mterm_iso", [model.x, model.tvp, model.p], [y_cost])(
+        model.x, model.tvp, model.p
+    )
+    u_cost = 0
     for i in range(NU):
-        lterm = lterm + Qu[i, i] * (u_vars[i] - u_ref[i]) ** 2
-    mpc.set_objective(mterm=lterm, lterm=lterm)
+        u_cost = u_cost + Qu[i, i] * (u_vars[i] - u_ref[i]) ** 2
+    mpc.set_objective(mterm=mterm, lterm=mterm + u_cost)
     mpc.set_rterm(**{name: float(Qdu[i, i]) for i, name in enumerate(U_NAMES)})
 
     u_min = np.asarray(loaded_setup["u_min_ns"], dtype=float).reshape(-1)

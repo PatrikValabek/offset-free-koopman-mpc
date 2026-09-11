@@ -1,0 +1,6 @@
+trial	method	n	SS_f	SS_p	f_extra	p_over_f	centering	SS_A_stability	SS_PK_B_reval	rho	n_ident	test_mae	cl_of	cl_tracking	cl_du	error
+0	PARSIM-K	13	40	40	27	1	None		False	0.993812	13	10.625	478.863	286.059	11.4139	
+1	N4SID	13	40	40	27		None	True		0.99212	13	10.5693	263.526	175.513	13.2678	
+2	N4SID	7	34	34	27		None	True		0.991812	7	10.5812	289.352	198.165	16.1105	
+3	PARSIM-K	7	34	34	27	1	None		False	0.999081	7	78.5742	2454.55	923.085	11.3881	
+4	N4SID	9	36	36	27		None	True		0.991813	9	10.6296	308.321	209.084	12.8057	

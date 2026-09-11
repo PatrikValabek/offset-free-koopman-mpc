@@ -123,6 +123,16 @@ def _decoder_maps(problem, T_real):
     return get_x, get_y, jacobian_at
 
 
+def _psd_quad(Q: np.ndarray, eps: float = 1e-8) -> np.ndarray:
+    """Symmetrize and shift so CVXPY's PSD Parameter accepts Q."""
+    Q = np.asarray(Q, dtype=float)
+    Q = 0.5 * (Q + Q.T)
+    wmin = float(np.min(np.linalg.eigvalsh(Q)))
+    if wmin < eps:
+        Q = Q + (eps - wmin) * np.eye(Q.shape[0])
+    return Q
+
+
 def _accumulate_of(y_sim, u_sim, us_sim, reference, Qy, Qu, Qdu, sim_time):
     objective = state_err = du_cost = u_sp_cost = 0.0
     for k in range(sim_time):
@@ -207,7 +217,7 @@ def closed_loop_taylor(
     )
     if mode == "t2d2":
         J = jacobian_at(z_s)
-    Qz_psd = J.T @ loaded["Qy"] @ J + 1e-8 * np.eye(nz)
+    Qz_psd = _psd_quad(J.T @ loaded["Qy"] @ J)
     mpc = helper.TaylorMPC(A, B, loaded["Qy"], loaded["Qu"], loaded["Qdu"], Bd, Cd)
     mpc.build_problem()
     z_ref = z_s
@@ -280,7 +290,7 @@ def closed_loop_taylor(
             )
             z_lin = z_sim[:nz, k]
 
-        Qz_psd = J.T @ Qy @ J + 1e-8 * np.eye(nz)
+        Qz_psd = _psd_quad(J.T @ Qy @ J)
         u_opt = mpc.get_u_optimal(
             z_sim[:nz, k],
             z_sim[nz:, k],

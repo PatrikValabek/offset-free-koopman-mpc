@@ -125,7 +125,7 @@ Qy_te = np.diag([1.0, 1.0, 1.0, 20.0])
 Qu_te = np.diag([0.2, 0.2, 0.2, 0.5, 0.5, 0.5]) * 0
 
 Qy = np.diag([2.0, 2.0, 2.0, 15.0])
-Qu = np.diag([0.2, 0.2, 0.2, 0.5, 0.5, 0.5]) * 0
+Qu = np.diag([0.2, 0.2, 0.2, 0.5, 0.5, 0.5])
 Qdu = np.diag([0.5, 0.5, 0.5, 1.0, 1.0, 1.0])
 
 ident = np.load((DATA_DIR / "cstr_separator_ident.npz").as_posix(), allow_pickle=True)

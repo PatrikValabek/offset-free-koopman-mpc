@@ -1,0 +1,23 @@
+{
+  "trial": 0,
+  "params": {
+    "method": "PARSIM-K",
+    "n": 13,
+    "f_extra": 27,
+    "centering": "None",
+    "SS_A_stability": true,
+    "p_over_f": 1.0,
+    "SS_PK_B_reval": false,
+    "SS_f": 40,
+    "SS_p": 40
+  },
+  "use_block_diag": true,
+  "cl": {
+    "objective": 478.86304369727145,
+    "state_error_cost": 286.059466282141,
+    "control_increment_cost": 11.41390136944867,
+    "rho_A": 0.9938119037427747
+  },
+  "test_mae_sum": 10.62502451871706,
+  "n_ident": 13
+}
