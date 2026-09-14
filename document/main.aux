@@ -54,84 +54,120 @@
 \newlabel{eq:of:mpc:ycon}{{4f}{5}{Koopman MPC with Offset-Free}{equation.3.6}{}}
 \newlabel{eq:of:mpc:init}{{4g}{5}{Koopman MPC with Offset-Free}{equation.3.7}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Methodology}{6}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Linearization of Output Mapping}{6}{subsection.4.1}\protected@file@percent }
-\newlabel{eq:linearization}{{5}{6}{Linearization of Output Mapping}{equation.4.5}{}}
-\newlabel{eq:linearization:target}{{5a}{6}{Linearization of Output Mapping}{equation.4.1}{}}
-\newlabel{eq:linearization:state}{{5b}{6}{Linearization of Output Mapping}{equation.4.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Target Optimization}{6}{subsection.4.2}\protected@file@percent }
-\newlabel{eq:cs:target}{{6}{7}{Target Optimization}{equation.4.6}{}}
-\newlabel{eq:cs:target:obj}{{6a}{7}{Target Optimization}{equation.4.1}{}}
-\newlabel{eq:cs:target:z}{{6b}{7}{Target Optimization}{equation.4.2}{}}
-\newlabel{eq:cs:target:y}{{6c}{7}{Target Optimization}{equation.4.3}{}}
-\newlabel{eq:cs:target:u}{{6d}{7}{Target Optimization}{equation.4.4}{}}
-\newlabel{eq:cs:target:ycon}{{6e}{7}{Target Optimization}{equation.4.5}{}}
-\newlabel{eq:cs:target:params}{{6f}{7}{Target Optimization}{equation.4.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}MPC}{7}{subsection.4.3}\protected@file@percent }
-\newlabel{eq:cs:mpc}{{7}{7}{MPC}{equation.4.7}{}}
-\newlabel{eq:cs:mpc:obj}{{7a}{7}{MPC}{equation.4.1}{}}
-\newlabel{eq:cs:mpc:z}{{7b}{7}{MPC}{equation.4.2}{}}
-\newlabel{eq:cs:mpc:y}{{7c}{7}{MPC}{equation.4.3}{}}
-\newlabel{eq:cs:mpc:du}{{7d}{7}{MPC}{equation.4.4}{}}
-\newlabel{eq:cs:mpc:u}{{7e}{7}{MPC}{equation.4.5}{}}
-\newlabel{eq:cs:mpc:ycon}{{7f}{7}{MPC}{equation.4.6}{}}
-\newlabel{eq:cs:mpc:init}{{7g}{7}{MPC}{equation.4.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Closed-Loop Control Structure}{8}{subsection.4.4}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Closed-loop control with nonlinear output mapping with linearization at previous target\relax }}{8}{algorithm.1}\protected@file@percent }
-\newlabel{alg:closed-loop}{{1}{8}{Closed-loop control with nonlinear output mapping with linearization at previous target\relax }{algorithm.1}{}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces Closed-loop control with nonlinear output mapping (linearization at current state estimate)\relax }}{9}{algorithm.2}\protected@file@percent }
-\newlabel{alg:closed-loop-state}{{2}{9}{Closed-loop control with nonlinear output mapping (linearization at current state estimate)\relax }{algorithm.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}State Estimation - Time Varying Kalman Filter}{9}{subsection.4.5}\protected@file@percent }
-\newlabel{sec:tvkf}{{4.5}{9}{State Estimation - Time Varying Kalman Filter}{subsection.4.5}{}}
-\newlabel{eq:tvkf:aug}{{9}{9}{State Estimation - Time Varying Kalman Filter}{equation.4.9}{}}
-\newlabel{eq:tvkf:meas}{{10}{9}{State Estimation - Time Varying Kalman Filter}{equation.4.10}{}}
-\newlabel{eq:tvkf:predict}{{11}{10}{State Estimation - Time Varying Kalman Filter}{equation.4.11}{}}
-\newlabel{eq:tvkf:predict:z}{{11a}{10}{State Estimation - Time Varying Kalman Filter}{equation.4.1}{}}
-\newlabel{eq:tvkf:predict:P}{{11b}{10}{State Estimation - Time Varying Kalman Filter}{equation.4.2}{}}
-\newlabel{eq:tvkf:update}{{12}{10}{State Estimation - Time Varying Kalman Filter}{equation.4.12}{}}
-\newlabel{eq:tvkf:update:S}{{12a}{10}{State Estimation - Time Varying Kalman Filter}{equation.4.1}{}}
-\newlabel{eq:tvkf:update:K}{{12b}{10}{State Estimation - Time Varying Kalman Filter}{equation.4.2}{}}
-\newlabel{eq:tvkf:update:z}{{12c}{10}{State Estimation - Time Varying Kalman Filter}{equation.4.3}{}}
-\newlabel{eq:tvkf:update:P}{{12d}{10}{State Estimation - Time Varying Kalman Filter}{equation.4.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Block Diagonal Deep Koopman Transformation}{10}{subsection.4.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Identification}{11}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}Control Results}{11}{section.6}\protected@file@percent }
-\newlabel{sec:Results}{{6}{11}{Control Results}{section.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}The effect of block-diagonal transformation}{11}{subsection.6.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Comparison of structure of problem to solver time and control performance.\relax }}{11}{table.caption.4}\protected@file@percent }
-\newlabel{tab:block-diagonal}{{1}{11}{Comparison of structure of problem to solver time and control performance.\relax }{table.caption.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Simulation setups}{12}{subsection.6.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Simulation Results for Two Reactor System}{12}{subsection.6.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Two-reactor CSTR: previous vs.\ updated objectives}}{12}{table.caption.5}\protected@file@percent }
-\newlabel{tab:setups-matrix-reactor-1}{{2}{12}{Two-reactor CSTR: previous vs.\ updated objectives}{table.caption.5}{}}
-\newlabel{tab:setups-matrix-reactor-2}{{2}{12}{Two-reactor CSTR: previous vs.\ updated objectives}{table.caption.5}{}}
-\newlabel{tab:setups-matrix-reactor-3}{{2}{12}{Two-reactor CSTR: previous vs.\ updated objectives}{table.caption.5}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Discussion}{12}{section.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{12}{section.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Deep Koopman identification}{6}{subsection.4.1}\protected@file@percent }
+\newlabel{sec:method:ident}{{4.1}{6}{Deep Koopman identification}{subsection.4.1}{}}
+\newlabel{eq:dk:rollout}{{5}{6}{Deep Koopman identification}{equation.4.5}{}}
+\newlabel{eq:dk:rollout:init}{{5a}{6}{Deep Koopman identification}{equation.4.1}{}}
+\newlabel{eq:dk:rollout:dyn}{{5b}{6}{Deep Koopman identification}{equation.4.2}{}}
+\newlabel{eq:dk:rollout:out}{{5c}{6}{Deep Koopman identification}{equation.4.3}{}}
+\citation{akiba2019optuna}
+\newlabel{eq:dk:loss}{{6}{7}{Deep Koopman identification}{equation.4.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Linearization of Output Mapping}{8}{subsection.4.2}\protected@file@percent }
+\newlabel{eq:linearization}{{7}{8}{Linearization of Output Mapping}{equation.4.7}{}}
+\newlabel{eq:linearization:target}{{7a}{8}{Linearization of Output Mapping}{equation.4.1}{}}
+\newlabel{eq:linearization:state}{{7b}{8}{Linearization of Output Mapping}{equation.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Target Optimization}{8}{subsection.4.3}\protected@file@percent }
+\newlabel{eq:cs:target}{{8}{8}{Target Optimization}{equation.4.8}{}}
+\newlabel{eq:cs:target:obj}{{8a}{8}{Target Optimization}{equation.4.1}{}}
+\newlabel{eq:cs:target:z}{{8b}{8}{Target Optimization}{equation.4.2}{}}
+\newlabel{eq:cs:target:y}{{8c}{8}{Target Optimization}{equation.4.3}{}}
+\newlabel{eq:cs:target:u}{{8d}{8}{Target Optimization}{equation.4.4}{}}
+\newlabel{eq:cs:target:ycon}{{8e}{8}{Target Optimization}{equation.4.5}{}}
+\newlabel{eq:cs:target:params}{{8f}{8}{Target Optimization}{equation.4.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}MPC}{9}{subsection.4.4}\protected@file@percent }
+\newlabel{eq:cs:mpc}{{9}{9}{MPC}{equation.4.9}{}}
+\newlabel{eq:cs:mpc:obj}{{9a}{9}{MPC}{equation.4.1}{}}
+\newlabel{eq:cs:mpc:z}{{9b}{9}{MPC}{equation.4.2}{}}
+\newlabel{eq:cs:mpc:y}{{9c}{9}{MPC}{equation.4.3}{}}
+\newlabel{eq:cs:mpc:du}{{9d}{9}{MPC}{equation.4.4}{}}
+\newlabel{eq:cs:mpc:u}{{9e}{9}{MPC}{equation.4.5}{}}
+\newlabel{eq:cs:mpc:ycon}{{9f}{9}{MPC}{equation.4.6}{}}
+\newlabel{eq:cs:mpc:init}{{9g}{9}{MPC}{equation.4.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Closed-Loop Control Structure}{9}{subsection.4.5}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Closed-loop control with nonlinear output mapping with linearization at previous target\relax }}{10}{algorithm.1}\protected@file@percent }
+\newlabel{alg:closed-loop}{{1}{10}{Closed-loop control with nonlinear output mapping with linearization at previous target\relax }{algorithm.1}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces Closed-loop control with nonlinear output mapping (linearization at current state estimate)\relax }}{11}{algorithm.2}\protected@file@percent }
+\newlabel{alg:closed-loop-state}{{2}{11}{Closed-loop control with nonlinear output mapping (linearization at current state estimate)\relax }{algorithm.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}State Estimation - Time Varying Kalman Filter}{11}{subsection.4.6}\protected@file@percent }
+\newlabel{sec:tvkf}{{4.6}{11}{State Estimation - Time Varying Kalman Filter}{subsection.4.6}{}}
+\newlabel{eq:tvkf:aug}{{11}{11}{State Estimation - Time Varying Kalman Filter}{equation.4.11}{}}
+\newlabel{eq:tvkf:meas}{{12}{11}{State Estimation - Time Varying Kalman Filter}{equation.4.12}{}}
+\newlabel{eq:tvkf:predict}{{13}{12}{State Estimation - Time Varying Kalman Filter}{equation.4.13}{}}
+\newlabel{eq:tvkf:predict:z}{{13a}{12}{State Estimation - Time Varying Kalman Filter}{equation.4.1}{}}
+\newlabel{eq:tvkf:predict:P}{{13b}{12}{State Estimation - Time Varying Kalman Filter}{equation.4.2}{}}
+\newlabel{eq:tvkf:update}{{14}{12}{State Estimation - Time Varying Kalman Filter}{equation.4.14}{}}
+\newlabel{eq:tvkf:update:S}{{14a}{12}{State Estimation - Time Varying Kalman Filter}{equation.4.1}{}}
+\newlabel{eq:tvkf:update:K}{{14b}{12}{State Estimation - Time Varying Kalman Filter}{equation.4.2}{}}
+\newlabel{eq:tvkf:update:z}{{14c}{12}{State Estimation - Time Varying Kalman Filter}{equation.4.3}{}}
+\newlabel{eq:tvkf:update:P}{{14d}{12}{State Estimation - Time Varying Kalman Filter}{equation.4.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7}Block Diagonal Deep Koopman Transformation}{12}{subsection.4.7}\protected@file@percent }
+\newlabel{sec:blockdiag}{{4.7}{12}{Block Diagonal Deep Koopman Transformation}{subsection.4.7}{}}
+\citation{liu2009distributed}
+\citation{li2019dynamic}
+\citation{li2019dynamic}
+\citation{li2019dynamic}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Identification}{13}{section.5}\protected@file@percent }
+\newlabel{sec:ident}{{5}{13}{Identification}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Reactor--separator process}{13}{subsection.5.1}\protected@file@percent }
+\citation{van2012subspace}
+\citation{armenise2018sippy}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces \textcolor {green}{Manipulated variables of the reactor--separator plant, with the nominal operating point of\nobreakspace  {}\cite  {li2019dynamic} and the box used for the identification experiment.}\relax }}{14}{table.caption.4}\protected@file@percent }
+\newlabel{tab:cstr-sep-inputs}{{1}{14}{\textcolor {green}{Manipulated variables of the reactor--separator plant, with the nominal operating point of~\cite {li2019dynamic} and the box used for the identification experiment.}\relax }{table.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Identification data}{14}{subsection.5.2}\protected@file@percent }
+\citation{paszke2019pytorch}
+\citation{Neuromancer2023}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Subspace model}{15}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Koopman models}{15}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Open-loop accuracy on the test data}{15}{subsection.5.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces \textcolor {green}{Open-loop prediction accuracy on the test data, measured by the mean absolute error (MAE) against the noise-free plant outputs. The last column is the sum of the mean absolute errors of the four standardized outputs, which is the criterion on which the models are directly comparable.}\relax }}{16}{table.caption.6}\protected@file@percent }
+\newlabel{tab:ident-accuracy}{{2}{16}{\textcolor {green}{Open-loop prediction accuracy on the test data, measured by the mean absolute error (MAE) against the noise-free plant outputs. The last column is the sum of the mean absolute errors of the four standardized outputs, which is the criterion on which the models are directly comparable.}\relax }{table.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces \textcolor {green}{Open-loop predictions of the identified models on the first four input steps of the test data. The black solid line is the noise-free plant, the dash-dotted \textcolor {deepkoopman}{red} line is the Koopman model with the nonlinear decoder, the dashed \textcolor {koopmanc}{orange} line is the Koopman model with the linear decoder, and the dotted \textcolor {parsimk}{green} line is the N4SID model.}\relax }}{17}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:ident-test}{{4}{17}{\textcolor {green}{Open-loop predictions of the identified models on the first four input steps of the test data. The black solid line is the noise-free plant, the dash-dotted \textcolor {deepkoopman}{red} line is the Koopman model with the nonlinear decoder, the dashed \textcolor {koopmanc}{orange} line is the Koopman model with the linear decoder, and the dotted \textcolor {parsimk}{green} line is the N4SID model.}\relax }{figure.caption.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Control Results}{18}{section.6}\protected@file@percent }
+\newlabel{sec:Results}{{6}{18}{Control Results}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}The effect of block-diagonal transformation}{18}{subsection.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Comparison of structure of problem to solver time and control performance.\relax }}{18}{table.caption.7}\protected@file@percent }
+\newlabel{tab:block-diagonal}{{3}{18}{Comparison of structure of problem to solver time and control performance.\relax }{table.caption.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Simulation setups}{19}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Simulation Results for Two Reactor System}{19}{subsection.6.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Two-reactor CSTR: previous vs.\ updated objectives}}{19}{table.caption.8}\protected@file@percent }
+\newlabel{tab:setups-matrix-reactor-1}{{4}{19}{Two-reactor CSTR: previous vs.\ updated objectives}{table.caption.8}{}}
+\newlabel{tab:setups-matrix-reactor-2}{{4}{19}{Two-reactor CSTR: previous vs.\ updated objectives}{table.caption.8}{}}
+\newlabel{tab:setups-matrix-reactor-3}{{4}{19}{Two-reactor CSTR: previous vs.\ updated objectives}{table.caption.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Discussion}{19}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Conclusion}{19}{section.8}\protected@file@percent }
 \@writefile{toc}{\let\numberline\tmptocnumberline}
-\@writefile{toc}{\contentsline {section}{\numberline {Appendix \nobreakspace  {}A}System Models}{13}{appendix.A}\protected@file@percent }
-\newlabel{app:models}{{Appendix \nobreakspace  {}A}{13}{System Models}{appendix.A}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {Appendix \nobreakspace  {}A.1}Two Reactor System}{13}{subsection.A.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {Appendix \nobreakspace  {}A.1.1}Chemical Reactions}{13}{subsubsection.A.1.1}\protected@file@percent }
-\newlabel{eq:rxn1}{{A.1}{13}{Chemical Reactions}{equation.A.1}{}}
-\newlabel{eq:rxn2}{{A.2}{13}{Chemical Reactions}{equation.A.2}{}}
-\newlabel{eq:rxn3}{{A.3}{13}{Chemical Reactions}{equation.A.3}{}}
-\newlabel{eq:arrhenius}{{A.4}{13}{Chemical Reactions}{equation.A.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {Appendix \nobreakspace  {}A.1.2}Dynamic Model}{13}{subsubsection.A.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {Appendix \nobreakspace  {}A}System Models}{20}{appendix.A}\protected@file@percent }
+\newlabel{app:models}{{Appendix \nobreakspace  {}A}{20}{System Models}{appendix.A}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {Appendix \nobreakspace  {}A.1}Two Reactor System}{20}{subsection.A.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {Appendix \nobreakspace  {}A.1.1}Chemical Reactions}{20}{subsubsection.A.1.1}\protected@file@percent }
+\newlabel{eq:rxn1}{{A.1}{20}{Chemical Reactions}{equation.A.1}{}}
+\newlabel{eq:rxn2}{{A.2}{20}{Chemical Reactions}{equation.A.2}{}}
+\newlabel{eq:rxn3}{{A.3}{20}{Chemical Reactions}{equation.A.3}{}}
+\newlabel{eq:arrhenius}{{A.4}{20}{Chemical Reactions}{equation.A.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {Appendix \nobreakspace  {}A.1.2}Dynamic Model}{20}{subsubsection.A.1.2}\protected@file@percent }
 \bibstyle{elsarticle-harv}
 \bibdata{bibfile}
-\bibcite{kaiser2021data}{{1}{2021}{{Kaiser et~al.}}{{Kaiser, Kutz and Brunton}}}
-\bibcite{koopman1931hamiltonian}{{2}{1931}{{Koopman}}{{}}}
-\bibcite{korda2018linear}{{3}{2018}{{Korda and Mezi{\'c}}}{{}}}
-\newlabel{eq:cstr-series}{{A.7}{14}{Dynamic Model}{equation.A.7}{}}
-\bibcite{lusch2018deep}{{4}{2018}{{Lusch et~al.}}{{Lusch, Kutz and Brunton}}}
-\bibcite{mezic2005spectral}{{5}{2005}{{Mezi{\'c}}}{{}}}
-\bibcite{pannocchia2003disturbance}{{6}{2003}{{Pannocchia and Rawlings}}{{}}}
-\bibcite{rowley2009spectral}{{7}{2009}{{Rowley et~al.}}{{Rowley, Mezi{\'c}, Bagheri, Schlatter and Henningson}}}
-\bibcite{williams2015data}{{8}{2015}{{Williams et~al.}}{{Williams, Kevrekidis and Rowley}}}
-\@writefile{lot}{\contentsline {table}{\numberline {A.3}{\ignorespaces CSTR series physical and thermodynamic parameters.\relax }}{15}{table.caption.6}\protected@file@percent }
-\newlabel{tab:cstr-physical}{{A.3}{15}{CSTR series physical and thermodynamic parameters.\relax }{table.caption.6}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {A.4}{\ignorespaces Arrhenius kinetic parameters for reactions R1--R3.\relax }}{15}{table.caption.7}\protected@file@percent }
-\newlabel{tab:cstr-kinetics}{{A.4}{15}{Arrhenius kinetic parameters for reactions R1--R3.\relax }{table.caption.7}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {A.5}{\ignorespaces CSTR series operational constraints and initial conditions.\relax }}{16}{table.caption.8}\protected@file@percent }
-\newlabel{tab:cstr-constraints}{{A.5}{16}{CSTR series operational constraints and initial conditions.\relax }{table.caption.8}{}}
-\gdef \@abspage@last{17}
+\bibcite{akiba2019optuna}{{1}{2019}{{Akiba et~al.}}{{Akiba, Sano, Yanase, Ohta and Koyama}}}
+\bibcite{armenise2018sippy}{{2}{2018}{{Armenise et~al.}}{{Armenise, Bacci~di Capaci, Vaccari and Pannocchia}}}
+\newlabel{eq:cstr-series}{{A.7}{21}{Dynamic Model}{equation.A.7}{}}
+\bibcite{Neuromancer2023}{{3}{2023}{{Drgo{\v {n}}a et~al.}}{{Drgo{\v {n}}a, Tuor, Koch, Shapiro and Vrabie}}}
+\bibcite{kaiser2021data}{{4}{2021}{{Kaiser et~al.}}{{Kaiser, Kutz and Brunton}}}
+\bibcite{koopman1931hamiltonian}{{5}{1931}{{Koopman}}{{}}}
+\bibcite{korda2018linear}{{6}{2018}{{Korda and Mezi{\'c}}}{{}}}
+\@writefile{lot}{\contentsline {table}{\numberline {A.5}{\ignorespaces CSTR series physical and thermodynamic parameters.\relax }}{22}{table.caption.9}\protected@file@percent }
+\newlabel{tab:cstr-physical}{{A.5}{22}{CSTR series physical and thermodynamic parameters.\relax }{table.caption.9}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {A.6}{\ignorespaces Arrhenius kinetic parameters for reactions R1--R3.\relax }}{22}{table.caption.10}\protected@file@percent }
+\newlabel{tab:cstr-kinetics}{{A.6}{22}{Arrhenius kinetic parameters for reactions R1--R3.\relax }{table.caption.10}{}}
+\bibcite{li2019dynamic}{{7}{2019}{{Li and Swartz}}{{}}}
+\bibcite{liu2009distributed}{{8}{2009}{{Liu et~al.}}{{Liu, Mu\~{n}oz de~la Pe\~{n}a and Christofides}}}
+\bibcite{lusch2018deep}{{9}{2018}{{Lusch et~al.}}{{Lusch, Kutz and Brunton}}}
+\bibcite{mezic2005spectral}{{10}{2005}{{Mezi{\'c}}}{{}}}
+\bibcite{pannocchia2003disturbance}{{11}{2003}{{Pannocchia and Rawlings}}{{}}}
+\bibcite{paszke2019pytorch}{{12}{2019}{{Paszke et~al.}}{{Paszke, Gross, Massa, Lerer, Bradbury, Chanan, Killeen, Lin, Gimelshein, Antiga, Desmaison, K{\"o}pf, Yang, DeVito, Raison, Tejani, Chilamkurthy, Steiner, Fang, Bai and Chintala}}}
+\bibcite{rowley2009spectral}{{13}{2009}{{Rowley et~al.}}{{Rowley, Mezi{\'c}, Bagheri, Schlatter and Henningson}}}
+\@writefile{lot}{\contentsline {table}{\numberline {A.7}{\ignorespaces CSTR series operational constraints and initial conditions.\relax }}{23}{table.caption.11}\protected@file@percent }
+\newlabel{tab:cstr-constraints}{{A.7}{23}{CSTR series operational constraints and initial conditions.\relax }{table.caption.11}{}}
+\bibcite{van2012subspace}{{14}{2012}{{Van~Overschee and De~Moor}}{{}}}
+\bibcite{williams2015data}{{15}{2015}{{Williams et~al.}}{{Williams, Kevrekidis and Rowley}}}
+\gdef \@abspage@last{25}

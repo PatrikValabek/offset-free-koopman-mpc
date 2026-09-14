@@ -88,3 +88,13 @@ Format: `- $symbol$ — meaning (first defined in \label{...})`
 - `$S_k$` — innovation covariance in the TVKF update (first defined in `\label{eq:tvkf:update:S}`)
 - `$K_k$` — Kalman gain (first defined in `\label{eq:tvkf:update:K}`)
 - `$P_{k|k}$`, `$P_{k|k-1}$` — posterior and prior error covariance matrices (first defined in `\label{eq:tvkf:predict:P}`)
+- `$N_\text{r}$` — length of the training window over which the Koopman model is unrolled (first defined in `\label{eq:dk:rollout}`)
+- `$i$` — sample index within the training window (first defined in `\label{eq:dk:rollout}`)
+- `$\hat{y}_i$` — output predicted by the Koopman model during training (first defined in `\label{eq:dk:rollout:out}`)
+- `$\mathcal{L}$` — training loss of the deep Koopman identification (first defined in `\label{eq:dk:loss}`)
+- `$w_\text{y}$`, `$w_\text{z}$`, `$w_1$`, `$w_\text{r}$` — weights of the multi-step output, latent consistency, one-step output, and reconstruction terms of the training loss (first defined in `\label{eq:dk:loss}`)
+- `$Q_1, Q_2, Q_3$` — heat duties of the three vessels of the reactor--separator plant, in kJ/s (first defined in `\label{tab:cstr-sep-inputs}`). Note the numeric subscripts: the weighting matrices always carry text subscripts (`$Q_\text{y}$`) and the process noise covariance is the unsubscripted `$Q$`
+- `$F_{10}$`, `$F_{20}$`, `$F_\text{r}$` — fresh feed flow rates to the first and second reactor and the recycle flow rate (first defined in `\label{tab:cstr-sep-inputs}`)
+- `$T_1, T_2, T_3$` — vessel temperatures of the reactor--separator plant, the first three controlled outputs (first defined in `\label{tab:cstr-sep-inputs}`)
+- `$x_{\text{B}3}$` — mass fraction of the product B leaving the separator, the bottoms quality and fourth controlled output (first defined in `\label{tab:cstr-sep-inputs}`)
+- Species of the reaction `$\text{A} \rightarrow \text{B} \rightarrow \text{C}$` are set upright, so that the species C is distinguishable from the output matrix `$C$`

@@ -1,4 +1,4 @@
-\begin{thebibliography}{8}
+\begin{thebibliography}{15}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\href}[2]{#2}
@@ -11,6 +11,19 @@
 \providecommand{\Pubmed}[1]{\href{pmid:#1}{\path{#1}}}
 \providecommand{\bibinfo}[2]{#2}
 \ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
+%Type = Inproceedings
+\bibitem[{Akiba et~al.(2019)Akiba, Sano, Yanase, Ohta and Koyama}]{akiba2019optuna}
+\bibinfo{author}{Akiba, T.}, \bibinfo{author}{Sano, S.}, \bibinfo{author}{Yanase, T.}, \bibinfo{author}{Ohta, T.}, \bibinfo{author}{Koyama, M.}, \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{Optuna: A next-generation hyperparameter optimization framework}, in: \bibinfo{booktitle}{Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery \& Data Mining}, pp. \bibinfo{pages}{2623--2631}.
+%Type = Inproceedings
+\bibitem[{Armenise et~al.(2018)Armenise, Bacci~di Capaci, Vaccari and Pannocchia}]{armenise2018sippy}
+\bibinfo{author}{Armenise, G.}, \bibinfo{author}{Bacci~di Capaci, R.}, \bibinfo{author}{Vaccari, M.}, \bibinfo{author}{Pannocchia, G.}, \bibinfo{year}{2018}.
+\newblock \bibinfo{title}{An open-source system identification package for multivariable processes}, in: \bibinfo{booktitle}{2018 UKACC 12th International Conference on Control (CONTROL)}.
+\newblock \DOIprefix\doi{10.1109/CONTROL.2018.8516791}.
+%Type = Article
+\bibitem[{Drgo{\v{n}}a et~al.(2023)Drgo{\v{n}}a, Tuor, Koch, Shapiro and Vrabie}]{Neuromancer2023}
+\bibinfo{author}{Drgo{\v{n}}a, J.}, \bibinfo{author}{Tuor, A.}, \bibinfo{author}{Koch, J.}, \bibinfo{author}{Shapiro, M.}, \bibinfo{author}{Vrabie, D.}, \bibinfo{year}{2023}.
+\newblock \bibinfo{title}{{NeuroMANCER: Neural Modules with Adaptive Nonlinear Constraints and Efficient Regularizations}} \URLprefix \url{https://github.com/pnnl/neuromancer}.
 %Type = Article
 \bibitem[{Kaiser et~al.(2021)Kaiser, Kutz and Brunton}]{kaiser2021data}
 \bibinfo{author}{Kaiser, E.}, \bibinfo{author}{Kutz, J.N.}, \bibinfo{author}{Brunton, S.L.}, \bibinfo{year}{2021}.
@@ -27,6 +40,17 @@
 \newblock \bibinfo{title}{Linear predictors for nonlinear dynamical systems: Koopman operator meets model predictive control}.
 \newblock \bibinfo{journal}{Automatica} \bibinfo{volume}{93}, \bibinfo{pages}{149--160}.
 %Type = Article
+\bibitem[{Li and Swartz(2019)}]{li2019dynamic}
+\bibinfo{author}{Li, H.}, \bibinfo{author}{Swartz, C.L.E.}, \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{Dynamic real-time optimization of distributed {MPC} systems using rigorous closed-loop prediction}.
+\newblock \bibinfo{journal}{Computers \& Chemical Engineering} \bibinfo{volume}{122}, \bibinfo{pages}{356--371}.
+\newblock \DOIprefix\doi{10.1016/j.compchemeng.2018.08.028}.
+%Type = Article
+\bibitem[{Liu et~al.(2009)Liu, Mu\~{n}oz de~la Pe\~{n}a and Christofides}]{liu2009distributed}
+\bibinfo{author}{Liu, J.}, \bibinfo{author}{Mu\~{n}oz de~la Pe\~{n}a, D.}, \bibinfo{author}{Christofides, P.D.}, \bibinfo{year}{2009}.
+\newblock \bibinfo{title}{Distributed model predictive control of nonlinear process systems}.
+\newblock \bibinfo{journal}{AIChE Journal} \bibinfo{volume}{55}, \bibinfo{pages}{1171--1184}.
+%Type = Article
 \bibitem[{Lusch et~al.(2018)Lusch, Kutz and Brunton}]{lusch2018deep}
 \bibinfo{author}{Lusch, B.}, \bibinfo{author}{Kutz, J.N.}, \bibinfo{author}{Brunton, S.L.}, \bibinfo{year}{2018}.
 \newblock \bibinfo{title}{Deep learning for universal linear embeddings of nonlinear dynamics}.
@@ -41,11 +65,20 @@
 \bibinfo{author}{Pannocchia, G.}, \bibinfo{author}{Rawlings, J.B.}, \bibinfo{year}{2003}.
 \newblock \bibinfo{title}{Disturbance models for offset-free model-predictive control}.
 \newblock \bibinfo{journal}{AIChE journal} \bibinfo{volume}{49}, \bibinfo{pages}{426--437}.
+%Type = Inproceedings
+\bibitem[{Paszke et~al.(2019)Paszke, Gross, Massa, Lerer, Bradbury, Chanan, Killeen, Lin, Gimelshein, Antiga, Desmaison, K{\"o}pf, Yang, DeVito, Raison, Tejani, Chilamkurthy, Steiner, Fang, Bai and Chintala}]{paszke2019pytorch}
+\bibinfo{author}{Paszke, A.}, \bibinfo{author}{Gross, S.}, \bibinfo{author}{Massa, F.}, \bibinfo{author}{Lerer, A.}, \bibinfo{author}{Bradbury, J.}, \bibinfo{author}{Chanan, G.}, \bibinfo{author}{Killeen, T.}, \bibinfo{author}{Lin, Z.}, \bibinfo{author}{Gimelshein, N.}, \bibinfo{author}{Antiga, L.}, \bibinfo{author}{Desmaison, A.}, \bibinfo{author}{K{\"o}pf, A.}, \bibinfo{author}{Yang, E.}, \bibinfo{author}{DeVito, Z.}, \bibinfo{author}{Raison, M.}, \bibinfo{author}{Tejani, A.}, \bibinfo{author}{Chilamkurthy, S.}, \bibinfo{author}{Steiner, B.}, \bibinfo{author}{Fang, L.}, \bibinfo{author}{Bai, J.}, \bibinfo{author}{Chintala, S.}, \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{Pytorch: An imperative style, high-performance deep learning library}, in: \bibinfo{booktitle}{Advances in Neural Information Processing Systems 32}, pp. \bibinfo{pages}{8024--8035}.
 %Type = Article
 \bibitem[{Rowley et~al.(2009)Rowley, Mezi{\'c}, Bagheri, Schlatter and Henningson}]{rowley2009spectral}
 \bibinfo{author}{Rowley, C.W.}, \bibinfo{author}{Mezi{\'c}, I.}, \bibinfo{author}{Bagheri, S.}, \bibinfo{author}{Schlatter, P.}, \bibinfo{author}{Henningson, D.S.}, \bibinfo{year}{2009}.
 \newblock \bibinfo{title}{Spectral analysis of nonlinear flows}.
 \newblock \bibinfo{journal}{Journal of fluid mechanics} \bibinfo{volume}{641}, \bibinfo{pages}{115--127}.
+%Type = Book
+\bibitem[{Van~Overschee and De~Moor(2012)}]{van2012subspace}
+\bibinfo{author}{Van~Overschee, P.}, \bibinfo{author}{De~Moor, B.}, \bibinfo{year}{2012}.
+\newblock \bibinfo{title}{Subspace identification for linear systems: Theory—Implementation—Applications}.
+\newblock \bibinfo{publisher}{Springer Science \& Business Media}.
 %Type = Article
 \bibitem[{Williams et~al.(2015)Williams, Kevrekidis and Rowley}]{williams2015data}
 \bibinfo{author}{Williams, M.O.}, \bibinfo{author}{Kevrekidis, I.G.}, \bibinfo{author}{Rowley, C.W.}, \bibinfo{year}{2015}.

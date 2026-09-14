@@ -4,44 +4,47 @@ The top-level auxiliary file: main.aux
 The style file: elsarticle-harv.bst
 Database file #1: bibfile.bib
 Reallocated singl_function (elt_size=4) to 100 items from 50.
-You've used 8 entries,
+Warning--empty pages in armenise2018sippy
+Warning--empty journal in Neuromancer2023
+You've used 15 entries,
             2990 wiz_defined-function locations,
-            688 strings with 6581 characters,
-and the built_in function-call counts, 5261 in all, are:
-= -- 408
-> -- 176
-< -- 4
-+ -- 70
-- -- 60
-* -- 564
-:= -- 764
-add.period$ -- 24
-call.type$ -- 8
-change.case$ -- 60
-chr.to.int$ -- 8
-cite$ -- 8
-duplicate$ -- 396
-empty$ -- 403
-format.name$ -- 84
-if$ -- 971
+            728 strings with 8515 characters,
+and the built_in function-call counts, 11349 in all, are:
+= -- 843
+> -- 526
+< -- 8
++ -- 205
+- -- 186
+* -- 1281
+:= -- 1643
+add.period$ -- 43
+call.type$ -- 15
+change.case$ -- 136
+chr.to.int$ -- 15
+cite$ -- 17
+duplicate$ -- 805
+empty$ -- 783
+format.name$ -- 235
+if$ -- 2098
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 76
-newline$ -- 55
-num.names$ -- 32
-pop$ -- 136
+missing$ -- 163
+newline$ -- 88
+num.names$ -- 60
+pop$ -- 301
 preamble$ -- 1
-purify$ -- 52
+purify$ -- 122
 quote$ -- 0
-skip$ -- 107
+skip$ -- 243
 stack$ -- 0
-substring$ -- 276
-swap$ -- 280
-text.length$ -- 0
+substring$ -- 491
+swap$ -- 613
+text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 72
-warning$ -- 0
-while$ -- 38
+type$ -- 132
+warning$ -- 2
+while$ -- 69
 width$ -- 0
-write$ -- 126
+write$ -- 221
+(There were 2 warnings)

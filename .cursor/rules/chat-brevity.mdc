@@ -1,0 +1,23 @@
+---
+description: Keep chat replies to one short paragraph; applies to chat prose only, never to generated artifacts
+alwaysApply: true
+---
+
+# Chat brevity
+
+Answer in the chat with at most one short paragraph. Lead with the outcome or the answer in the
+first sentence, then at most a few sentences of the reasoning or technical points that change what
+the user does next. Drop everything else: no recap of the steps just taken, no restating the
+request, no listing files touched, no summary headers, no closing offers of further help.
+
+Brevity comes from including less, not from compressing the writing. Write complete sentences with
+terms spelled out. Do not use arrow chains, abbreviations, telegraphic fragments, or bullet lists
+of one-word items to fit the limit.
+
+Tables, plots, diagrams, and code references are welcome and do not count against the paragraph.
+
+Expand beyond one paragraph only when the user asks to develop the answer, or for implementation
+plans and multi-step task breakdowns. Even then, keep it to the main ideas and technical points.
+
+This rule governs chat messages only. It never applies to generated content: code, comments, LaTeX
+and paper prose, notebooks, docstrings, commit messages, or any file written to disk.

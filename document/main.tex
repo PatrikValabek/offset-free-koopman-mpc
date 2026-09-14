@@ -40,6 +40,9 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{float}
+\definecolor{deepkoopman}{HTML}{8B0000}
+\definecolor{koopmanc}{HTML}{FFA500}
+\definecolor{parsimk}{HTML}{008000}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
@@ -350,6 +353,38 @@ We will show that we can use the lifted space directly in the objective function
 We can fully eliminate the neccessity of the back transformation used in objective function in MPC, but we still need them to compute the target for the lifted space. In this case and case of constraints, we use a first order Taylor expansion, to better approximate the transformation. 
 
 
+{\color{green}
+\subsection{Deep Koopman identification}
+\label{sec:method:ident}
+
+Both prediction models used in this work are obtained with the deep Koopman architecture of Fig.~\ref{fig:DK-nonautonomous}, in which the encoder lifts the measured outputs, the lifted state evolves linearly, and the decoder projects the lifted state back to the outputs. Given an input--output trajectory of the plant, the model is unrolled over a window of $N_\text{r}$ samples as
+\begin{subequations}
+  \label{eq:dk:rollout}
+  \begin{align}
+    z_0 &= g(y_0), \label{eq:dk:rollout:init} \\
+    z_{i+1} &= A z_i + B u_i, \quad i\in\mathbb{N}_0^{N_\text{r}-1}, \label{eq:dk:rollout:dyn} \\
+    \hat{y}_i &= h(z_i), \quad i\in\mathbb{N}_0^{N_\text{r}}, \label{eq:dk:rollout:out}
+  \end{align}
+\end{subequations}
+where $N_\text{r}$ is the length of the training window, $i$ is the sample index within this window, $y_i$ and $u_i$ are the measured output and the applied input taken from the data, $z_i \in \mathbb{R}^{n_z}$ is the lifted state, and $\hat{y}_i \in \mathbb{R}^{n_y}$ is the predicted output. The encoder $g$ and the decoder $h$ are multilayer perceptrons, while the input map $B$ is kept linear, so that the identified model is an LTI system in the lifted coordinates and can be used directly in the optimization problems~\eqref{eq:cs:target} and~\eqref{eq:cs:mpc}.
+
+The four terms of the training loss are the multi-step output prediction error over the whole window, the consistency between the unrolled lifted state and the lifted measurement, the one-step output prediction error, and the reconstruction error of the autoencoder, resulting in
+\begin{equation}
+  \label{eq:dk:loss}
+  \begin{aligned}
+    \mathcal{L} = {} & \frac{\ui{w}{y}}{N_\text{r}-1} \sum_{i=1}^{N_\text{r}-1} \left\| \hat{y}_i - y_i \right\|_2^2
+    + \frac{\ui{w}{z}}{N_\text{r}-1} \sum_{i=1}^{N_\text{r}-1} \left\| z_i - g(y_i) - B u_i \right\|_2^2 \\
+    & + w_1 \left\| \hat{y}_1 - y_1 \right\|_2^2
+    + \ui{w}{r} \left\| \hat{y}_0 - y_0 \right\|_2^2,
+  \end{aligned}
+\end{equation}
+where $\mathcal{L}$ is the loss minimized during training and $\ui{w}{y}$, $\ui{w}{z}$, $w_1$, and $\ui{w}{r}$ are the weights of the four terms, respectively. All terms are additionally averaged over the minibatch of training windows. The one-step term $w_1$ is fixed to one, so that only three weights have to be chosen, and the remaining weights are scaled relative to it.
+
+When the decoder is restricted to a single matrix, $h(z) = Cz$, the identified model is the LTI model of the standard offset-free Koopman MPC of Sec.~\ref{sec:easy-mpc}. When the decoder is a nonlinear map, the model is the one used by the proposed scheme, and a constant output matrix is obtained afterwards by linear least squares from the lifted trajectory of the training data. This matrix is not used in the objective function or in the constraints of~\eqref{eq:cs:mpc}; it only provides the initial output matrix of the observer of Sec.~\ref{sec:tvkf}, which is replaced by the Jacobian $H(\ui{z}{LP})$ at every subsequent sampling instant.
+
+The lifted dimension $n_z$, the depth and the width of the encoder and the decoder, the activation function, the weights in~\eqref{eq:dk:loss}, the window length $N_\text{r}$, the minibatch size, and the learning rate are not tuned by hand. Each candidate configuration is trained, the resulting model is inserted into the closed loop, and the achieved value of the closed-loop objective function is used as the score of the configuration; the search itself is carried out with the tree-structured Parzen estimator of Optuna~\cite{akiba2019optuna}. Scoring a model by the closed-loop performance rather than by the open-loop prediction error is a deliberate choice, because the two are only loosely related, as the results of Sec.~\ref{sec:ident} and Sec.~\ref{sec:Results} show. The same criterion is used to select the order and the horizons of the subspace model that serves as the baseline, so that no model is favored by the way its parameters were chosen. Note that this procedure is not a contribution of this work and any comparable model selection scheme can replace it.
+}
+
 \subsection{Linearization of Output Mapping}
 For the control problem, we are not able to completely eliminate the neccessity of the transformation from the lifted space back to the original space. For this, we linearize the output mapping with first order taylor expansion. 
 For the purpose of this work we experimented with linearization. at two different points: linearization at the previous target and linearization at the current state estimate.
@@ -509,6 +544,7 @@ $Q \succeq 0$ is the process noise covariance matrix.
 where $S_k \in \mathbb{R}^{n_y \times n_y}$ is the innovation covariance, $K_k \in \mathbb{R}^{(n_z+n_d)\times n_y}$ is the Kalman gain, $\hat{\tilde{z}}_{k|k}$ is the posterior augmented-state estimate whose upper $n_z$ entries give $\hat{z}(t)$ and lower $n_d$ entries give $\hat{d}(t)$, $P_{k|k}$ is the posterior error covariance, and $R \succ 0$ is the measurement noise covariance matrix.
 
 \subsection{Block Diagonal Deep Koopman Transformation}
+\label{sec:blockdiag}
 \todo{bevare notation conflict zbar}
 During our work, we encounter a several problems with the suboptimal or infeasible solutions using Koopman MPC using Gurobi solver. For the enhancement of the performaance, we are proposing a block diagonal structure of the matrix \(A\). This transformation can be done after obtaining the Koopman operator, with finding the transformation matrix \(T\) that transforms the Koopman operator to the block diagonal form:
 \begin{equation}
@@ -526,8 +562,84 @@ When computing the Jackobian, we are transforming the original Jackobian \(H(z_k
 For fair comparison, this transformation is applied to every identified model through this work, not only for Koopman models. The effects of this transformation are discussed in the result section of this work.
 
 \section{Identification}
+\label{sec:ident}
 
-\todo{Specific parameters for each model that was identified and identification error comparison}
+{\color{green}
+In this section, we introduce the benchmark process, the data collected from it, and the three prediction models whose closed-loop performance is compared in Sec.~\ref{sec:Results}. All models are identified from the same data set with the same scaling, and the parameters reported here are the final ones used in every closed-loop experiment of this work.
+
+\subsection{Reactor--separator process}
+
+The considered plant consists of two continuous stirred tank reactors in series followed by a flash separator, with a recycle stream from the separator back to the first reactor. The plant structure is the one of~\cite{liu2009distributed} and the kinetic, thermodynamic, and geometric parameters are those reported by~\cite{li2019dynamic}. Two consecutive first-order reactions $\text{A} \rightarrow \text{B} \rightarrow \text{C}$ take place in both reactors, where B is the desired product and C an undesired by-product. The plant is therefore a selectivity problem, since additional heat increases the conversion of the reactant A but also the loss of the product B into C.
+
+The plant has nine states, namely the mass fractions of A and B and the temperature in each of the three vessels, and the third vessel is the separator, in which no reaction occurs. The manipulated variables are the three heat duties $Q_1$, $Q_2$, $Q_3$, the fresh feed flow rates $F_{10}$ and $F_{20}$ to the first and the second reactor, and the recycle flow rate $\ui{F}{r}$. The measured and controlled outputs are the three vessel temperatures $T_1$, $T_2$, $T_3$ and the bottoms quality $x_{\text{B}3}$, which is the mass fraction of B leaving the separator. The vessel inventories are constant, so the internal flow rates follow from the manipulated ones. The nominal operating point and the box within which the inputs are moved during identification are listed in Table~\ref{tab:cstr-sep-inputs}.
+
+\begin{table}[h]
+  \centering
+  \small
+  \caption{\textcolor{green}{Manipulated variables of the reactor--separator plant, with the nominal operating point of~\cite{li2019dynamic} and the box used for the identification experiment.}}
+  \label{tab:cstr-sep-inputs}
+  \begin{tabular}{llcc}
+    \toprule
+    Variable & Description & Nominal & Range \\
+    \midrule
+    $Q_1$, $Q_2$, $Q_3$ [kJ/s] & Heat duties of the three vessels & 10.0 & $[0.0,\; 25.0]$ \\
+    $F_{10}$ [m$^3$/s] & Fresh feed to the first reactor & 8.3 & $[3.0,\; 16.0]$ \\
+    $F_{20}$ [m$^3$/s] & Fresh feed to the second reactor & 0.5 & $[0.1,\; 3.0]$ \\
+    $\ui{F}{r}$ [m$^3$/s] & Recycle from the separator & 4.0 & $[0.5,\; 10.0]$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Two mechanisms make the plant nonlinear. The first one is the Arrhenius dependence of both reaction rates on the vessel temperatures, and the second one is the relative-volatility flash of the separator, which makes the composition of the recycle stream a nonlinear function of the composition in the separator and closes a nonlinear loop back to the first reactor. As a consequence, the bottoms quality is not monotone in the supplied heat: the yield of B reaches a peak and then decreases again as more of the product is converted into C. A model identified around a single operating point can therefore reproduce only one branch of this behavior, which is the reason for choosing this plant as the benchmark. The plant equations are integrated with the explicit Runge--Kutta solver of SciPy, and the sampling period used for identification and for control is $\Ts = 1\,\text{s}$.
+
+\subsection{Identification data}
+
+The excitation is a sequence of $100$ piecewise-constant input steps, each held for $180\,\text{s}$, which gives $18\,000$ samples of input--output data. All six inputs are stepped within the box of Table~\ref{tab:cstr-sep-inputs}, and the levels of the heat duties are paired with the fresh feed flow rate so that the excitation crosses the yield peak of the bottoms quality instead of staying on one of its branches. Over the whole data set the temperatures cover the range from $325\,\text{K}$ to $393\,\text{K}$ and the bottoms quality the range from $0.42$ to $0.77$.
+
+Zero-mean Gaussian measurement noise is added to all four outputs, with a standard deviation equal to $1\%$ of the range of the respective output, that is $0.494\,\text{K}$, $0.508\,\text{K}$, and $0.556\,\text{K}$ for the three temperatures and $0.0033$ for the bottoms quality. The data set is split into the first $12\,960$ samples used for training, the following $2880$ samples used for validation and early stopping, and the remaining $2160$ samples, which are never seen during identification and serve as the test data. Inputs and outputs are standardized to zero mean and unit variance using the statistics of the training split only, and all three models are identified in these coordinates, so that the four outputs contribute to the identification criteria on a comparable scale.
+
+\subsection{Subspace model}
+
+The baseline model is identified with the N4SID algorithm~\cite{van2012subspace} as implemented in the SIPPY package~\cite{armenise2018sippy}, with the direct input--output term fixed to zero. The final model has the order $17$ and the past and future horizons equal to $57$, no centering is applied to the data, and no stability constraint is imposed during identification, which results in the spectral radius of $0.9897$. Identifying this model takes $2.6\,\text{s}$ on a Mac mini with an Apple M4 Pro processor.
+
+\subsection{Koopman models}
+
+Two Koopman models are trained with the loss~\eqref{eq:dk:loss} on the same data. The first one restricts the decoder to a single matrix and thus provides the LTI model required by the standard offset-free Koopman MPC of Sec.~\ref{sec:easy-mpc}. Its lifted dimension is $n_z = 19$ and its encoder is a network with one hidden layer of four GELU units, which gives $666$ trainable parameters in total and the spectral radius of $0.9337$. The second one keeps the nonlinear decoder and is the model used by the proposed scheme. Its lifted dimension is $n_z = 26$, the encoder has the widths $4$--$7$--$14$--$26$ and the decoder the mirrored widths $26$--$14$--$7$--$4$, both with ELU activations, which gives $1884$ trainable parameters and the spectral radius of $0.9622$.
+
+Both models are trained with the Adam optimizer in PyTorch~\cite{paszke2019pytorch} through the Neuromancer library~\cite{Neuromancer2023}, on minibatches of $40$ windows of $N_\text{r} = 120$ samples, for at most $4000$ epochs, with early stopping after $300$ epochs without an improvement of the validation loss and a warm-up of $100$ epochs. The learning rate is $9.9 \cdot 10^{-4}$ for the model with the linear decoder and $8.0 \cdot 10^{-4}$ for the model with the nonlinear decoder, and the loss weights $(\ui{w}{y}, \ui{w}{z}, \ui{w}{r})$ of~\eqref{eq:dk:loss} are $(1.14,\, 2.15,\, 4.84)$ and $(17.38,\, 1.59,\, 2.28)$, respectively. Training took $131\,\text{s}$, terminated by early stopping after $2937$ epochs, for the model with the linear decoder, and $239\,\text{s}$ for the model with the nonlinear decoder, on the same Mac mini with an Apple M4 Pro processor. As stated in Sec.~\ref{sec:blockdiag}, all three models are transformed into the real block-diagonal form before they are used in any control problem.
+
+\subsection{Open-loop accuracy on the test data}
+
+To compare the models on the data that none of them has seen, each model is initialized from the first sample of the test split and then run in open loop over the whole test window, driven only by the recorded inputs and without any state correction. The prediction errors are evaluated against the noise-free outputs of the plant, which are available because the plant is simulated, so that the reported numbers reflect the model error alone and are not inflated by the measurement noise. Fig.~\ref{fig:ident-test} shows the first four input steps of this window and Table~\ref{tab:ident-accuracy} summarizes the accuracy over the whole window.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/ident_test_comparison.pdf}
+  \caption{\textcolor{green}{Open-loop predictions of the identified models on the first four input steps of the test data. The black solid line is the noise-free plant, the dash-dotted \textcolor{deepkoopman}{red} line is the Koopman model with the nonlinear decoder, the dashed \textcolor{koopmanc}{orange} line is the Koopman model with the linear decoder, and the dotted \textcolor{parsimk}{green} line is the N4SID model.}}
+  \label{fig:ident-test}
+\end{figure}
+
+\begin{table}[h]
+  \centering
+  \small
+  \setlength{\tabcolsep}{4pt}
+  \caption{\textcolor{green}{Open-loop prediction accuracy on the test data, measured by the mean absolute error (MAE) against the noise-free plant outputs. The last column is the sum of the mean absolute errors of the four standardized outputs, which is the criterion on which the models are directly comparable.}}
+  \label{tab:ident-accuracy}
+  \begin{tabular}{lccccc}
+    \toprule
+    Model & $T_1$ [K] & $T_2$ [K] & $T_3$ [K] & $x_{\text{B}3}$ [--] & $\Sigma$ MAE [--] \\
+    \midrule
+    N4SID, order $17$ & 3.79 & 3.32 & 3.42 & 0.0193 & 1.21 \\
+    Koopman, linear $h$, $n_z = 19$ & 4.41 & 3.93 & 4.10 & 0.0224 & 1.43 \\
+    Koopman, nonlinear $h$, $n_z = 26$ & 0.47 & 0.50 & 0.61 & 0.0034 & 0.19 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The Koopman model with the nonlinear decoder is significantly more accurate than both linear alternatives, and it reduces the sum of the mean absolute errors by approximately $85\%$ with respect to the N4SID model. Its prediction error is of the same magnitude as the standard deviation of the measurement noise on all four outputs, which means that the model captures the plant dynamics down to the resolution of the data. As can be seen in Fig.~\ref{fig:ident-test}, the two linear models follow the direction of every response but consistently miss the steady-state values reached after a step, and the deviation is largest for the bottoms quality, which is exactly the output whose dependence on the inputs is not monotone. The nonlinear decoder, in contrast, tracks both the transients and the steady states.
+
+The Koopman model with the linear decoder is not better than the subspace model in open loop; its error is approximately $18\%$ higher than that of the N4SID model, even though its lifted dimension exceeds the order of the subspace model. Restricting the decoder to a matrix removes most of the benefit of the lifting, since the lifted state then has to be a linear image of the outputs and the whole model remains an input--output map of an LTI system, for which subspace identification is a mature and well-tuned tool. This model is nevertheless retained in the comparison, because it is the model that the standard offset-free Koopman MPC formulation of Sec.~\ref{sec:easy-mpc} requires, and it therefore isolates the effect of the nonlinear output mapping proposed in Sec.~\ref{sec:method:ident} from the effect of the lifting itself.
+}
 
 \section{Control Results}
 \label{sec:Results}
