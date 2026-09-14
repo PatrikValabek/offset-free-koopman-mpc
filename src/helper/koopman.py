@@ -362,12 +362,19 @@ def extract_matrices(
     train_full_dict: Optional[dict] = None,
 ):
     """Legacy helper kept for notebook compatibility."""
+    def _callable(node):
+        if hasattr(node, "callable"):
+            return node.callable
+        if hasattr(node, "op"):
+            return node.op
+        return node.module
+
     dynamics = problem.nodes[3]
     koopman_node = dynamics.nodes[0]
-    pred_module = koopman_node.op if hasattr(koopman_node, "op") else koopman_node.module
+    pred_module = _callable(koopman_node)
     K = pred_module.K
-    f_u = problem.nodes[2].op if hasattr(problem.nodes[2], "op") else problem.nodes[2].module
-    f_y_inv = problem.nodes[4].op if hasattr(problem.nodes[4], "op") else problem.nodes[4].module
+    f_u = _callable(problem.nodes[2])
+    f_y_inv = _callable(problem.nodes[4])
     return extract_matrices_from_modules(
         K, f_u, f_y_inv, matrix_C, problem, train_full_dict
     )
