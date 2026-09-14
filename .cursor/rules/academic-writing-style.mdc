@@ -1,0 +1,25 @@
+---
+description: Pointer to the group academic writing style skill — load it before drafting or editing paper prose
+globs: **/*.tex
+alwaysApply: false
+---
+
+# Academic writing style
+
+Before drafting, rewriting, or polishing any prose in a paper (abstract, introduction,
+preliminaries, method, results, captions, conclusions), read
+`.cursor/skills/academic-writing-style/SKILL.md` and follow it.
+
+That skill encodes our group's voice and structural conventions, distilled only from 13 of the
+group's own published papers. Do not substitute generic academic-writing habits for it.
+
+Quick reminders, so small edits do not need the full skill:
+
+- No first-person singular. No questions, exclamations, or contractions.
+- A display equation is part of a sentence and ends in a comma (if a `where` clause follows) or a period.
+- No section or subsection ends on a display equation.
+- Cite equations as `(8)`, never `Eq. (8)`. Use `Fig. N` and `Table N`.
+- No timing or memory number without the hardware named.
+- Self-citations in the third person; `to the best of the author's knowledge`, never `our`.
+
+Symbol definitions and the `where` clause are owned by `latex-paper-writing.mdc`.

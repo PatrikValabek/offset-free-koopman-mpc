@@ -1,0 +1,31 @@
+{
+  "trial": 2,
+  "params": {
+    "nz": 29,
+    "encoder_depth": 2,
+    "width_mult": 1.0,
+    "nonlin": "elu",
+    "y_loss_w": 14.2,
+    "x_loss_w": 2.58,
+    "recon_loss_w": 1.93,
+    "nsteps": 120,
+    "bs": 40,
+    "lr": 0.0007607,
+    "seed": 2031,
+    "epochs": 4000,
+    "use_block_diag": true
+  },
+  "use_block_diag": true,
+  "cl": {
+    "objective": 331.0852334982445,
+    "t2d2": 166.9370797047343,
+    "t3d3": 164.1481537935102,
+    "t2d2_tracking": 138.68656899961883,
+    "t3d3_tracking": 135.54862644788494,
+    "t2d2_du": 14.989869363824967,
+    "t3d3_du": 14.079391314732263,
+    "rho_A": 0.9613303310561283
+  },
+  "dev_mae_sum": 2.2763471603393555,
+  "test_mae_sum": 2.1856653690338135
+}

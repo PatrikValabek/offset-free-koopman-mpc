@@ -1,0 +1,79 @@
+Title: The Beginning of Control Revolution: Offset-free Koopman MPC
+
+Abstract
+  (empty)
+
+Highlights
+  Placeholder items only.
+
+Keywords
+  (empty)
+
+1. Introduction
+  (empty)
+
+2. Preliminaries and Notation
+  (empty at section level; content is in the subsections)
+
+  2.1 Offset-Free MPC
+    Standard offset-free MPC: disturbance-augmented model, observer, target optimizer, and dynamic optimizer for integral action under plant–model mismatch.
+
+  2.2 Koopman Operator
+    Koopman theory and Deep Koopman approximations for systems with control, with both a linear output map C and a nonlinear projection h(z).
+
+3. Koopman MPC with Offset-Free
+  Baseline offset-free Koopman MPC using an LTI lifted model, a Kalman filter, a linear target problem, and a linear MPC problem.
+
+4. Methodology
+  Proposed scheme: keep the MPC cost in lifted space and linearize the nonlinear output map only where the original coordinates are still needed (targets and constraints).
+
+  4.1 Linearization of Output Mapping
+    First-order Taylor linearization of h(z) at either the previous target or the current state estimate.
+
+  4.2 Target Optimization
+    Steady-state target problem with the linearized output map, using the previous target as the linearization point.
+
+  4.3 MPC
+    Receding-horizon problem with cost on lifted-state error (Qz derived from Qy and the Jacobian) and linearized output constraints.
+
+  4.4 Closed-Loop Control Structure
+    Two algorithms: linearize at the previous target, or linearize at the current Kalman estimate, then observer → target → MPC.
+
+  4.5 State Estimation - Time Varying Kalman Filter
+    Time-varying Kalman filter on the disturbance-augmented lifted state, with the measurement equation re-linearized at each sample.
+
+  4.6 Block Diagonal Deep Koopman Transformation
+    Similarity transform of A (and B, C, z, Jacobian) into block-diagonal form to speed up the QP and raise the rate of optimal solves.
+
+5. Identification
+  (empty; TODO: model parameters and identification-error comparison)
+
+6. Control Results
+  Simulation setups and closed-loop results.
+
+  6.1 The effect of block-diagonal transformation
+    Block-diagonal A vs. full A: faster solves, 100% optimal solutions, and slightly better closed-loop cost and settling times.
+
+  6.2 Simulation setups
+    (empty; T1–T3 / D1–D4 mapping definitions are commented out)
+
+  6.3 Simulation Results for Two Reactor System
+    Two-reactor CSTR closed-loop costs for CT, T2D2, T3D3 vs. NMPC, previous vs. updated numbers, three tunings.
+
+7. Discussion
+  (empty)
+
+8. Conclusion
+  (empty)
+
+Appendix A. System Models
+  Mathematical models of the benchmark plants.
+
+  A.1 Two Reactor System
+    Two CSTRs in series with recycle, jacket cooling, and parallel reactions.
+
+    A.1.1 Chemical Reactions
+      Desired, undesired, and shunt reactions with Arrhenius rates.
+
+    A.1.2 Dynamic Model
+      Eight-state ODEs, inputs (F, L, Tc1, Tc2), outputs equal to states, parameters and constraints in tables.

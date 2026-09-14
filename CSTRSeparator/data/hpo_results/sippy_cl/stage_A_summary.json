@@ -1,0 +1,12 @@
+{
+  "best_value": 222.7818197510848,
+  "best_params": {
+    "method": "N4SID",
+    "n": 17,
+    "f_extra": 40,
+    "centering": "None",
+    "SS_A_stability": false
+  },
+  "n_trials": 200,
+  "use_block_diag": true
+}

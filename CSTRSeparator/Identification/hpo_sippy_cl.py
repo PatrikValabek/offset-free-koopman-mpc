@@ -394,6 +394,31 @@ def enqueue_seed_trials(study: optuna.Study) -> None:
         )
 
 
+def params_already_evaluated(study: optuna.Study, params: dict[str, Any]) -> float | None:
+    """SIPPY identification is deterministic: reuse a completed trial with the same params."""
+    for t in study.get_trials(deepcopy=False, states=(TrialState.COMPLETE,)):
+        if t.params == params and t.value is not None:
+            return float(t.value)
+    return None
+
+
+def enqueue_long_horizon_n4sid(study: optuna.Study) -> int:
+    """Queue n=19 and n=20 on the winning f_extra=40 N4SID line if missing."""
+    wanted = [
+        {"method": "N4SID", "n": n, "f_extra": 40, "centering": "None", "SS_A_stability": False}
+        for n in (19, 20)
+    ]
+    existing = {tuple(sorted((t.params or {}).items())) for t in study.trials}
+    n_added = 0
+    for params in wanted:
+        key = tuple(sorted(params.items()))
+        if key in existing:
+            continue
+        study.enqueue_trial(params)
+        n_added += 1
+    return n_added
+
+
 def fail_stale_running_trials(study: optuna.Study) -> int:
     n = 0
     for trial in study.get_trials(deepcopy=False, states=(TrialState.RUNNING,)):
@@ -578,9 +603,11 @@ def main() -> None:
             flush=True,
         )
     else:
+        n_extra = enqueue_long_horizon_n4sid(study)
         print(
             f"Continuing {HPO_CFG.study_name} "
-            f"({len(study.trials)} existing, best OF={safe_best_value(study)}).",
+            f"({len(study.trials)} existing, best OF={safe_best_value(study)}"
+            f"{f', queued {n_extra} n=19/20 N4SID trials' if n_extra else ''}).",
             flush=True,
         )
 
@@ -588,6 +615,14 @@ def main() -> None:
         params = sample_sippy_params(trial)
         trial.set_user_attr("SS_f", params.SS_f)
         trial.set_user_attr("SS_p", params.SS_p)
+        cached = params_already_evaluated(study, dict(trial.params))
+        if cached is not None:
+            print(
+                f"trial {trial.number} duplicate params; reusing OF={cached:.4g} "
+                f"({params.method} n={params.n} SS_f={params.SS_f})",
+                flush=True,
+            )
+            return cached
         print(
             f"trial {trial.number} start  {params.method}  n={params.n}  "
             f"SS_f={params.SS_f}  SS_p={params.SS_p}  centering={params.centering}  "

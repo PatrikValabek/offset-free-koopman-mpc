@@ -6,17 +6,19 @@ The Optuna objective is the same closed-loop cost printed in
 minimized. ``use_block_diag`` is always True (not searched).
 
 Default: new study ``koopman_C_cl_qu`` (Qu on in ``sim_setup.pkl``), 2 parallel
-jobs, run until Ctrl+C. Does not write into ``hpo_results/C_cl_bd/``.
+worker *processes*, run until Ctrl+C. Does not write into ``hpo_results/C_cl_bd/``.
 Logs: ``hpo_results/C_cl_qu/trials.tsv``.
 """
 
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
+import signal
+import subprocess
 import sys
-import threading
 from dataclasses import asdict, replace
 from pathlib import Path
 
@@ -163,10 +165,53 @@ def safe_best_value(study: optuna.Study) -> float | None:
         return None
 
 
+def make_storage(out_dir: Path) -> optuna.storages.RDBStorage:
+    db = out_dir / f"{HPO_CFG.study_name}.db"
+    return optuna.storages.RDBStorage(
+        url=f"sqlite:///{db.resolve()}",
+        engine_kwargs={"connect_args": {"timeout": 120}},
+    )
+
+
+def load_study(out_dir: Path) -> optuna.Study:
+    return optuna.load_study(
+        study_name=HPO_CFG.study_name,
+        storage=make_storage(out_dir),
+    )
+
+
 def save_abc_for_ct(A, B, C) -> None:
     np.save(DATA_DIR / "A_cstr_separator_C_True.npy", A)
     np.save(DATA_DIR / "B_cstr_separator_C_True.npy", B)
     np.save(DATA_DIR / "C_cstr_separator_C_True.npy", C)
+
+
+def save_best_trial(out_dir: Path, trial_number: int, params: dict, result: dict, cl: dict) -> None:
+    lock_path = out_dir / "best.lock"
+    with open(lock_path, "a", encoding="utf-8") as lf:
+        fcntl.flock(lf, fcntl.LOCK_EX)
+        winner_path = out_dir / "cl_winner.json"
+        if winner_path.is_file():
+            prev = json.loads(winner_path.read_text(encoding="utf-8"))
+            prev_of = float(prev.get("cl", {}).get("objective", float("inf")))
+            if float(cl["objective"]) >= prev_of:
+                return
+        save_abc_for_ct(result["A"], result["B"], result["C"])
+        torch.save(result["best_model"], DATA_DIR / "model_cstr_separator_C_True.pth")
+        meta = {
+            "trial": trial_number,
+            "params": params,
+            "use_block_diag": USE_BLOCK_DIAG,
+            "cl": {k: cl[k] for k in cl if k != "error"},
+            "dev_mae_sum": result["dev_mae_sum"],
+            "test_mae_sum": result["test_mae_sum"],
+        }
+        winner_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
+        print(
+            f"New best trial {trial_number}: CL OF={cl['objective']:.4g} "
+            "(saved A/B/C and model from this trial, not a retrain).",
+            flush=True,
+        )
 
 
 class StopBelowTarget:
@@ -177,6 +222,68 @@ class StopBelowTarget:
         if trial.value is not None and trial.value < self.target:
             print(f"Reached closed-loop OF {trial.value:.4g} < {self.target}; stopping.")
             study.stop()
+
+
+def run_worker(args: argparse.Namespace, out_dir: Path) -> None:
+    train_cfg = TrainConfig(
+        epochs=args.epochs,
+        patience=args.patience,
+        warmup=args.warmup,
+    )
+    train, dev, test, scaler, scalerU, y_names, _ = load_dataset()
+    setup_mlflow(HPO_CFG)
+    study = load_study(out_dir)
+
+    def objective(trial: optuna.Trial) -> float:
+        params = sample_trial_params(trial)
+        epoch_budget = trial.suggest_categorical("epochs", EPOCH_GRID)
+        trial_train_cfg = replace(train_cfg, epochs=int(epoch_budget))
+        result = run_trial(
+            params,
+            HPO_CFG,
+            train,
+            dev,
+            test,
+            scaler,
+            scalerU,
+            y_names,
+            trial_train_cfg,
+            verbose=args.verbose,
+        )
+        cl = evaluate_or_penalty(
+            result["A"], result["B"], result["C"], use_block_diag=USE_BLOCK_DIAG
+        )
+        log_params = {**asdict(params), "epochs": epoch_budget}
+        try:
+            with mlflow.start_run(run_name=f"ct_trial_{trial.number}"):
+                mlflow.log_params(log_params)
+                mlflow.log_param("use_block_diag", USE_BLOCK_DIAG)
+                mlflow.log_metric("dev_mae_sum", result["dev_mae_sum"])
+                mlflow.log_metric("test_mae_sum", result["test_mae_sum"])
+                mlflow.log_metric("cl_of", cl["objective"])
+                mlflow.log_metric("trainer_epochs", result["trainer_epochs"])
+        except Exception as exc:
+            print(f"MLflow log failed (trial {trial.number}): {exc}", flush=True)
+        trial.set_user_attr("dev_mae_sum", result["dev_mae_sum"])
+        trial.set_user_attr("test_mae_sum", result["test_mae_sum"])
+        trial.set_user_attr("cl_of", cl["objective"])
+        trial.set_user_attr("cl_detail", json.dumps({k: cl[k] for k in cl if k != "error"}))
+        result["use_block_diag"] = USE_BLOCK_DIAG
+        result["cl_of"] = cl["objective"]
+        result["cl_tracking"] = cl.get("state_error_cost")
+        result["cl_du"] = cl.get("control_increment_cost")
+        append_trial_log(HPO_CFG, trial.number, log_params, result)
+        save_best_trial(out_dir, trial.number, log_params, result, cl)
+        return float(cl["objective"])
+
+    callbacks = [StopBelowTarget(args.target_of)] if args.stop_below_target else []
+    study.optimize(
+        objective,
+        n_trials=args.n_trials,
+        n_jobs=1,
+        show_progress_bar=False,
+        callbacks=callbacks,
+    )
 
 
 def main() -> None:
@@ -225,7 +332,9 @@ def main() -> None:
         default=N_SEED_BEST,
         help="How many previous finite-OF configs to enqueue at the start.",
     )
+    parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
     add_parallel_cli(parser)
+    parser.set_defaults(n_jobs=int(os.environ.get("HPO_N_JOBS", "2")))
     args = parser.parse_args()
 
     configure_threading(args.blas_threads)
@@ -239,22 +348,18 @@ def main() -> None:
         print(f"existing C_True  block_diag={USE_BLOCK_DIAG}  OF={out}")
         return
 
-    train_cfg = TrainConfig(
-        epochs=args.epochs,
-        patience=args.patience,
-        warmup=args.warmup,
-    )
-    train, dev, test, scaler, scalerU, y_names, _ = load_dataset()
-    setup_mlflow(HPO_CFG)
-
     out_dir = RESULTS_DIR / HPO_CFG.variant
     out_dir.mkdir(parents=True, exist_ok=True)
-    db = out_dir / f"{HPO_CFG.study_name}.db"
+
+    if args.worker:
+        run_worker(args, out_dir)
+        return
+
     study = optuna.create_study(
         study_name=HPO_CFG.study_name,
         direction="minimize",
         sampler=optuna.samplers.TPESampler(seed=42),
-        storage=f"sqlite:///{db.resolve()}",
+        storage=make_storage(out_dir),
         load_if_exists=True,
     )
     n_stale = fail_stale_running_trials(study)
@@ -275,84 +380,51 @@ def main() -> None:
             flush=True,
         )
 
-    best_lock = threading.Lock()
-    _best = safe_best_value(study)
-    best_of = [float(_best) if _best is not None else float("inf")]
+    n_jobs = max(1, int(args.n_jobs))
+    print(f"Launching {n_jobs} Optuna worker processes (n_jobs=1 each).", flush=True)
+    worker_cmd = [
+        sys.executable,
+        str(Path(__file__).resolve()),
+        "--worker",
+        "--patience",
+        str(args.patience),
+        "--warmup",
+        str(args.warmup),
+        "--n-jobs",
+        "1",
+        "--blas-threads",
+        str(args.blas_threads),
+    ]
+    if args.n_trials is not None:
+        worker_cmd.extend(["--n-trials", str(args.n_trials)])
+    if args.verbose:
+        worker_cmd.append("--verbose")
+    if args.stop_below_target:
+        worker_cmd.extend(["--stop-below-target", "--target-of", str(args.target_of)])
+    procs = [subprocess.Popen(worker_cmd) for _ in range(n_jobs)]
 
-    def objective(trial: optuna.Trial) -> float:
-        params = sample_trial_params(trial)
-        epoch_budget = trial.suggest_categorical("epochs", EPOCH_GRID)
-        trial_train_cfg = replace(train_cfg, epochs=int(epoch_budget))
-        use_block_diag = USE_BLOCK_DIAG
-        with mlflow.start_run():
-            mlflow.log_params(asdict(params))
-            mlflow.log_param("use_block_diag", use_block_diag)
-            mlflow.log_param("epoch_budget", epoch_budget)
-            result = run_trial(
-                params,
-                HPO_CFG,
-                train,
-                dev,
-                test,
-                scaler,
-                scalerU,
-                y_names,
-                trial_train_cfg,
-                verbose=args.verbose,
-            )
-            cl = evaluate_or_penalty(
-                result["A"], result["B"], result["C"], use_block_diag=use_block_diag
-            )
-            mlflow.log_metric("dev_mae_sum", result["dev_mae_sum"])
-            mlflow.log_metric("test_mae_sum", result["test_mae_sum"])
-            mlflow.log_metric("cl_of", cl["objective"])
-            mlflow.log_metric("trainer_epochs", result["trainer_epochs"])
-            trial.set_user_attr("dev_mae_sum", result["dev_mae_sum"])
-            trial.set_user_attr("test_mae_sum", result["test_mae_sum"])
-            trial.set_user_attr("cl_of", cl["objective"])
-            trial.set_user_attr("cl_detail", json.dumps({k: cl[k] for k in cl if k != "error"}))
-            result["use_block_diag"] = use_block_diag
-            result["cl_of"] = cl["objective"]
-            result["cl_tracking"] = cl.get("state_error_cost")
-            result["cl_du"] = cl.get("control_increment_cost")
-            log_params = {**asdict(params), "epochs": epoch_budget}
-            append_trial_log(HPO_CFG, trial.number, log_params, result)
-            with best_lock:
-                if cl["objective"] < best_of[0]:
-                    best_of[0] = float(cl["objective"])
-                    save_abc_for_ct(result["A"], result["B"], result["C"])
-                    torch.save(result["best_model"], DATA_DIR / "model_cstr_separator_C_True.pth")
-                    meta = {
-                        "trial": trial.number,
-                        "params": {**asdict(params), "epochs": epoch_budget},
-                        "use_block_diag": use_block_diag,
-                        "cl": {k: cl[k] for k in cl if k != "error"},
-                        "dev_mae_sum": result["dev_mae_sum"],
-                        "test_mae_sum": result["test_mae_sum"],
-                    }
-                    (out_dir / "cl_winner.json").write_text(
-                        json.dumps(meta, indent=2), encoding="utf-8"
-                    )
-                    print(
-                        f"New best trial {trial.number}: CL OF={cl['objective']:.4g} "
-                        "(saved A/B/C and model from this trial, not a retrain).",
-                        flush=True,
-                    )
-            return float(cl["objective"])
+    def _shutdown(signum, _frame):
+        for proc in procs:
+            proc.terminate()
+        for proc in procs:
+            try:
+                proc.wait(timeout=15)
+            except Exception:
+                proc.kill()
+        raise SystemExit(128 + int(signum))
 
-    callbacks = [StopBelowTarget(args.target_of)] if args.stop_below_target else []
+    signal.signal(signal.SIGTERM, _shutdown)
+    signal.signal(signal.SIGINT, _shutdown)
+    rc = 0
     try:
-        study.optimize(
-            objective,
-            n_trials=args.n_trials,
-            n_jobs=args.n_jobs,
-            show_progress_bar=True,
-            callbacks=callbacks,
-            catch=(Exception,),
-        )
+        for proc in procs:
+            proc.wait()
+            if proc.returncode:
+                rc = proc.returncode
     except KeyboardInterrupt:
-        print("\nInterrupted by user. Writing summary of completed trials.", flush=True)
+        _shutdown(signal.SIGINT, None)
 
+    study = load_study(out_dir)
     best_value = safe_best_value(study)
     if best_value is not None:
         print(f"Best CL OF: {best_value:.6g}")
@@ -370,8 +442,16 @@ def main() -> None:
     (out_dir / "stage_A_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
     if best_value is not None and not args.no_final_retrain:
+        train_cfg = TrainConfig(
+            epochs=args.epochs,
+            patience=args.patience,
+            warmup=args.warmup,
+        )
+        train, dev, test, scaler, scalerU, y_names, _ = load_dataset()
+        setup_mlflow(HPO_CFG)
         best = dict(study.best_params)
         best.pop("use_block_diag", None)
+        best.pop("epochs", None)
         params = TrialParams(**best)
         meta = save_final_model(
             HPO_CFG,
@@ -391,6 +471,8 @@ def main() -> None:
         print("Final retrain CL OF:", cl)
     elif args.no_final_retrain:
         print("Skipping final retrain (--no-final-retrain).")
+    if rc:
+        raise SystemExit(rc)
 
 
 if __name__ == "__main__":

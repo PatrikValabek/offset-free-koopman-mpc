@@ -1,0 +1,27 @@
+{
+  "trial": 0,
+  "params": {
+    "nz": 24,
+    "encoder_depth": 2,
+    "width_mult": 0.5,
+    "nonlin": "gelu",
+    "y_loss_w": 1.5,
+    "x_loss_w": 1.38,
+    "recon_loss_w": 4.48,
+    "nsteps": 120,
+    "bs": 40,
+    "lr": 0.001118,
+    "seed": 8080,
+    "epochs": 4000
+  },
+  "use_block_diag": true,
+  "cl": {
+    "objective": 555.0097426387396,
+    "state_error_cost": 507.22234963583,
+    "control_increment_cost": 27.149118260089566,
+    "control_setpoint_cost": 20.638274742819448,
+    "rho_A": 0.9305527221982554
+  },
+  "dev_mae_sum": 10.462525367736816,
+  "test_mae_sum": 12.859381675720215
+}

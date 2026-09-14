@@ -1,0 +1,23 @@
+{
+  "trial": 41,
+  "params": {
+    "method": "N4SID",
+    "n": 18,
+    "f_extra": 40,
+    "centering": "None",
+    "SS_A_stability": false,
+    "p_over_f": 1.0,
+    "SS_PK_B_reval": false,
+    "SS_f": 58,
+    "SS_p": 58
+  },
+  "use_block_diag": true,
+  "cl": {
+    "objective": 230.88740638155565,
+    "state_error_cost": 167.00561609105705,
+    "control_increment_cost": 11.271404218847664,
+    "rho_A": 0.9893637651165778
+  },
+  "test_mae_sum": 10.632394781363956,
+  "n_ident": 18
+}

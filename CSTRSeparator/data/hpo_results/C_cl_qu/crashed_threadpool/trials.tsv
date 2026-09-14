@@ -1,0 +1,3 @@
+trial	nz	encoder_depth	width_mult	nonlin	nsteps	bs	lr	y_loss_w	x_loss_w	recon_loss_w	seed	epochs	dev_mae	test_mae	use_block_diag	cl_of	cl_tracking	cl_du
+0	24	2	0.5	gelu	120	40	0.001118	1.5	1.38	4.48	8080	4000	10.46	12.86	True	555	507.2	27.15
+9194	31	2	0.5	relu	40	160	0.0006373	12.4	1.4	3.67	4195	1000	12.36	14.26	True	4303	2951	247.3
