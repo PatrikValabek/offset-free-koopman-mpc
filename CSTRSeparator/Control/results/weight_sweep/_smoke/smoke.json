@@ -1,0 +1,161 @@
+{
+  "ok": true,
+  "notes": [
+    "N4SID twin max|\u0394u|=0.000e+00 \u0394J=0.000e+00",
+    "NMPC twin max|\u0394u|=0.000e+00 \u0394J=0.000e+00 rel=0.000e+00",
+    "mixed CT OF=0.98103",
+    "mixed NMPC OF=0.0826035"
+  ],
+  "linear": [
+    {
+      "controller": "N4SID",
+      "setup_name": "original",
+      "job_id": "N4SID_original_a",
+      "pid": 27341,
+      "error": null,
+      "objective": 0.47076872216985544,
+      "state_error_cost": 0.0820955897434395,
+      "control_increment_cost": 0.08320472898598963,
+      "control_setpoint_cost": 0.30546840344042625,
+      "objective_original_weights": 0.47076872216985544,
+      "wall_s": 3.1282223340822384,
+      "mpc_wall_sum_s": 0.31724733277224004,
+      "mpc_wall_mean_s": 0.039655916596530005,
+      "mpc_wall_max_s": 0.04428999999072403,
+      "mpc_solver_sum_s": 0.18202567100524902,
+      "mpc_solver_mean_s": 0.022753208875656128,
+      "mpc_solver_max_s": 0.027189016342163086,
+      "target_wall_sum_s": 0.010503165307454765,
+      "n_steps": 8,
+      "Qy_diag": [
+        2.0,
+        2.0,
+        2.0,
+        15.0
+      ],
+      "Qu_diag": [
+        0.2,
+        0.2,
+        0.2,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "sim_time": 8,
+      "notebook_of": 201.63337681139214
+    },
+    {
+      "controller": "N4SID",
+      "setup_name": "original",
+      "job_id": "N4SID_original_b",
+      "pid": 27340,
+      "error": null,
+      "objective": 0.47076872216985544,
+      "state_error_cost": 0.0820955897434395,
+      "control_increment_cost": 0.08320472898598963,
+      "control_setpoint_cost": 0.30546840344042625,
+      "objective_original_weights": 0.47076872216985544,
+      "wall_s": 3.127938958001323,
+      "mpc_wall_sum_s": 0.3175074610626325,
+      "mpc_wall_mean_s": 0.03968843263282906,
+      "mpc_wall_max_s": 0.044357749982737005,
+      "mpc_solver_sum_s": 0.1802978515625,
+      "mpc_solver_mean_s": 0.0225372314453125,
+      "mpc_solver_max_s": 0.026865005493164062,
+      "target_wall_sum_s": 0.010676541831344366,
+      "n_steps": 8,
+      "Qy_diag": [
+        2.0,
+        2.0,
+        2.0,
+        15.0
+      ],
+      "Qu_diag": [
+        0.2,
+        0.2,
+        0.2,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "sim_time": 8,
+      "notebook_of": 201.63337681139214
+    }
+  ],
+  "nmpc": [
+    {
+      "controller": "NMPC",
+      "setup_name": "original",
+      "job_id": "NMPC_original_a",
+      "pid": 27354,
+      "error": null,
+      "objective": 0.08327768244281389,
+      "state_error_cost": 0.0003124564141901202,
+      "control_increment_cost": 0.04216975245340697,
+      "control_setpoint_cost": 0.04079547357521679,
+      "objective_original_weights": 0.08327768244281389,
+      "wall_s": 7.443227542098612,
+      "mpc_wall_sum_s": 0.781384666915983,
+      "mpc_wall_mean_s": 0.26046155563866097,
+      "mpc_wall_max_s": 0.29092304199002683,
+      "mpc_solver_sum_s": 0.0,
+      "mpc_solver_mean_s": null,
+      "mpc_solver_max_s": null,
+      "target_wall_sum_s": 0.021295249927788973,
+      "n_steps": 3,
+      "Qy_diag": [
+        2.0,
+        2.0,
+        2.0,
+        15.0
+      ],
+      "Qu_diag": [
+        0.2,
+        0.2,
+        0.2,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "sim_time": 3,
+      "notebook_of": 145.62960989639097
+    },
+    {
+      "controller": "NMPC",
+      "setup_name": "original",
+      "job_id": "NMPC_original_b",
+      "pid": 27355,
+      "error": null,
+      "objective": 0.08327768244281389,
+      "state_error_cost": 0.0003124564141901202,
+      "control_increment_cost": 0.04216975245340697,
+      "control_setpoint_cost": 0.04079547357521679,
+      "objective_original_weights": 0.08327768244281389,
+      "wall_s": 7.421859292080626,
+      "mpc_wall_sum_s": 0.7823019169736654,
+      "mpc_wall_mean_s": 0.26076730565788847,
+      "mpc_wall_max_s": 0.28971329191699624,
+      "mpc_solver_sum_s": 0.0,
+      "mpc_solver_mean_s": null,
+      "mpc_solver_max_s": null,
+      "target_wall_sum_s": 0.021349956979975104,
+      "n_steps": 3,
+      "Qy_diag": [
+        2.0,
+        2.0,
+        2.0,
+        15.0
+      ],
+      "Qu_diag": [
+        0.2,
+        0.2,
+        0.2,
+        0.5,
+        0.5,
+        0.5
+      ],
+      "sim_time": 3,
+      "notebook_of": 145.62960989639097
+    }
+  ]
+}

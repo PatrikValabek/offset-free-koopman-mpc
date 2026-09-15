@@ -14,6 +14,7 @@ pair over the horizon with no preview, matching the N4SID loop.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from typing import Dict, List
 
@@ -211,6 +212,7 @@ def build_mpc(
             "ipopt.sb": "yes",
             "print_time": 0,
             "ipopt.max_iter": 400,
+            "ipopt.linear_solver": "mumps",
         },
     )
 
@@ -319,7 +321,7 @@ class TargetSelector:
             "g": ca.vertcat(x_next - x, y),
         }
         self._solver = ca.nlpsol(
-            "target",
+            f"target_{os.getpid()}_{id(self)}",
             "ipopt",
             nlp,
             {
@@ -327,6 +329,7 @@ class TargetSelector:
                 "ipopt.sb": "yes",
                 "print_time": 0,
                 "ipopt.max_iter": 200,
+                "ipopt.linear_solver": "mumps",
             },
         )
         x_lb = np.array([0.0, 0.0, self.y_min[0], 0.0, 0.0, self.y_min[1], 0.0, 0.0, self.y_min[2]])

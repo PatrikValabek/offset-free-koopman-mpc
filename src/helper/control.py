@@ -12,6 +12,44 @@ def _load_sim_setup():
     path = os.environ.get("SIM_SETUP_PATH", "sim_setup.pkl")
     return joblib.load(path)
 
+
+_PROCESS_GUROBI_ENV = None
+_PROCESS_GUROBI_ENV_FAILED = False
+
+
+def _gurobi_env():
+    """One Gurobi environment per process so parallel workers do not share a default env."""
+    global _PROCESS_GUROBI_ENV, _PROCESS_GUROBI_ENV_FAILED
+    if _PROCESS_GUROBI_ENV_FAILED:
+        return None
+    if _PROCESS_GUROBI_ENV is None:
+        try:
+            import gurobipy as gp
+
+            env = gp.Env(empty=True)
+            env.setParam("OutputFlag", 0)
+            env.setParam("LogToConsole", 0)
+            env.setParam("Threads", 1)
+            env.start()
+            _PROCESS_GUROBI_ENV = env
+        except Exception:
+            _PROCESS_GUROBI_ENV_FAILED = True
+            return None
+    return _PROCESS_GUROBI_ENV
+
+
+def _gurobi_solve(problem, **extra):
+    kwargs = dict(solver=cp.GUROBI, TimeLimit=60, BarIterLimit=1e6, Threads=1)
+    kwargs.update(extra)
+    env = _gurobi_env()
+    if env is not None:
+        kwargs["env"] = env
+    try:
+        return problem.solve(**kwargs)
+    except TypeError:
+        kwargs.pop("env", None)
+        return problem.solve(**kwargs)
+
 class KF():
     def __init__(self, A, B, C, x0, P0, Q, R):
         self.A = A
@@ -382,7 +420,7 @@ class TargetEstimation():
         self.y_sp.value = y_sp.flatten()
         self.u_sp.value = u_sp.flatten()
         # solve the problem
-        self.te.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)
+        _gurobi_solve(self.te)
         
         if self.te.status != cp.OPTIMAL:
             print("Target estimation problem is not optimal")
@@ -438,7 +476,7 @@ class TargetEnergyEstimation():
         self.y_sp.value = y_sp.flatten()
         self.u_sp.value = u_sp.flatten()
         # solve the problem
-        self.te.solve(solver=cp.GUROBI,TimeLimit=60,BarIterLimit=1e6)
+        _gurobi_solve(self.te)
         
         if self.te.status != cp.OPTIMAL:
             print("Target estimation problem is not optimal")
@@ -521,7 +559,7 @@ class MPC():
         self.u_prev.value = u_prev.flatten()
         self.z_ref.value = z_ref.flatten()
         # solve the problem
-        self.mpc.solve(solver=cp.GUROBI, TimeLimit=60, BarIterLimit=1e6, Threads=1)
+        _gurobi_solve(self.mpc)
         
         if self.mpc.status != cp.OPTIMAL:
             print("MPC problem is not optimal")
@@ -601,7 +639,7 @@ class MPC_Qy():
         self.u_prev.value = u_prev.flatten()
         self.y_ref.value = y_ref.flatten()
         # solve the problem
-        self.mpc.solve(solver=cp.GUROBI, TimeLimit=60, BarIterLimit=1e6, Threads=1)
+        _gurobi_solve(self.mpc)
         
         if self.mpc.status != cp.OPTIMAL:
             print("MPC problem is not optimal")
@@ -662,7 +700,7 @@ class TaylorTargetEstimation():
         self.C_k.value = C_k
         self.u_sp.value = u_sp.flatten()
         # solve the problem
-        self.te.solve(solver=cp.GUROBI, Threads=1)
+        _gurobi_solve(self.te)
         
         if self.te.status != cp.OPTIMAL:
             print("Target estimation problem is not optimal")
@@ -723,7 +761,7 @@ class TaylorTargetEnergyEstimation():
         self.C_k.value = C_k
         self.u_sp.value = u_sp.flatten()
         # solve the problem
-        self.te.solve(solver=cp.GUROBI, Threads=1)
+        _gurobi_solve(self.te)
         
         if self.te.status != cp.OPTIMAL:
             print("Target estimation problem is not optimal")
@@ -811,7 +849,7 @@ class TaylorMPC():
         self.linear_term_z.value = Qz @ z_ref.flatten()  # Compute Qz @ z_ref for efficiency (equivalent to z_ref.T @ Qz when transposed)
         self.u_sp.value = u_sp.flatten()
         # solve the problem
-        self.mpc.solve(solver=cp.GUROBI, TimeLimit=60, BarIterLimit=1e6, Threads=1)
+        _gurobi_solve(self.mpc)
         
         if self.mpc.status != cp.OPTIMAL:
             print("MPC problem is not optimal")
@@ -896,7 +934,7 @@ class TaylorCrossMPC():
         self.Qz_param.value = Qz
         self.alpha.value = y_k.flatten() - (C_k @ z_k).flatten() - (C_ref @ z_ref).flatten() - y_ref.flatten() + (C_ref @ z_p_ref).flatten()
         # solve the problem
-        self.mpc.solve(solver=cp.GUROBI, TimeLimit=60, BarIterLimit=1e6, Threads=1)
+        _gurobi_solve(self.mpc)
         
         if self.mpc.status != cp.OPTIMAL:
             print("MPC problem is not optimal")

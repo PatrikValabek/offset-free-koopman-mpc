@@ -1,0 +1,35 @@
+{
+  "objective": 265.5330466926796,
+  "state_error_cost": 234.54469958814235,
+  "control_increment_cost": 16.04384906983584,
+  "control_setpoint_cost": 14.944498034701368,
+  "objective_original_weights": 148.2606968986077,
+  "wall_s": 457.6559464999009,
+  "mpc_wall_sum_s": 436.03654681739863,
+  "mpc_wall_mean_s": 0.29069103121159906,
+  "mpc_wall_max_s": 0.5958203749032691,
+  "mpc_solver_sum_s": 0.0,
+  "mpc_solver_mean_s": null,
+  "mpc_solver_max_s": null,
+  "target_wall_sum_s": 12.855727825663052,
+  "n_steps": 1500,
+  "controller": "NMPC",
+  "setup_name": "qy_x2",
+  "Qy_diag": [
+    4.0,
+    4.0,
+    4.0,
+    30.0
+  ],
+  "Qu_diag": [
+    0.2,
+    0.2,
+    0.2,
+    0.5,
+    0.5,
+    0.5
+  ],
+  "sim_time": 1500,
+  "notebook_of": null,
+  "pid": 29548
+}

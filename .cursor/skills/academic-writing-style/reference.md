@@ -298,3 +298,6 @@ times, DDPG three times) and it is a flaw, not a feature.
 - [ ] Self-citations phrased in the third person.
 - [ ] Spelling internally consistent; no acronym re-expanded.
 - [ ] `voice.md` §"Group errors" list swept.
+- [ ] Agent-drafted prose is wrapped in `\generatedstyle` (`HTML 1B5E20` and bold); default `green` is not used.
+- [ ] Agent-drafted blocks also carry `\genopen`/`\genclose` with the model name and settings that
+      generated them; a faster model is not used to save time.

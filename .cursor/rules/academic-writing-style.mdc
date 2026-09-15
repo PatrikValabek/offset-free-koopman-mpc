@@ -15,6 +15,11 @@ group's own published papers. Do not substitute generic academic-writing habits 
 
 Quick reminders, so small edits do not need the full skill:
 
+- Wrap every drafted passage in `\generatedstyle` (`HTML 1B5E20` and bold). Never the default `green`.
+  Beside the colour, mark the model and settings with `\genopen`/`\genclose` (e.g. `grok4.6high`).
+  Do not switch to a faster model; quality is not to be traded for speed.
+- Raise every open question twice: in chat **and** as a self-contained `\todo{}` at the exact spot in
+  the document. Remove the `\todo{}` in the same edit that resolves it.
 - No first-person singular. No questions, exclamations, or contractions.
 - A display equation is part of a sentence and ends in a comma (if a `where` clause follows) or a period.
 - No section or subsection ends on a display equation.

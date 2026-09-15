@@ -43,6 +43,14 @@
 \definecolor{deepkoopman}{HTML}{8B0000}
 \definecolor{koopmanc}{HTML}{FFA500}
 \definecolor{parsimk}{HTML}{008000}
+\definecolor{koopmanb}{HTML}{7030A0}
+% Marks agent-generated prose: dark green and bold so it stays legible in print.
+\definecolor{generated}{HTML}{1B5E20}
+\newcommand{\generatedstyle}{\color{generated}\bfseries\boldmath}
+\newcommand{\textgenerated}[1]{\textcolor{generated}{\bfseries\boldmath #1}}
+\newcommand{\gensource}{grok4.6high}
+\newcommand{\genopen}{{\scriptsize\generatedstyle[\gensource]}}
+\newcommand{\genclose}{{\scriptsize\generatedstyle[/\gensource]}}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
@@ -71,7 +79,7 @@
 \newcommand{\uact}{\ui{u}{ACT}}
 \newcommand{\corr}{\ui{\mathcal{C}}{C}}
 \newcommand{\todo}[1]{{{\color{red} TODO: #1	}} }
-\renewcommand{\mark}[1]{{{\color{green} #1	}} }
+\renewcommand{\mark}[1]{{{\generatedstyle #1	}} }
 %\newcommand{\e}[1]{\cdot 10^{#1}}
 %%-------------------------------------------------------
 %% MACRO for tikz picture. DO NOT CHANGE ANYTHING !!!!!
@@ -298,8 +306,9 @@ For the purpose of this work we are using the Deep Koopman Approximation introdu
 
 \section{Koopman MPC with Offset-Free}
 \label{sec:easy-mpc}
+\todo{This heading is incomplete and is in title case; headings must be sentence case. Confirm the intended title, for example "Offset-free Koopman MPC", and it will be applied.}
 In this subsection, we will present a standard offset free model predictive control framework using approximation of Koopman operator as a linear time invariant (LTI) model. As observer is standard Kalman filter, we will discuss mainly remaining two optimization problems. 
-As we use the LTI approximation of Koopman operator, we can use the standard MPC formulation with linear constraints and objective function. The control structure is shown in Figure~\ref{fig:close_loop}.
+As we use the LTI approximation of Koopman operator, we can use the standard MPC formulation with linear constraints and objective function. The control structure is shown in Fig.~\ref{fig:close_loop}.
 
 \begin{figure}[H]
   \centering
@@ -313,7 +322,7 @@ The target optimization problem computes the steady-state targets $\bar{u}, \bar
 \begin{subequations}
   \label{eq:target:opt}
   \begin{align}
-    \min_{\bar{u}, \bar{z}, \bar{y}} \quad & \; (\bar{y} - y_\text{ref})^\intercal Q_\text{y} (\bar{y} - y_\text{ref}) \label{eq:target:opt:obj}, \\
+    \min_{\bar{u}, \bar{z}, \bar{y}} \quad & \; (\bar{y} - y_\text{ref})^\intercal \ui{Q}{y}^\text{t} (\bar{y} - y_\text{ref}) \label{eq:target:opt:obj}, \\
     \text{s.t.} \quad & \; \bar{z} = A\bar{z} + B\bar{u} \label{eq:target:opt:z}, \\
     & \; \bar{y} = C\bar{z} + d \label{eq:target:opt:y}, \\
     & \; u_{\min} \leq \bar{u} \leq u_{\max} \label{eq:target:opt:u}, \\
@@ -321,10 +330,11 @@ The target optimization problem computes the steady-state targets $\bar{u}, \bar
     & \; d = \hat{d}(t), \quad y_\text{ref} = y_\text{sp}(t), \label{eq:target:opt:params}
   \end{align}
 \end{subequations}
-where $\bar{u} \in \mathbb{R}^{n_u}$, $\bar{z} \in \mathbb{R}^{n_z}$, and $\bar{y} \in \mathbb{R}^{n_y}$ are the steady-state input, lifted state, and output, respectively; $Q_\text{y} \succ 0$ is the output tracking weight matrix; $A \in \mathbb{R}^{n_z \times n_z}$, $B \in \mathbb{R}^{n_z \times n_u}$, $C \in \mathbb{R}^{n_y \times n_z}$ are the state-space matrices of the LTI Koopman model; $d = \hat{d}(t) \in \mathbb{R}^{n_y}$ is the additive output disturbance estimate provided by the Kalman filter; $y_\text{ref} = y_\text{sp}(t)$ is the output setpoint; and $u_{\min}, u_{\max}$, $y_{\min}, y_{\max}$ are the input and output constraint bounds.
+where $\bar{u} \in \mathbb{R}^{n_u}$, $\bar{z} \in \mathbb{R}^{n_z}$, and $\bar{y} \in \mathbb{R}^{n_y}$ are the steady-state input, lifted state, and output, respectively; $\ui{Q}{y}^\text{t} \succ 0$ is the output weight of the target optimization, which is tuned separately from the weights of the MPC problem; $A \in \mathbb{R}^{n_z \times n_z}$, $B \in \mathbb{R}^{n_z \times n_u}$, $C \in \mathbb{R}^{n_y \times n_z}$ are the state-space matrices of the LTI Koopman model; $d = \hat{d}(t) \in \mathbb{R}^{n_y}$ is the additive output disturbance estimate provided by the Kalman filter; $y_\text{ref} = y_\text{sp}(t)$ is the output setpoint; and $u_{\min}, u_{\max}$, $y_{\min}, y_{\max}$ are the input and output constraint bounds.
 
 \begin{remark}
   For this 
+  \todo{This remark is empty. What should it state? A likely candidate is the condition under which the target problem stays feasible when \(n_d = n_y\), which would follow the rank condition~\eqref{eq:of:rank}.}
 \end{remark}
 
 Given the steady-state target $(\bar{u}, \bar{z}, \bar{y})$, the MPC problem is solved at each sampling instant to compute the optimal input sequence over the horizon $N$:
@@ -332,7 +342,7 @@ Given the steady-state target $(\bar{u}, \bar{z}, \bar{y})$, the MPC problem is 
 \begin{subequations}
   \label{eq:of:mpc}
   \begin{align}
-    \min_{u_0, \ldots, u_{N-1}} \; & \; \sum_{k=0}^{N-1} (y_k - \bar{y})^\intercal Q_\text{y} (y_k - \bar{y}) + \sum_{k=0}^{N-1} \Delta u_k^\intercal Q_\text{u} \Delta u_k, \label{eq:of:mpc:obj} \\
+    \min_{u_0, \ldots, u_{N-1}} \; & \; \sum_{k=0}^{N-1} \left[ (y_k - \bar{y})^\intercal Q_\text{y} (y_k - \bar{y}) + \Delta u_k^\intercal Q_{\Delta\text{u}} \Delta u_k + (u_k - \bar{u})^\intercal Q_\text{u} (u_k - \bar{u}) \right], \label{eq:of:mpc:obj} \\
     \text{s.t.} \;\;\;\; & \; z_{k+1} = A z_k + B u_k, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:of:mpc:z} \\
     & \; y_k = C z_k + d, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:of:mpc:y} \\
     & \; \Delta u_k = u_k - u_{k-1}, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:of:mpc:du} \\
@@ -341,21 +351,24 @@ Given the steady-state target $(\bar{u}, \bar{z}, \bar{y})$, the MPC problem is 
     & \; z_0 = \hat{z}(t), \quad d = \hat{d}(t), \quad u_{-1} = u(t-T_\text{s}), \label{eq:of:mpc:init}
   \end{align}
 \end{subequations}
-where $\hat{z}(t) \in \mathbb{R}^{n_z}$ is the lifted state estimate provided by the Kalman filter; and $u_{-1} = u(t - T_\text{s})$ is the input applied at the previous sampling instant, used to compute the first increment $\Delta u_0$. Following the receding-horizon principle, only the first element $u_0^*$ of the optimal sequence is applied to the plant.
+where $Q_\text{y} \succ 0$ is the output tracking weight matrix, $Q_{\Delta\text{u}} \succ 0$ the input increment weight matrix, and $Q_\text{u} \succeq 0$ the weight on the deviation of the input from its steady-state target; $\hat{z}(t) \in \mathbb{R}^{n_z}$ is the lifted state estimate provided by the Kalman filter; and $u_{-1} = u(t - T_\text{s})$ is the input applied at the previous sampling instant, used to compute the first increment $\Delta u_0$. The first term of the objective function~\eqref{eq:of:mpc:obj} penalizes the predicted tracking error with respect to the output target, the second term penalizes the movement of the manipulated variables, and the third term keeps the inputs at the steady-state target computed by~\eqref{eq:target:opt}, which resolves the remaining degrees of freedom when the plant has more inputs than outputs. Following the receding-horizon principle, only the first element $u_0^*$ of the optimal sequence is applied to the plant.
 
 
 
 \section{Methodology}
+\label{sec:method}
 
-Main drawback that we observe in a current Koopman MPC (offset-free, robust, or any other), is that the optimization is done without fully leveraging knowledge of the lifted space. 
-Of course we are predicting in the lifted space, but in objective function we are using original space, that is created derived as linear transformation of the lifted space \(y_k = Cz_k\). This transformation is not linear by nature \(y_k = h(z_k)\), but to use linear MPC, we think we had no other choice. Some papers are not using this transformation directly, but after closer look, they are usually using equivalent transformations, for example expanding lifted space with measurements, but dynamic in lifted space is linear, so transformations to achieve back this measurements is linear. 
-We will show that we can use the lifted space directly in the objective function, showing how to handle the lifted space and transformation of an objective function.
-We can fully eliminate the neccessity of the back transformation used in objective function in MPC, but we still need them to compute the target for the lifted space. In this case and case of constraints, we use a first order Taylor expansion, to better approximate the transformation. 
+In this section, we present the proposed offset-free Koopman MPC framework. The main drawback of the current Koopman MPC formulations, whether offset-free, robust, or of any other kind, is that the optimization is carried out without fully exploiting the knowledge of the lifted space.
+The prediction is made in the lifted space, but the objective function is expressed in the original space, which is recovered from the lifted state by the linear transformation \(y_k = C z_k\). This transformation is nonlinear by nature, \(y_k = h(z_k)\), and it is restricted to a linear one only so that a linear MPC problem is obtained. Formulations that do not use this transformation directly usually rely on an equivalent one, for example by augmenting the lifted state with the measurements, in which case the recovery of the measurements from the lifted state is again linear.
+\todo{This sentence characterises other authors' formulations but carries no citation, and the style skill forbids attributing a claim to an uncited source. Which papers augment the lifted state with the measurements? Supply the keys and they will be cited here, one reference per claim.}
+We show that the lifted space can be used directly in the objective function, and we derive the corresponding transformation of the weighting matrix.
+The back transformation is thereby eliminated from the objective function of the MPC problem, while it is still required to compute the steady-state target and to impose the output constraints. In both of these, we approximate it by a first-order Taylor expansion. 
 
 
-{\color{green}
+{\generatedstyle
 \subsection{Deep Koopman identification}
 \label{sec:method:ident}
+\todo{Register clash inside one section: this subsection is impersonal ("the model is unrolled", "each candidate configuration is trained") while Sec.~4.2--4.7 are first-person plural ("we propose", "we encountered"). The style skill allows either register but forbids mixing them within a section. Decide which one holds for the whole Methodology, and the other block will be converted.}
 
 Both prediction models used in this work are obtained with the deep Koopman architecture of Fig.~\ref{fig:DK-nonautonomous}, in which the encoder lifts the measured outputs, the lifted state evolves linearly, and the decoder projects the lifted state back to the outputs. Given an input--output trajectory of the plant, the model is unrolled over a window of $N_\text{r}$ samples as
 \begin{subequations}
@@ -385,36 +398,33 @@ When the decoder is restricted to a single matrix, $h(z) = Cz$, the identified m
 The lifted dimension $n_z$, the depth and the width of the encoder and the decoder, the activation function, the weights in~\eqref{eq:dk:loss}, the window length $N_\text{r}$, the minibatch size, and the learning rate are not tuned by hand. Each candidate configuration is trained, the resulting model is inserted into the closed loop, and the achieved value of the closed-loop objective function is used as the score of the configuration; the search itself is carried out with the tree-structured Parzen estimator of Optuna~\cite{akiba2019optuna}. Scoring a model by the closed-loop performance rather than by the open-loop prediction error is a deliberate choice, because the two are only loosely related, as the results of Sec.~\ref{sec:ident} and Sec.~\ref{sec:Results} show. The same criterion is used to select the order and the horizons of the subspace model that serves as the baseline, so that no model is favored by the way its parameters were chosen. Note that this procedure is not a contribution of this work and any comparable model selection scheme can replace it.
 }
 
-\subsection{Linearization of Output Mapping}
-For the control problem, we are not able to completely eliminate the neccessity of the transformation from the lifted space back to the original space. For this, we linearize the output mapping with first order taylor expansion. 
-For the purpose of this work we experimented with linearization. at two different points: linearization at the previous target and linearization at the current state estimate.
+\subsection{Linearization of the output mapping}
+For the control problem, the transformation from the lifted space back to the original space cannot be eliminated completely, because both the steady-state target and the output constraints are expressed in the original variables. We therefore approximate the output mapping by a first-order Taylor expansion, and we consider two linearization points, the target computed at the previous sampling instant and the current state estimate, which gives
 \begin{subequations}
   \label{eq:linearization}
   \begin{align}
-    y_k &= h(z_k) \approx h\!\left(\bar{z}(t-T_\text{s})\right) + J_{\bar{z}(t-T_\text{s})}\!\left(z_k - \bar{z}(t-T_\text{s})\right), \label{eq:linearization:target} \\
-    y_k &= h(z_k) \approx h\!\left(\hat{z}(t)\right) + J_{\hat{z}(t)}\!\left(z_k - \hat{z}(t)\right), \label{eq:linearization:state}
+    y_k &= h(z_k) \approx h\!\left(\bar{z}(t-T_\text{s})\right) + H\!\left(\bar{z}(t-T_\text{s})\right)\!\left(z_k - \bar{z}(t-T_\text{s})\right), \label{eq:linearization:target} \\
+    y_k &= h(z_k) \approx h\!\left(\hat{z}(t)\right) + H\!\left(\hat{z}(t)\right)\!\left(z_k - \hat{z}(t)\right), \label{eq:linearization:state}
   \end{align}
 \end{subequations}
-where $h : \mathbb{R}^{n_z} \to \mathbb{R}^{n_y}$ is the nonlinear output mapping; $\bar{z}(t-T_\text{s})$ is the steady-state lifted state computed by the target optimizer at the previous sampling instant; $J_{\bar{z}(t-T_\text{s})}$ and $J_{\hat{z}(t)}$ are the Jacobians of $h$ evaluated at $\bar{z}(t-T_\text{s})$ and $\hat{z}(t)$, respectively.
+where $h : \mathbb{R}^{n_z} \to \mathbb{R}^{n_y}$ is the decoder of the identified model, which acts as the nonlinear output mapping; $H(\cdot) \in \mathbb{R}^{n_y \times n_z}$ is the Jacobian of $h$ evaluated at its argument; and $\bar{z}(t-T_\text{s})$ is the steady-state lifted state computed by the target optimizer at the previous sampling instant.
 
-\subsection{Target Optimization}
+\subsection{Target optimization}
 
-The objective function of target estimation is the same as in the standard offset-free MPC. The main difference is in 
-
-The proposed target optimization problem is formulated as:
+The objective function of the target optimization is the same as in the standard offset-free MPC of Sec.~\ref{sec:easy-mpc}. The difference is in the output equation, where the linear map of~\eqref{eq:target:opt:y} is replaced by the linearization~\eqref{eq:linearization:target} of the nonlinear output mapping. The proposed target optimization problem is therefore formulated as:
 
 \begin{subequations}
   \label{eq:cs:target}
   \begin{align}
-    \min_{\bar{u}, \bar{z}, \bar{y}} \quad & \; (\bar{y} - y_\text{ref})^\intercal Q_\text{y} (\bar{y} - y_\text{ref}), \label{eq:cs:target:obj} \\
+    \min_{\bar{u}, \bar{z}, \bar{y}} \quad & \; (\bar{y} - y_\text{ref})^\intercal \ui{Q}{y}^\text{t} (\bar{y} - y_\text{ref}), \label{eq:cs:target:obj} \\
     \text{s.t.} \quad & \; \bar{z} = A\bar{z} + B\bar{u}, \label{eq:cs:target:z} \\
     & \; \bar{y} = H(\ui{z}{LP})\bar{z} + h(\ui{z}{LP}) - H(\ui{z}{LP})\ui{z}{LP} + d, \label{eq:cs:target:y} \\
     & \; u_{\min} \leq \bar{u} \leq u_{\max}, \label{eq:cs:target:u} \\
     & \; y_{\min} \leq \bar{y} \leq y_{\max}, \label{eq:cs:target:ycon} \\
-    & \; d = \hat{d}(t), \quad y_\text{ref} = y_\text{sp}, \quad \ui{z}{LP} = \bar{z}_{-1}, \label{eq:cs:target:params}
+    & \; d = \hat{d}(t), \quad y_\text{ref} = y_\text{sp}(t), \quad \ui{z}{LP} = \bar{z}(t-T_\text{s}), \label{eq:cs:target:params}
   \end{align}
 \end{subequations}
-where \(H(\ui{z}{LP})\) is the Jacobian of the transformation \(h(\ui{z}{LP})\). \(\ui{z}{LP}\) is a linearization point, the point where we approximate our function with first order Taylor expansion. We propose, that this point should be as close as possible to the \(\bar{z}\). Therefor we are using the previously calculated target \(\bar{z}_{-1}\). This allow us to better approximate the transformation of the lifted space to the original space and more precise target optimization.  
+where \(\ui{z}{LP}\) is the linearization point at which the output mapping is approximated by its first-order Taylor expansion. We propose to choose this point as close as possible to \(\bar{z}\), and we therefore use the target \(\bar{z}(t-T_\text{s})\) computed at the previous sampling instant, which corresponds to the linearization~\eqref{eq:linearization:target}. This choice improves the accuracy of the approximation of the transformation from the lifted space to the original space and, consequently, the accuracy of the computed target.
 
 
 \subsection{MPC}
@@ -422,75 +432,74 @@ The proposed MPC problem is formulated as:
 \begin{subequations}
   \label{eq:cs:mpc}
   \begin{align}
-    \min_{u_0, \ldots, u_{N-1}} \; & \; \sum_{k=0}^{N-1} (z_k - \bar{z})^\intercal Q_\text{z} (z_k - \bar{z}) + \sum_{k=0}^{N-1} \Delta u_k^\intercal Q_\text{u} \Delta u_k, \label{eq:cs:mpc:obj} \\
+    \min_{u_0, \ldots, u_{N-1}} \; & \; \sum_{k=0}^{N-1} \left[ (z_k - \bar{z})^\intercal Q_\text{z} (z_k - \bar{z}) + \Delta u_k^\intercal Q_{\Delta\text{u}} \Delta u_k + (u_k - \bar{u})^\intercal Q_\text{u} (u_k - \bar{u}) \right], \label{eq:cs:mpc:obj} \\
     \text{s.t.}\;\;\;\; & \; z_{k+1} = A z_k + B u_k, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:cs:mpc:z} \\
     & \; y_k = H(\ui{z}{LP}) z_k + h(\ui{z}{LP}) - H(\ui{z}{LP})\ui{z}{LP} + d, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:cs:mpc:y} \\
     & \; \Delta u_k = u_k - u_{k-1}, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:cs:mpc:du} \\
     & \; u_{\min} \leq u_k \leq u_{\max}, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:cs:mpc:u} \\
     & \; y_{\min} \leq y_k \leq y_{\max}, \quad k\in\mathbb{N}_0^{N-1}, \label{eq:cs:mpc:ycon} \\
-    & \; z_0 = \hat{z}(t), \quad d = \hat{d}(t), \quad u_{-1} = u(t-T_\text{s}) \label{eq:cs:mpc:init}
+    & \; z_0 = \hat{z}(t), \quad d = \hat{d}(t), \quad u_{-1} = u(t-T_\text{s}), \label{eq:cs:mpc:init}
   \end{align}
 \end{subequations}
-where \(H(z_0)\) is the Jacobian of the transformation \(h(z_0)\) at the point \(z_0\). This linearization point is chosen to best approximate the surroundings of current operational point. The first order Taylor expansion is done to receive \(y_k\), which is used only in the constrains of the system. In objective funtion, we use a tuning matric \(\ui{Q}{z}\) to penalize the difference from lifted space target. We propose to derive this tuning matrix as follows:
+where the linearization point \(\ui{z}{LP}\) is the same as in the target optimization problem~\eqref{eq:cs:target}, so that a single linearization of the output mapping is shared by both problems at every sampling instant. The first-order Taylor expansion provides \(y_k\), which enters the problem only through the output constraints~\eqref{eq:cs:mpc:ycon}. In the objective function~\eqref{eq:cs:mpc:obj}, the deviation from the target is penalized directly in the lifted space by the weighting matrix \(\ui{Q}{z}\), which we propose to derive as
 \begin{equation}
-  Q_\text{z} = H(\bar{z})^\intercal Q_\text{y} H(\bar{z}).
+  \label{eq:cs:Qz}
+  Q_\text{z} = H(\ui{z}{LP})^\intercal Q_\text{y} H(\ui{z}{LP}).
 \end{equation}
-
-This allows us to use and tune our problem using matrix \(\ui{Q}{y}\), which is convenient and easily tuned. 
+In this way, the controller is still tuned through the matrix \(\ui{Q}{y}\), which acts on the physical outputs and is therefore convenient to choose and directly comparable with the tuning of the standard formulation~\eqref{eq:of:mpc}. The matrix \(\ui{Q}{z}\) constructed by~\eqref{eq:cs:Qz} is positive semidefinite with rank at most \(n_y\), and it is regularized by a small multiple of the identity matrix so that the MPC problem remains strictly convex.
+\todo{The implementation uses \(\ui{Q}{z} + 10^{-8} I\). State this value explicitly here, or keep the wording qualitative? The skill does not allow a number to be introduced without confirmation.}
 This is a significant change from the standard Koopman MPC, where the objective function is defined in the original space. 
 
-\subsection{Closed-Loop Control Structure}
+\subsection{Closed-loop control structure}
 
-The close loop structure is similar to the previous with the few tweaks. There is an addition of the linearization block. Also there is a time varying Kalman filter as an observer and the optimization problems have a different formulation.
-
-For the linearization at previous target the algorithm is:
+The closed-loop structure follows the one shown in Fig.~\ref{fig:close_loop}, with three modifications: a linearization block is added, the observer is a time-varying Kalman filter, and the two optimization problems are replaced by~\eqref{eq:cs:target} and~\eqref{eq:cs:mpc}. The order in which the blocks are evaluated within one sampling period depends on the chosen linearization point. Algorithm~\ref{alg:closed-loop} summarizes the loop for the linearization at the previous target.
 \begin{algorithm}[H]
   \caption{Closed-loop control with nonlinear output mapping with linearization at previous target}
   \label{alg:closed-loop}
   \begin{algorithmic}[1]
     \REQUIRE Koopman lifting function $g(\cdot)$, initial measurement $y(0)$
-    \STATE \textbf{Initialization:} $\hat{z}(0) \leftarrow g(y(0))$, $\hat{d}(0) \leftarrow 0$; solve~\eqref{eq:cs:target} with $\ui{z}{LP} = \hat{z}(0)$ and $\hat{d}(0)$ to obtain $\bar{z}_{-1}$
+    \STATE \textbf{Initialization:} $\hat{z}(0) \leftarrow g(y(0))$, $\hat{d}(0) \leftarrow 0$; solve~\eqref{eq:cs:target} with $\ui{z}{LP} = \hat{z}(0)$ and $\hat{d}(0)$ to obtain $\bar{z}(-T_\text{s})$
     \LOOP
       \STATE \textbf{Measurement:} Obtain $y(t)$ from the plant
-      \STATE \textbf{Linearization:} Compute $H(\bar{z}_{-1})$ and $h(\bar{z}_{-1})$ — output mapping linearized at $\ui{z}{LP} = \bar{z}_{-1}$
-      \STATE \textbf{Observer:} Run the time-varying Kalman filter with $y(t)$ and $u(t-T_\text{s})$ to obtain updated estimates $\hat{z}(t)$ and $\hat{d}(t)$
-      \STATE \textbf{Target estimation:} Solve~\eqref{eq:cs:target} with $\hat{d}(t)$ to obtain $\bar{z}(t)$, $\bar{u}(t)$, $\bar{y}(t)$; set $\bar{z}_{-1} \leftarrow \bar{z}(t)$
+      \STATE \textbf{Linearization:} Set $\ui{z}{LP} \leftarrow \bar{z}(t-T_\text{s})$ and compute $H(\ui{z}{LP})$ and $h(\ui{z}{LP})$
+      \STATE \textbf{Observer:} Run the time-varying Kalman filter with $y(t)$, $u(t-T_\text{s})$ and $H(\ui{z}{LP})$ to obtain the estimates $\hat{z}(t)$ and $\hat{d}(t)$
+      \STATE \textbf{Target estimation:} Solve~\eqref{eq:cs:target} with $\hat{d}(t)$ to obtain $\bar{z}(t)$, $\bar{u}(t)$, $\bar{y}(t)$
       \STATE \textbf{MPC:} Solve~\eqref{eq:cs:mpc} with $\hat{z}(t)$, $\hat{d}(t)$, $\bar{z}(t)$ to obtain the optimal first input $u_0^*$
       \STATE \textbf{Apply input:} Apply $u(t) = u_0^*$ to the plant
     \ENDLOOP
   \end{algorithmic}
 \end{algorithm}
-where $g : \mathbb{R}^{n_y} \to \mathbb{R}^{n_z}$ is the Koopman lifting function that provides the initial lifted-state estimate, and $\hat{d}(0) = 0$ initialises the disturbance estimate at zero.
-
-For the linearization at current estimate, it is:
+where the encoder $g : \mathbb{R}^{n_y} \to \mathbb{R}^{n_z}$ provides the initial lifted-state estimate from the first measurement, and the disturbance estimate is initialized at zero. Because the linearization point is the target of the previous sampling instant, the output mapping is linearized before the observer is run, and the same Jacobian is then used by the observer, by the target optimizer, and by the MPC problem. Algorithm~\ref{alg:closed-loop-state} summarizes the loop for the linearization at the current state estimate.
 
 \begin{algorithm}[H]
   \caption{Closed-loop control with nonlinear output mapping (linearization at current state estimate)}
   \label{alg:closed-loop-state}
   \begin{algorithmic}[1]
     \REQUIRE Koopman lifting function $g(\cdot)$, initial measurement $y(0)$
-    \STATE \textbf{Initialization:} $\hat{z}(0) \leftarrow g(y(0))$, $\hat{d}(0) \leftarrow 0$%; solve~\eqref{eq:cs:target} with $\ui{z}{LP} = \hat{z}(0)$ and $\hat{d}(0)$ to obtain $\bar{z}_{-1}$
+    \STATE \textbf{Initialization:} $\hat{z}(0) \leftarrow g(y(0))$, $\hat{d}(0) \leftarrow 0$
     \LOOP
       \STATE \textbf{Measurement:} Obtain $y(t)$ from the plant
-      \STATE \textbf{Observer:} Run the time-varying Kalman filter with $y(t)$ and $u(t-T_\text{s})$ to obtain updated estimates $\hat{z}(t)$ and $\hat{d}(t)$
-      \STATE \textbf{Linearization:} Compute $H(\hat{z}(t))$ and $h(\hat{z}(t))$ — output mapping linearized at $\ui{z}{LP} = \hat{z}(t)$ \todo{when this is hapenning?}
-      \STATE \textbf{Target estimation:} Solve~\eqref{eq:cs:target} with $\hat{d}(t)$ to obtain $\bar{z}(t)$, $\bar{u}(t)$, $\bar{y}(t)$; set $\bar{z}_{-1} \leftarrow \bar{z}(t)$
+      \STATE \textbf{Observer:} Run the time-varying Kalman filter with $y(t)$, $u(t-T_\text{s})$ and $H(\hat{z}(t-T_\text{s}))$ to obtain the estimates $\hat{z}(t)$ and $\hat{d}(t)$
+      \STATE \textbf{Linearization:} Set $\ui{z}{LP} \leftarrow \hat{z}(t)$ and compute $H(\ui{z}{LP})$ and $h(\ui{z}{LP})$
+      \STATE \textbf{Target estimation:} Solve~\eqref{eq:cs:target} with $\hat{d}(t)$ to obtain $\bar{z}(t)$, $\bar{u}(t)$, $\bar{y}(t)$
       \STATE \textbf{MPC:} Solve~\eqref{eq:cs:mpc} with $\hat{z}(t)$, $\hat{d}(t)$, $\bar{z}(t)$ to obtain the optimal first input $u_0^*$
       \STATE \textbf{Apply input:} Apply $u(t) = u_0^*$ to the plant
     \ENDLOOP
   \end{algorithmic}
 \end{algorithm}
 
-\subsection{State Estimation - Time Varying Kalman Filter}
+The two algorithms differ in the linearization point and, as a consequence, in the position of the linearization step within the sampling period. In Algorithm~\ref{alg:closed-loop}, a single Jacobian is evaluated at the target of the previous sampling instant and is shared by the observer, by the target optimizer, and by the MPC problem. In Algorithm~\ref{alg:closed-loop-state}, the target optimizer and the MPC problem use the Jacobian at the current state estimate, which becomes available only after the measurement update. The observer itself cannot use this Jacobian, since it is the quantity that the update produces, and its measurement equation is therefore linearized at the estimate of the previous sampling instant.
+
+\subsection{State estimation with a time-varying Kalman filter}
 \label{sec:tvkf}
 
-The observer estimates the augmented state $\tilde{z}_k = [z_k^\intercal,\; d_k^\intercal]^\intercal$ from the
-noisy output $y_k$ and the applied input $u_k$.
-The augmented linear dynamics are identical to~\eqref{eq:of:ss} with $x_k$ replaced by the
-lifted Koopman state $z_k$:
+The observer estimates the augmented state $\tilde{z}(t) = [z(t)^\intercal,\; d(t)^\intercal]^\intercal$ from the
+noisy output $y(t)$ and the applied input $u(t)$.
+The augmented linear dynamics are identical to~\eqref{eq:of:ss} with the original state replaced by the
+lifted Koopman state, resulting in
 \begin{equation}
   \label{eq:tvkf:aug}
-  \tilde{z}_{k+1} = \tilde{A}\,\tilde{z}_k + \tilde{B}\,u_k,
+  \tilde{z}(t+T_\text{s}) = \tilde{A}\,\tilde{z}(t) + \tilde{B}\,u(t),
   \qquad
   \tilde{A} =
   \begin{bmatrix} A & B_d \\ 0 & I \end{bmatrix},
@@ -498,73 +507,70 @@ lifted Koopman state $z_k$:
   \tilde{B} =
   \begin{bmatrix} B \\ 0 \end{bmatrix},
 \end{equation}
-where $\tilde{z}_k \in \mathbb{R}^{n_z + n_d}$ is the augmented state stacking the lifted Koopman state
-$z_k \in \mathbb{R}^{n_z}$ and the output disturbance estimate $d_k \in \mathbb{R}^{n_d}$, $\tilde{A} \in \mathbb{R}^{(n_z+n_d)\times(n_z+n_d)}$ and $\tilde{B} \in \mathbb{R}^{(n_z+n_d)\times n_u}$ are the augmented system matrices.
+where $\tilde{z}(t) \in \mathbb{R}^{n_z + n_d}$ is the augmented state stacking the lifted Koopman state
+and the output disturbance, and $\tilde{A} \in \mathbb{R}^{(n_z+n_d)\times(n_z+n_d)}$ and $\tilde{B} \in \mathbb{R}^{(n_z+n_d)\times n_u}$ are the augmented system matrices.
 
-Because the output map is nonlinear, the measurement equation is re-linearised at each
-sampling instant around a chosen linearisation point $\ui{z}{LP}$:
+Because the output map is nonlinear, the measurement equation is re-linearized at each
+sampling instant around the linearization point $\ui{z}{LP}$ selected by Algorithm~\ref{alg:closed-loop} or Algorithm~\ref{alg:closed-loop-state}, which gives
 \begin{equation}
   \label{eq:tvkf:meas}
-  y_k \approx \tilde{C}_k\,\tilde{z}_k + c_k,
+  y(t) \approx \tilde{C}(t)\,\tilde{z}(t) + c(t),
   \qquad
-  \tilde{C}_k = \bigl[H(\ui{z}{LP}),\; C_d\bigr],
+  \tilde{C}(t) = \bigl[H(\ui{z}{LP}),\; C_d\bigr],
   \quad
-  c_k = h(\ui{z}{LP}) - H(\ui{z}{LP})\,\ui{z}{LP},
+  c(t) = h(\ui{z}{LP}) - H(\ui{z}{LP})\,\ui{z}{LP},
 \end{equation}
-where $\tilde{C}_k \in \mathbb{R}^{n_y \times (n_z + n_d)}$ is the time-varying output matrix formed by
-stacking the Jacobian $H(\ui{z}{LP}) \in \mathbb{R}^{n_y \times n_z}$ of $h$ at the linearisation point
-and the disturbance output matrix $C_d$, and $c_k \in \mathbb{R}^{n_y}$ is the linearisation offset.
+where $\tilde{C}(t) \in \mathbb{R}^{n_y \times (n_z + n_d)}$ is the time-varying output matrix formed by
+stacking the Jacobian of $h$ at the linearization point
+and the disturbance output matrix $C_d$, and $c(t) \in \mathbb{R}^{n_y}$ is the linearization offset.
 
 With the linear prediction model~\eqref{eq:tvkf:aug} and the time-varying output
-matrix~\eqref{eq:tvkf:meas}, the filter runs the standard predict–update recursion at each
-step $k$:
-
-\noindent\textbf{Predict:}
+matrix~\eqref{eq:tvkf:meas}, the filter runs the standard predict--update recursion at each
+sampling instant. The prediction step reads
 \begin{subequations}
   \label{eq:tvkf:predict}
   \begin{align}
-    \hat{\tilde{z}}_{k|k-1} &= \tilde{A}\,\hat{\tilde{z}}_{k-1|k-1} + \tilde{B}\,u_{k-1}, \label{eq:tvkf:predict:z} \\
-    P_{k|k-1} &= \tilde{A}\,P_{k-1|k-1}\,\tilde{A}^\intercal + Q, \label{eq:tvkf:predict:P}
+    \hat{\tilde{z}}^{-}(t) &= \tilde{A}\,\hat{\tilde{z}}(t-T_\text{s}) + \tilde{B}\,u(t-T_\text{s}), \label{eq:tvkf:predict:z} \\
+    P^{-}(t) &= \tilde{A}\,P(t-T_\text{s})\,\tilde{A}^\intercal + Q, \label{eq:tvkf:predict:P}
   \end{align}
 \end{subequations}
-where $\hat{\tilde{z}}_{k|k-1} \in \mathbb{R}^{n_z+n_d}$ is the prior augmented-state estimate,
-$P_{k|k-1} \in \mathbb{R}^{(n_z+n_d)\times(n_z+n_d)}$ is the prior error covariance, and
-$Q \succeq 0$ is the process noise covariance matrix.
-
-\noindent\textbf{Update:}
+where $\hat{\tilde{z}}^{-}(t) \in \mathbb{R}^{n_z+n_d}$ is the prior augmented-state estimate,
+$P^{-}(t) \in \mathbb{R}^{(n_z+n_d)\times(n_z+n_d)}$ is the prior error covariance, and
+$Q \succeq 0$ is the process noise covariance matrix. The superscript minus sign distinguishes the quantities available before the measurement $y(t)$ has been processed. The update step is then given by
 \begin{subequations}
   \label{eq:tvkf:update}
   \begin{align}
-    S_k &= \tilde{C}_k\,P_{k|k-1}\,\tilde{C}_k^\intercal + R, \label{eq:tvkf:update:S} \\
-    K_k &= P_{k|k-1}\,\tilde{C}_k^\intercal\,S_k^{-1}, \label{eq:tvkf:update:K} \\
-    \hat{\tilde{z}}_{k|k} &= \hat{\tilde{z}}_{k|k-1} + K_k\!\left(y_k - \tilde{C}_k\,\hat{\tilde{z}}_{k|k-1} - c_k\right), \label{eq:tvkf:update:z} \\
-    P_{k|k} &= \left(I - K_k\,\tilde{C}_k\right)P_{k|k-1}, \label{eq:tvkf:update:P}
+    S(t) &= \tilde{C}(t)\,P^{-}(t)\,\tilde{C}(t)^\intercal + R, \label{eq:tvkf:update:S} \\
+    K(t) &= P^{-}(t)\,\tilde{C}(t)^\intercal\,S(t)^{-1}, \label{eq:tvkf:update:K} \\
+    \hat{\tilde{z}}(t) &= \hat{\tilde{z}}^{-}(t) + K(t)\!\left(y(t) - \tilde{C}(t)\,\hat{\tilde{z}}^{-}(t) - c(t)\right), \label{eq:tvkf:update:z} \\
+    P(t) &= \left(I - K(t)\,\tilde{C}(t)\right)P^{-}(t), \label{eq:tvkf:update:P}
   \end{align}
 \end{subequations}
-where $S_k \in \mathbb{R}^{n_y \times n_y}$ is the innovation covariance, $K_k \in \mathbb{R}^{(n_z+n_d)\times n_y}$ is the Kalman gain, $\hat{\tilde{z}}_{k|k}$ is the posterior augmented-state estimate whose upper $n_z$ entries give $\hat{z}(t)$ and lower $n_d$ entries give $\hat{d}(t)$, $P_{k|k}$ is the posterior error covariance, and $R \succ 0$ is the measurement noise covariance matrix.
+where $S(t) \in \mathbb{R}^{n_y \times n_y}$ is the innovation covariance, $K(t) \in \mathbb{R}^{(n_z+n_d)\times n_y}$ is the Kalman gain, $\hat{\tilde{z}}(t)$ is the posterior augmented-state estimate whose upper $n_z$ entries give $\hat{z}(t)$ and lower $n_d$ entries give $\hat{d}(t)$, $P(t)$ is the posterior error covariance, and $R \succ 0$ is the measurement noise covariance matrix.
 
-\subsection{Block Diagonal Deep Koopman Transformation}
+\subsection{Block-diagonal deep Koopman transformation}
 \label{sec:blockdiag}
-\todo{bevare notation conflict zbar}
-During our work, we encounter a several problems with the suboptimal or infeasible solutions using Koopman MPC using Gurobi solver. For the enhancement of the performaance, we are proposing a block diagonal structure of the matrix \(A\). This transformation can be done after obtaining the Koopman operator, with finding the transformation matrix \(T\) that transforms the Koopman operator to the block diagonal form:
+During our work, we encountered several problems with suboptimal or infeasible solutions of the Koopman MPC problem solved by the Gurobi solver. To improve the behavior of the optimization, we propose to bring the matrix \(A\) into a block-diagonal structure. The transformation is applied after the Koopman operator has been identified, and it amounts to finding a transformation matrix \(V\) such that
 \begin{equation}
-  \bar{A} = T^{-1} A T.
+  \label{eq:bd:A}
+  \uis{A}{bd} = V^{-1} A V,
 \end{equation}
-This transformation is done by finding the eigenvalues and eigenvectors of the Koopman operator, and then grouping them into blocks. The transformation matrix \(T\) is constructed from the eigenvectors, and the block diagonal form \(\bar{A}\) is obtained by applying the transformation to the original Koopman operator \(A\). Using this approach, we had to modify the rest of the model accordingly, using the transformation matrix \(T\) to transform the input and output matrices \(B\) and \(C\) as well as the lifted states \(z\):
+where \(V \in \mathbb{R}^{n_z \times n_z}\) is constructed from the eigenvectors of \(A\) and \(\uis{A}{bd}\) is the real block-diagonal form of \(A\), in which the eigenvalues are grouped into one-by-one blocks for the real eigenvalues and two-by-two blocks for the complex conjugate pairs. The remaining parts of the model have to be modified accordingly, and the same matrix \(V\) is used to transform the input and output matrices as well as the lifted state, which gives
 \begin{equation}
-  \bar{B} = T^{-1} B, \quad \bar{C} = C T, \quad \bar{z}_k = T^{-1} z_k.
+  \label{eq:bd:BCz}
+  \uis{B}{bd} = V^{-1} B, \quad \uis{C}{bd} = C V, \quad \uis{z}{bd}_k = V^{-1} z_k.
 \end{equation}
-When computing the Jackobian, we are transforming the original Jackobian \(H(z_k)\) to the block diagonal form \(\bar{H}(z_k)\) using the transformation matrix \(T\):
+The Jacobian of the output mapping is transformed in the same way, resulting in
 \begin{equation}
-  \bar{H}(z_k) = H(z_k) T = H(T\bar{z}_k) T.
+  \label{eq:bd:H}
+  \uis{H}{bd}(z_k) = H(z_k) V = H(V \uis{z}{bd}_k) V.
 \end{equation}
-
-For fair comparison, this transformation is applied to every identified model through this work, not only for Koopman models. The effects of this transformation are discussed in the result section of this work.
+For a fair comparison, this transformation is applied to every model identified in this work, not only to the Koopman models. The effects of the transformation are discussed in Sec.~\ref{sec:Results}.
 
 \section{Identification}
 \label{sec:ident}
 
-{\color{green}
+{\generatedstyle
 In this section, we introduce the benchmark process, the data collected from it, and the three prediction models whose closed-loop performance is compared in Sec.~\ref{sec:Results}. All models are identified from the same data set with the same scaling, and the parameters reported here are the final ones used in every closed-loop experiment of this work.
 
 \subsection{Reactor--separator process}
@@ -576,7 +582,7 @@ The plant has nine states, namely the mass fractions of A and B and the temperat
 \begin{table}[h]
   \centering
   \small
-  \caption{\textcolor{green}{Manipulated variables of the reactor--separator plant, with the nominal operating point of~\cite{li2019dynamic} and the box used for the identification experiment.}}
+  \caption{\textgenerated{Manipulated variables of the reactor--separator plant, with the nominal operating point of~\cite{li2019dynamic} and the box used for the identification experiment.}}
   \label{tab:cstr-sep-inputs}
   \begin{tabular}{llcc}
     \toprule
@@ -615,7 +621,7 @@ To compare the models on the data that none of them has seen, each model is init
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/ident_test_comparison.pdf}
-  \caption{\textcolor{green}{Open-loop predictions of the identified models on the first four input steps of the test data. The black solid line is the noise-free plant, the dash-dotted \textcolor{deepkoopman}{red} line is the Koopman model with the nonlinear decoder, the dashed \textcolor{koopmanc}{orange} line is the Koopman model with the linear decoder, and the dotted \textcolor{parsimk}{green} line is the N4SID model.}}
+  \caption{\textgenerated{Open-loop predictions of the identified models on the first four input steps of the test data. The black solid line is the noise-free plant, the dash-dotted \textcolor{deepkoopman}{red} line is the Koopman model with the nonlinear decoder, the dashed \textcolor{koopmanc}{orange} line is the Koopman model with the linear decoder, and the dotted \textcolor{parsimk}{green} line is the N4SID model.}}
   \label{fig:ident-test}
 \end{figure}
 
@@ -623,7 +629,7 @@ To compare the models on the data that none of them has seen, each model is init
   \centering
   \small
   \setlength{\tabcolsep}{4pt}
-  \caption{\textcolor{green}{Open-loop prediction accuracy on the test data, measured by the mean absolute error (MAE) against the noise-free plant outputs. The last column is the sum of the mean absolute errors of the four standardized outputs, which is the criterion on which the models are directly comparable.}}
+  \caption{\textgenerated{Open-loop prediction accuracy on the test data, measured by the mean absolute error (MAE) against the noise-free plant outputs. The last column is the sum of the mean absolute errors of the four standardized outputs, which is the criterion on which the models are directly comparable.}}
   \label{tab:ident-accuracy}
   \begin{tabular}{lccccc}
     \toprule
@@ -641,10 +647,65 @@ The Koopman model with the nonlinear decoder is significantly more accurate than
 The Koopman model with the linear decoder is not better than the subspace model in open loop; its error is approximately $18\%$ higher than that of the N4SID model, even though its lifted dimension exceeds the order of the subspace model. Restricting the decoder to a matrix removes most of the benefit of the lifting, since the lifted state then has to be a linear image of the outputs and the whole model remains an input--output map of an LTI system, for which subspace identification is a mature and well-tuned tool. This model is nevertheless retained in the comparison, because it is the model that the standard offset-free Koopman MPC formulation of Sec.~\ref{sec:easy-mpc} requires, and it therefore isolates the effect of the nonlinear output mapping proposed in Sec.~\ref{sec:method:ident} from the effect of the lifting itself.
 }
 
-\section{Control Results}
+\section{Control setup}
+\label{sec:control-setup}
+
+{\generatedstyle
+In this section, we describe the closed-loop scenario on which the models of Sec.~\ref{sec:ident} are compared, together with the tuning, the observer, and the benchmark against which every controller is measured. The scenario, the weights, the constraints, and the disturbance sequence are identical in all runs reported in Sec.~\ref{sec:Results}, so that the differences between the controllers are attributable to the prediction model and to the way the output mapping enters the control problem, and not to the way the loop was set up.
+
+All four measured outputs $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$ are controlled, and all six manipulated variables of Table~\ref{tab:cstr-sep-inputs} are available to the controller, so the plant has two more inputs than outputs and the remaining degrees of freedom have to be resolved by the input target of the target optimization. The sampling period is the one used for identification, $\Ts = 1\,\text{s}$, and the prediction horizon is $N = 60$ samples. The input constraints~\eqref{eq:cs:mpc:u} are the identification box of Table~\ref{tab:cstr-sep-inputs}, so that the controller never drives the plant outside the region from which the models were identified. The output constraints~\eqref{eq:cs:mpc:ycon} are an operating window rather than equipment limits, namely $310\,\text{K} \leq T_i \leq 380\,\text{K}$ for the three vessel temperatures and $0.35 \leq x_{\text{B}3} \leq 0.85$ for the bottoms quality. All signals, weights, and bounds are expressed in the standardized coordinates of Sec.~\ref{sec:ident}, so that the three temperatures and the mass fraction contribute to the objective function on a comparable scale.
+
+\subsection{Grade campaign and reference changes}
+
+The scenario is a grade campaign on the bottoms quality, which is the specification that the separator has to deliver. The plant starts at the nominal steady state of~\cite{li2019dynamic} and the setpoint is held there for the first $350\,\text{s}$, so that the observer of every controller converges from its initialization before the first reference change. At $t = 350\,\text{s}$ the campaign switches to a premium grade, in which the mass fraction of the product B leaving the separator rises from $0.637$ to $0.702$, and at $t = 1000\,\text{s}$ the plant returns to the nominal grade. The whole simulation lasts $1500\,\text{s}$.
+
+Both grades are steady states of the plant, obtained by simulating it to steady state at the nominal input of Table~\ref{tab:cstr-sep-inputs} and at the premium input $[8.0,\, 8.0,\, 8.0,\, 11.0,\, 0.8,\, 3.0]$, and both are reachable inside the identification box, so that no reference change asks for an operating point that the models were never shown. The setpoints of the three temperatures are the corresponding steady-state values, $336.7$, $344.1$, and $346.2\,\text{K}$ at the nominal grade and $331.5$, $338.6$, and $340.1\,\text{K}$ at the premium grade, which means that the controller has to move the whole operating point and not the quality alone. The premium grade is reached with less heat and a larger fresh feed, because the yield of B is not monotone in the supplied heat, and the three temperatures consequently fall by approximately $6\,\text{K}$ instead of rising. This is the direction in which a model identified around a single operating point is most likely to fail, and the grade change is chosen for exactly this reason.
+
+\subsection{Unmeasured feed disturbances}
+
+Two unmeasured feed upsets are applied to the plant while the premium grade is held. At $t = 600\,\text{s}$ the temperature of the fresh feed drops from $313\,\text{K}$ to $310\,\text{K}$, which represents a drift of the feed preheater or of the utility that supplies it. At $t = 850\,\text{s}$ the fresh feed becomes leaner, with the mass fraction of the reactant A falling from $1.00$ to $0.97$, which represents a switch of the feed tank or a carry-over of an inert. Both upsets act on the plant only, and the encoder, the observer, the target optimizer, and the MPC problem are left unchanged, so that the four controllers built on an identified model can reject them only through the output disturbance estimate $\hat{d}(t)$.
+
+The magnitudes are deliberately modest, because both grades have to remain reachable inside the identification box after the upsets. A drop of $10\,\text{K}$ in the feed temperature at the premium throughput would require approximately $40\,\text{kJ/s}$ of additional heat in the first vessel, which exceeds the $25\,\text{kJ/s}$ available there, and would leave the requested grade unreachable for every controller including the benchmark. The measurements are noise-free in all closed-loop runs, although the models were identified from noisy data as described in Sec.~\ref{sec:ident}. This is a deliberate choice, because the differences between the compared controllers are of the same order as the spread that a single noise realization introduces, and reporting one realization would attribute to the formulation what belongs to the noise.
+
+\subsection{Tuning}
+
+The target optimization~\eqref{eq:cs:target} uses $\ui{Q}{y}^\text{t} = \diag([1,\, 1,\, 1,\, 20])$, so that the steady-state target is the reachable operating point closest to the requested grade, with the bottoms quality weighted an order of magnitude above the temperatures. The MPC problem~\eqref{eq:cs:mpc} is tuned in the original setup by
+\begin{equation}
+  \label{eq:cl:weights}
+  \begin{gathered}
+    \ui{Q}{y} = \diag([2,\, 2,\, 2,\, 15]), \quad
+    Q_{\Delta\text{u}} = \diag([0.5,\, 0.5,\, 0.5,\, 1,\, 1,\, 1]), \\
+    \ui{Q}{u} = \diag([0.2,\, 0.2,\, 0.2,\, 0.5,\, 0.5,\, 0.5]),
+  \end{gathered}
+\end{equation}
+where the entries of $\ui{Q}{y}$ follow the order $T_1$, $T_2$, $T_3$, $x_{\text{B}3}$ of the outputs and the entries of $Q_{\Delta\text{u}}$ and $\ui{Q}{u}$ the order $Q_1$, $Q_2$, $Q_3$, $F_{10}$, $F_{20}$, $\ui{F}{r}$ of the inputs. The bottoms quality again carries the largest output weight, because it is the variable that the campaign has to meet, while the temperatures are regulated but act mainly as operating limits. The input target towards which $\ui{Q}{u}$ pulls is the nominal utility and throughput setting of Table~\ref{tab:cstr-sep-inputs}, held constant over the whole campaign, so that this term expresses the economic preference of the plant rather than a tracking requirement.
+
+Three tunings are reported. The first one is the original setup~\eqref{eq:cl:weights}. In the second one, $\ui{Q}{y}$ is multiplied by two and everything else is left unchanged, and in the third one, $\ui{Q}{y}$ is divided by two and everything else is left unchanged, so that the relative weight of the outputs against the inputs is moved by a factor of two in each direction. The purpose of this sweep is not to search for a good controller but to test the mechanism of the proposed formulation. The proposed scheme differs from the standard one only in the way the output mapping is used, in the objective function through~\eqref{eq:cs:Qz} and in the output constraints through~\eqref{eq:cs:mpc:y}. Its advantage is therefore expected to grow with the weight that the objective function places on the outputs, and to shrink when $\ui{Q}{y}$ is reduced and the outputs become a secondary concern.
+
+\subsection{Observers and the benchmark}
+
+Each controller is paired with the observer that its formulation requires. The two controllers built on an LTI model, namely the one using the subspace model and the one using the Koopman model with the linear decoder, use a stationary Kalman filter on the augmented system~\eqref{eq:of:ss}, while the proposed controllers use the time-varying filter of Sec.~\ref{sec:tvkf}. The number of estimated disturbances equals the number of measurements, $n_d = n_y = 4$, with $B_d = 0$ and $C_d = I$, so that the disturbance is purely additive on the outputs and the rank condition~\eqref{eq:of:rank} is satisfied. The covariances in the standardized coordinates are $P(0) = I$, $R = 0.3\,I$, and $Q = \diag([0.1\,I,\, 0.1\,I])$, with the two blocks acting on the lifted state and on the disturbance, respectively. The only exception is the subspace baseline, whose disturbance block had to be raised to $1.0\,I$ to obtain an acceptable closed-loop response; a larger disturbance covariance produces a faster estimate of $\hat{d}(t)$, so this exception favors the baseline.
+
+The benchmark is a nonlinear MPC that uses the plant equations themselves as the prediction model. It is paired with an extended Kalman filter and with a nonlinear steady-state target selector built on the same equations, both discretized by a fourth-order Runge--Kutta map with ten substeps per sampling period, so that the observer of the benchmark is not biased with respect to the plant stepper. Furthermore, the benchmark is informed of the new feed conditions at the instant at which each upset is applied, so that it suffers neither from process-model mismatch nor from a lag in the estimation of the disturbance. It uses the same horizon, the same weights, the same constraints, and the same references as every other controller. Its closed-loop performance is therefore the practical bound of this comparison, and we use it as the normalization of the results rather than as a competitor.
+
+To evaluate the closed-loop performance, we accumulate over the whole simulation the same quantities that the MPC problem penalizes, which gives
+\begin{equation}
+  \label{eq:cl:obj}
+  J = \underbrace{\sum_{t \in \mathcal{T}} \bigl\| y(t) - \ui{y}{sp}(t) \bigr\|_{\ui{Q}{y}}^2}_{\ui{J}{y}}
+  + \underbrace{\sum_{t \in \mathcal{T}} \bigl\| u(t) - u(t - \Ts) \bigr\|_{Q_{\Delta\text{u}}}^2}_{J_{\Delta\text{u}}}
+  + \underbrace{\sum_{t \in \mathcal{T}} \bigl\| u(t) - \bar{u}(t) \bigr\|_{\ui{Q}{u}}^2}_{\ui{J}{u}},
+\end{equation}
+where $J$ is the closed-loop objective, $\ui{J}{y}$, $J_{\Delta\text{u}}$, and $\ui{J}{u}$ are its three parts, $\mathcal{T} = \{0,\, \Ts,\, \ldots,\, (\ui{n}{sim}-1)\Ts\}$ is the set of the sampling instants of the campaign, $\ui{n}{sim} = 1500$ is its length in samples, and $\|v\|_Q^2 = v^\intercal Q v$. The three parts are the closed-loop counterparts of the three terms of~\eqref{eq:of:mpc:obj} and are evaluated with the weights of the tuning that is being reported. A large $\ui{J}{y}$ means that the plant spends time away from the requested grade, which in a campaign is off-specification product, whereas a large $J_{\Delta\text{u}}$ or $\ui{J}{u}$ means that the duties and the flow rates are moved far and held far from the economically preferred operating point, which is paid for in utilities and in throughput.
+
+The target optimization~\eqref{eq:cs:target} and the MPC problem~\eqref{eq:cs:mpc} are quadratic programs, formulated in CVXPY and solved with Gurobi~\cite{gurobi} restricted to a single thread. The decoder $h(\ui{z}{LP})$ and its Jacobian $H(\ui{z}{LP})$ are evaluated in PyTorch~\cite{paszke2019pytorch} at every sampling instant. The nonlinear benchmark and its target selector are formulated in CasADi through the do-mpc toolbox and solved with IPOPT using the MUMPS linear solver, and the plant itself is integrated by the explicit Runge--Kutta solver of SciPy. All closed-loop runs were carried out on a Mac mini with an Apple M4 Pro processor. \todo{add bibliography entries for CVXPY, CasADi, do-mpc, IPOPT, and SciPy}
+}
+
+\section{Closed-loop results}
 \label{sec:Results}
 
-In the following, we make precise the output mappings sketched in the notes and list the combinations (setups) evaluated in the simulations.
+{\generatedstyle
+In this section, we present and analyze the closed-loop results obtained in the scenario of Sec.~\ref{sec:control-setup}. Four controllers are compared against the nonlinear benchmark, namely the offset-free MPC of Sec.~\ref{sec:easy-mpc} using the subspace model, the same formulation using the Koopman model with the linear decoder, and the proposed formulation of Sec.~\ref{sec:method} in its two variants, linearized at the target of the previous sampling instant as in Algorithm~\ref{alg:closed-loop} and at the current state estimate as in Algorithm~\ref{alg:closed-loop-state}.
+}
 
 \subsection{The effect of block-diagonal transformation}
 
@@ -669,7 +730,7 @@ The second option how to obtain the block diagonal structure is to learn the Koo
 To obtain an optimal performance, which is neccessary for the real time control, we are proposing to use the block diagonal structure of the Koopman operator. There is no neccessity to use the full Koopman operator, as the block diagonal structure is able to capture the same dynamics of the system and favors the optimization performance. The way this structure is obtained, during or after the training, is not important, as long as the Koopman operator is in the block diagonal form.
 
 
-\subsection{Simulation setups}
+% \subsection{Simulation setups}
 % We consider three alternatives for computing the steady-state output corresponding to a candidate steady-state lifted state \(\bar z_k\) and disturbance estimate \(\hat d_k\):
 % \begin{subequations}
 %   \label{eq:target-mappings}
@@ -747,30 +808,117 @@ To obtain an optimal performance, which is neccessary for the real time control,
 %   \end{tabular}
 % \end{table}
 
-\subsection{Simulation Results for Two Reactor System}
+{\generatedstyle
+\subsection{Closed-loop performance of the grade campaign}
+\label{sec:results:cl}
 
-We index target mappings by T1--T3 and dynamic mappings by D1--D4 as in \eqref{eq:target-mappings}--\eqref{eq:dyn-mappings}. Table~\ref{tab:setups-matrix-reactor-1} compares previous diagonal entries (CT, T2D2, T3D3) with reruns from the current scripts.
+\genopen
+Fig.~\ref{fig:cl-trajectories} shows the controlled outputs over the whole campaign for the original setup~\eqref{eq:cl:weights}, Fig.~\ref{fig:cl-inputs} shows the manipulated variables, and Tables~\ref{tab:cl-original}--\ref{tab:cl-qy-half} report the closed-loop objective~\eqref{eq:cl:obj} and its three parts for the three tunings of Sec.~\ref{sec:control-setup}.
+\genclose
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/cl_trajectories.pdf}
+  \caption{\textgenerated{\genopen Closed-loop outputs of the grade campaign in the original setup. The panels are $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$. The black dashed line is the setpoint, the solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the two grade changes at $350\,\text{s}$ and $1000\,\text{s}$ and the two unmeasured feed upsets at $600\,\text{s}$ and $850\,\text{s}$. \genclose}}
+  \label{fig:cl-trajectories}
+\end{figure}
+
+\genopen
+As can be seen in Fig.~\ref{fig:cl-trajectories}, every plotted controller tracks both grade changes, and the steady-state offset in $x_{\text{B}3}$ is removed after each unmeasured feed upset. The nonlinear benchmark, which is informed of the new feed conditions, barely moves the temperatures after the upsets, whereas the identified-model controllers show a temperature excursion of approximately $1\,\text{K}$ after the drop in the feed temperature and a smaller one after the feed becomes leaner. The subspace controller retains a temperature offset of a few tenths of a kelvin during the holds, which both proposed linearizations remove. The two proposed series nearly coincide, except at the grade-change transients.
+\genclose
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/cl_inputs.pdf}
+  \caption{\textgenerated{\genopen Closed-loop manipulated variables of the grade campaign in the original setup. The panels are $Q_1$, $Q_2$, $Q_3$, $F_{10}$, $F_{20}$, and $\ui{F}{r}$. The solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}, and the grey bands are the input bounds of Table~\ref{tab:cstr-sep-inputs}. \genclose}}
+  \label{fig:cl-inputs}
+\end{figure}
+
+\genopen
+As can be seen in Fig.~\ref{fig:cl-inputs}, the subspace controller departs more from the nonlinear benchmark on the manipulated variables, in particular on $F_{20}$ and $\ui{F}{r}$. Both proposed linearizations stay close to the nonlinear benchmark, closer than the MPC that uses the Koopman model with the linear decoder, and none of the plotted inputs leaves the identification box of Table~\ref{tab:cstr-sep-inputs}.
+\genclose
+
+\genopen
+Fig.~\ref{fig:cl-disturbances} shows the four components of the output disturbance estimate $\hat{d}(t)$ for the linear MPCs. After each grade change the two LTI controllers accumulate several kelvin of correction on the temperatures, which is the amount by which those models miss the new steady state of the plant. The proposed controllers keep a smaller estimate over the same intervals, and the two linearization points nearly coincide except at the second grade change. Both feed upsets produce a further jump in $\hat{d}(t)$, since the observer is the only path through which those plant changes enter the control problem.
+\genclose
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\linewidth]{figures/cl_disturbances.pdf}
+  \caption{\textgenerated{\genopen Output disturbance estimates $\hat{d}(t)$ of the four linear MPCs in the original setup, expressed in the physical output units. The four panels correspond to $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$. The dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the previous target. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}. \genclose}}
+  \label{fig:cl-disturbances}
+\end{figure}
+\todo{The disturbance panels are the stored scaled $\hat{d}(t)$ multiplied by the output scaler, so the units are K and mass fraction. Switch the figure to standardized coordinates if that is the intended comparison.}
 
 \begin{table}[h]
   \centering
-  \caption[Two-reactor CSTR: previous vs.\ updated objectives]{Two-reactor CSTR: normalized closed-loop objective with NMPC benchmark \(100\). Diagonal combinations CT (\(T1\!\times\!D1\)), T2D2 (\(T2\!\times\!D2\)), and T3D3 (\(T3\!\times\!D3\)). \emph{Previous}: entries from the earlier full \(3\times 4\) TM/DM matrices. \emph{Updated}: \(100\,J/J_{\mathrm{NMPC}}\) from \texttt{control\_cstr} (\path{CT.py}, \path{T2D2.py}, \path{T3D3.py}) with the same weighting as tuning~\textsc{i}; em dashes mark tunings \textsc{ii}--\textsc{iii} not yet rerun.}
-  \label{tab:setups-matrix-reactor-1}
-  \label{tab:setups-matrix-reactor-2}
-  \label{tab:setups-matrix-reactor-3}
-  \begin{tabular}{@{}l rrr @{\hspace{2.2em}} rrr@{}}
-      \toprule
-      & \multicolumn{3}{c}{\textbf{Previous}} & \multicolumn{3}{c}{\textbf{Updated}} \\
-      \cmidrule(lr){2-4} \cmidrule(lr){5-7}
-      \textbf{Tuning} & CT & T2D2 & T3D3 & CT & T2D2 & T3D3 \\
-      \midrule
-      \textsc{i}: $Q_y=\mathrm{diag}(5)$, $Q_u=\mathrm{diag}(0.1)$ & 365.0 & 251.5 & 265.1 & 314.9 & 260.5 & 285.7 \\
-      \addlinespace[0.35em]
-      \textsc{ii}: $Q_y=Q_u=I$ & 184.5 & 146.2 & 153.9 & --- & --- & --- \\
-      \addlinespace[0.35em]
-      \textsc{iii}: $Q_y=\mathrm{diag}(0.1)$, $Q_u=\mathrm{diag}(5)$ & 130.4 & 112.1 & 116.1 & --- & --- & --- \\
-      \bottomrule
+  \small
+  \setlength{\tabcolsep}{5pt}
+  \caption{Closed-loop performance in the original setup~\eqref{eq:cl:weights}. The three parts of the objective function are the ones defined in~\eqref{eq:cl:obj}, and the last column is normalized so that $100\%$ stands for the performance of the nonlinear benchmark, which uses the exact plant model.}
+  \label{tab:cl-original}
+  \begin{tabular}{lrrrrr}
+    \toprule
+    Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
+    \midrule
+    Nonlinear MPC, exact model & 123.8 & 11.3 & 10.5 & 145.6 & 100.0 \\
+    N4SID, order $17$ & 140.8 & 19.6 & 30.0 & 190.4 & 130.8 \\
+    Koopman, linear $h$, $n_z = 19$ & 149.5 & 13.3 & 12.0 & 174.8 & 120.0 \\
+    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 134.6 & 15.0 & 12.8 & 162.3 & 111.5 \\
+    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 134.9 & 13.0 & 13.0 & 160.9 & 110.5 \\
+    \bottomrule
   \end{tabular}
 \end{table}
+
+\begin{table}[h]
+  \centering
+  \small
+  \setlength{\tabcolsep}{5pt}
+  \caption{Closed-loop performance with the output weight doubled, $\ui{Q}{y} = \diag([4,\, 4,\, 4,\, 30])$, and the remaining weights of~\eqref{eq:cl:weights} unchanged. The columns have the same meaning as in Table~\ref{tab:cl-original}, and the objective function is accumulated with the weights of this tuning.}
+  \label{tab:cl-qy}
+  \begin{tabular}{lrrrrr}
+    \toprule
+    Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
+    \midrule
+    Nonlinear MPC, exact model & 234.5 & 16.0 & 14.9 & 265.5 & 100.0 \\
+    N4SID, order $17$ & 257.8 & 28.4 & 45.3 & 331.6 & 124.9 \\
+    Koopman, linear $h$, $n_z = 19$ & 281.4 & 18.3 & 16.1 & 315.8 & 118.9 \\
+    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 256.8 & 25.2 & 23.8 & 305.8 & 115.1 \\
+    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 257.8 & 20.9 & 25.7 & 304.4 & 114.6 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  \small
+  \setlength{\tabcolsep}{5pt}
+  \caption{Closed-loop performance with the output weight halved, $\ui{Q}{y} = \diag([1,\, 1,\, 1,\, 7.5])$, and the remaining weights of~\eqref{eq:cl:weights} unchanged. The columns have the same meaning as in Table~\ref{tab:cl-original}, and the objective function is accumulated with the weights of this tuning.}
+  \label{tab:cl-qy-half}
+  \begin{tabular}{lrrrrr}
+    \toprule
+    Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
+    \midrule
+    Nonlinear MPC, exact model & 67.5 & 7.2 & 6.9 & 81.6 & 100.0 \\
+    N4SID, order $17$ & 80.2 & 14.2 & 19.8 & 114.2 & 139.9 \\
+    Koopman, linear $h$, $n_z = 19$ & 81.4 & 8.7 & 8.1 & 98.3 & 120.4 \\
+    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 72.0 & 9.2 & 7.2 & 88.4 & 108.2 \\
+    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 73.0 & 8.8 & 7.7 & 89.4 & 109.5 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Two comparisons are drawn from the tables. The first one is the comparison of each controller with the nonlinear benchmark, which quantifies how much of the achievable performance is lost when the plant equations are replaced by an identified model. The second one is the comparison of the proposed formulation with the standard offset-free Koopman MPC of Sec.~\ref{sec:easy-mpc}, which isolates the effect of the nonlinear output mapping, since the two controllers share the scenario, the tuning, the constraints, and the disturbance sequence, and differ only in the model and in the way the outputs are recovered from the lifted state. The subspace baseline is reported as well, because it is the model that would be identified first for a plant of this kind and, as Table~\ref{tab:ident-accuracy} shows, it is the more accurate of the two linear models in open loop.
+
+\todo{state the objective of every controller relative to the benchmark for the original setup, the gap between the proposed formulation and the standard Koopman MPC, and the position of the subspace baseline}
+
+The three tunings answer whether the improvement is attributable to the output mapping. The proposed formulation replaces the linear recovery $y_k = C z_k$ by the first-order expansion of the decoder, both in the weighting matrix~\eqref{eq:cs:Qz} and in the output constraints~\eqref{eq:cs:mpc:y}, so that its advantage acts on the part of the objective function that involves the outputs. The larger the share of $\ui{J}{y}$ in the total, the larger the advantage should be, and the advantage should shrink when $\ui{Q}{y}$ is halved and the accuracy of the predicted outputs influences the computed input less.
+
+\todo{confirm or refute the expected trend across Tables~\ref{tab:cl-original}--\ref{tab:cl-qy-half}, and report the normalized objective of the proposed formulation at the two extremes of the sweep}
+
+A separate question is which of the two linearization points is to be preferred. Algorithm~\ref{alg:closed-loop} expands the output mapping at the target of the previous sampling instant, which is the point at which the target optimization is the most accurate, whereas Algorithm~\ref{alg:closed-loop-state} expands it at the current state estimate, which is the point at which the first predicted output is the most accurate. The two points are far apart during the transient after a grade change and nearly coincide during the holds, so the difference between the two variants is expected to be visible in the transients only.
+
+\todo{compare the two linearization points across the three tunings and state which one is recommended}
+}
 
 % % \begin{table}[h]
 % %   \centering
@@ -938,170 +1086,6 @@ We index target mappings by T1--T3 and dynamic mappings by D1--D4 as in \eqref{e
 
 \section{Discussion}
 \section{Conclusion}
-
-\newpage
-
-\appendix
-
-\section{System Models}
-\label{app:models}
-
-In this appendix, we provide detailed mathematical descriptions of the two benchmark nonlinear systems used to evaluate the proposed offset-free Koopman MPC schemes: a two-tank system with hydraulic flows and a two-reactor CSTR series with recycle and parallel reactions.
-
-% \subsection{Two Tanks System}
-
-% The two-tank system consists of two interconnected tanks with liquid heights \(h_1\) and \(h_2\). Each tank receives an inflow (control inputs \(u_1\) and \(u_2\), respectively), and liquid can flow between tanks and out of the system through gravity-driven mechanisms. The continuous-time nonlinear dynamics are described by:
-% \begin{subequations}
-%   \label{eq:two-tanks}
-%   \begin{align}
-%     \frac{dh_1}{dt} &= \frac{1}{A_1}\left(u_1 - q_{12}\right), \\
-%     \frac{dh_2}{dt} &= \frac{1}{A_2}\left(u_2 + q_{12} - q_{\text{out}}\right),
-%   \end{align}
-% \end{subequations}
-% where \(A_1\) and \(A_2\) are the cross-sectional areas of tanks 1 and 2, respectively. The inter-tank flow \(q_{12}\) and the outlet flow \(q_{\text{out}}\) follow nonlinear hydraulic relationships:
-% \begin{align}
-%   q_{12} &= k_1 \, \text{sgn}(h_1 - h_2) \, \sqrt{|h_1 - h_2|}, \label{eq:q12}\\
-%   q_{\text{out}} &= k_2 \, \sqrt{h_2}, \label{eq:qout}
-% \end{align}
-% with \(k_1\) and \(k_2\) being flow coefficients. The outputs are the measured tank heights:
-% \begin{equation}
-%   y = \begin{bmatrix} h_1 \\ h_2 \end{bmatrix}.
-% \end{equation}
-
-% The system is discretized with a sampling time \(T_s = 1\,\text{s}\) using a Runge--Kutta integration scheme. The physical parameters and operational constraints used in the simulations are summarized in Table~\ref{tab:two-tanks-params}.
-
-% \begin{table}[h]
-%   \centering
-%   \caption{Two-tank system parameters and operational constraints.}
-%   \label{tab:two-tanks-params}
-%   \begin{tabular}{llc}
-%     \toprule
-%     \textbf{Parameter} & \textbf{Description} & \textbf{Value} \\
-%     \midrule
-%     \(A_1\) & Cross-sectional area of tank 1 & \(1.0\,\text{m}^2\) \\
-%     \(A_2\) & Cross-sectional area of tank 2 & \(1.0\,\text{m}^2\) \\
-%     \(k_1\) & Inter-tank flow coefficient & \(0.5\,\text{m}^{2.5}/\text{s}\) \\
-%     \(k_2\) & Outlet flow coefficient & \(0.3\,\text{m}^{2.5}/\text{s}\) \\
-%     \midrule
-%     \(h_1^0\), \(h_2^0\) & Initial heights & \(0.5\,\text{m}\) \\
-%     \(u_1^0\), \(u_2^0\) & Initial inflows & \(0.0705, 0.4759\,\text{m}^3/\text{s}\) \\
-%     \midrule
-%     \(u_1 \in\) & Inflow constraint (tank 1) & \([0.0, 0.5]\,\text{m}^3/\text{s}\) \\
-%     \(u_2 \in\) & Inflow constraint (tank 2) & \([0.0, 1.0]\,\text{m}^3/\text{s}\) \\
-%     \(T_s\) & Sampling time & \(1.0\,\text{s}\) \\
-%     \bottomrule
-%   \end{tabular}
-% \end{table}
-
-\subsection{Two Reactor System}
-
-The two-reactor system consists of two continuous stirred tank reactors (CSTRs) in series with a recycle loop from the second reactor back to the first. Each reactor is equipped with jacket cooling. The system models a classic selectivity problem with parallel competing reactions on reactant A.
-
-\subsubsection{Chemical Reactions}
-
-Three reaction pathways are considered:
-\begin{align}
-  \text{(R1) Desired:}\quad &  2\,\text{A} \rightarrow \text{B}, \quad && r_1 = k_1(T)\, C_A^2, \label{eq:rxn1}\\
-  \text{(R2) Undesired:}\quad &  \text{A} \rightarrow \text{U}, \quad && r_2 = k_2(T)\, C_A, \label{eq:rxn2}\\
-  \text{(R3) Shunt (R1 only):}\quad &  \text{A} + \text{B} \rightarrow 2\,\text{B}, \quad && r_3 = k_3(T)\, C_A\, C_B, \label{eq:rxn3}
-\end{align}
-where the temperature-dependent rate constants follow Arrhenius kinetics:
-\begin{equation}
-  k_i(T) = k_{i,0}\,\exp\!\left(-\frac{E_i}{R\,T}\right), \quad i = 1,2,3.
-  \label{eq:arrhenius}
-\end{equation}
-The autocatalytic shunt reaction (R3) occurs only in the first reactor.
-
-\subsubsection{Dynamic Model}
-
-The system has eight states:
-\begin{equation}
-  x = \begin{bmatrix} C_{A,1} & T_1 & C_{A,2} & T_2 & C_{B,1} & C_{B,2} & C_{U,1} & C_{U,2} \end{bmatrix}^\top,
-\end{equation}
-where \(C_{A,i}\), \(C_{B,i}\), and \(C_{U,i}\) denote concentrations of species A, B, and U in reactor \(i\), and \(T_i\) is the temperature. The four control inputs are:
-\begin{equation}
-  u = \begin{bmatrix} F & L & T_{c,1} & T_{c,2} \end{bmatrix}^\top,
-\end{equation}
-with \(F\) the fresh feed flow rate, \(L\) the recycle flow rate, and \(T_{c,i}\) the jacket coolant temperatures.
-
-The continuous-time dynamics are:
-\begin{subequations}
-  \label{eq:cstr-series}
-  \begin{align}
-    \frac{dC_{A,1}}{dt} &= \frac{1}{V_1}\bigl[C_{A,0}\,F + L\,C_{A,2} - (F+L)\,C_{A,1}\bigr] - 2\,r_{1,1} - r_{2,1} - r_{3,1}, \\
-    \frac{dC_{B,1}}{dt} &= \frac{1}{V_1}\bigl[C_{B,0}\,F + L\,C_{B,2} - (F+L)\,C_{B,1}\bigr] + r_{1,1} + r_{3,1}, \\
-    \frac{dC_{U,1}}{dt} &= \frac{1}{V_1}\bigl[C_{U,0}\,F + L\,C_{U,2} - (F+L)\,C_{U,1}\bigr] + r_{2,1}, \\
-    \frac{dT_1}{dt} &= \frac{1}{V_1}\bigl[T_0\,F + L\,T_2 - (F+L)\,T_1\bigr] - \frac{U_1A_1}{V_1\,\rho\,c_p}(T_1 - T_{c,1}) \notag\\
-    &\quad + \frac{1}{\rho\,c_p}\bigl[(-\Delta H_1)\,r_{1,1} + (-\Delta H_2)\,r_{2,1} + (-\Delta H_3)\,r_{3,1}\bigr], \\[0.5em]
-    \frac{dC_{A,2}}{dt} &= \frac{F+L}{V_2}\bigl[C_{A,1} - C_{A,2}\bigr] - 2\,r_{1,2} - r_{2,2}, \\
-    \frac{dC_{B,2}}{dt} &= \frac{F+L}{V_2}\bigl[C_{B,1} - C_{B,2}\bigr] + r_{1,2}, \\
-    \frac{dC_{U,2}}{dt} &= \frac{F+L}{V_2}\bigl[C_{U,1} - C_{U,2}\bigr] + r_{2,2}, \\
-    \frac{dT_2}{dt} &= \frac{F+L}{V_2}\bigl[T_1 - T_2\bigr] - \frac{U_2A_2}{V_2\,\rho\,c_p}(T_2 - T_{c,2}) \notag\\
-    &\quad + \frac{1}{\rho\,c_p}\bigl[(-\Delta H_1)\,r_{1,2} + (-\Delta H_2)\,r_{2,2}\bigr],
-  \end{align}
-\end{subequations}
-where \(r_{j,i}\) denotes the rate of reaction \(j\) in reactor \(i\). The outputs are all eight states:
-\begin{equation}
-  y = x.
-\end{equation}
-
-The system is discretized with sampling time \(T_s = 1\,\text{s}\) using a Runge--Kutta integration scheme. Physical parameters, kinetic constants, and operational constraints are listed in Tables~\ref{tab:cstr-physical}--\ref{tab:cstr-constraints}.
-
-\begin{table}[h]
-  \centering
-  \caption{CSTR series physical and thermodynamic parameters.}
-  \label{tab:cstr-physical}
-  \begin{tabular}{llc}
-    \toprule
-    \textbf{Parameter} & \textbf{Description} & \textbf{Value} \\
-    \midrule
-    \(V_1\) & Volume of reactor 1 & \(1.0\times10^{-3}\,\text{m}^3\) \\
-    \(V_2\) & Volume of reactor 2 & \(2.0\times10^{-3}\,\text{m}^3\) \\
-    \(U_1A_1\) & Heat transfer coefficient \(\times\) area (R1) & \(0.461\,\text{kJ/(s·K)}\) \\
-    \(U_2A_2\) & Heat transfer coefficient \(\times\) area (R2) & \(0.732\,\text{kJ/(s·K)}\) \\
-    \(\rho\) & Liquid density & \(1050\,\text{kg/m}^3\) \\
-    \(c_p\) & Specific heat capacity & \(3.766\,\text{kJ/(kg·K)}\) \\
-    \(R\) & Universal gas constant & \(8.3145\times10^{-3}\,\text{kJ/(mol·K)}\) \\
-    \midrule
-    \(C_{A,0}\) & Feed concentration of A & \(97.35\,\text{mol/m}^3\) \\
-    \(C_{B,0}, C_{U,0}\) & Feed concentrations of B, U & \(0.0\,\text{mol/m}^3\) \\
-    \(T_0\) & Feed temperature & \(298.0\,\text{K}\) \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-\begin{table}[h]
-  \centering
-  \caption{Arrhenius kinetic parameters for reactions R1--R3.}
-  \label{tab:cstr-kinetics}
-  \begin{tabular}{llccc}
-    \toprule
-    \textbf{Reaction} & \textbf{Parameter} & \textbf{Pre-exponential} & \textbf{Activation Energy} & \textbf{Heat of Reaction} \\
-    \midrule
-    R1: \(2\,\text{A} \rightarrow \text{B}\) & \(k_{1,0}\), \(E_1\), \(\Delta H_1\) & \(1.0\times10^5\,\text{m}^3/(\text{mol·s})\) & \(45.0\,\text{kJ/mol}\) & \(60.0\,\text{kJ/mol}\) \\
-    R2: \(\text{A} \rightarrow \text{U}\) & \(k_{2,0}\), \(E_2\), \(\Delta H_2\) & \(9.8\times10^9\,\text{s}^{-1}\) & \(70.0\,\text{kJ/mol}\) & \(40.0\,\text{kJ/mol}\) \\
-    R3: \(\text{A}+\text{B} \rightarrow 2\,\text{B}\) & \(k_{3,0}\), \(E_3\), \(\Delta H_3\) & \(5.0\times10^4\,\text{m}^3/(\text{mol·s})\) & \(55.0\,\text{kJ/mol}\) & \(60.0\,\text{kJ/mol}\) \\
-    \bottomrule
-  \end{tabular}
-\end{table}
-
-\begin{table}[h]
-  \centering
-  \caption{CSTR series operational constraints and initial conditions.}
-  \label{tab:cstr-constraints}
-  \begin{tabular}{llc}
-    \toprule
-    \textbf{Parameter} & \textbf{Description} & \textbf{Value/Range} \\
-    \midrule
-    \(F \in\) & Fresh feed flow rate & \([0.0, 2.0\times10^{-4}]\,\text{m}^3/\text{s}\) \\
-    \(L \in\) & Recycle flow rate & \([0.0, 2.0\times10^{-4}]\,\text{m}^3/\text{s}\) \\
-    \(T_{c,1}, T_{c,2} \in\) & Coolant temperatures & \([280.0, 330.0]\,\text{K}\) \\
-    \midrule
-    \(x_0\) & Initial state (steady state) & Computed for \(u_0 = [1.5\times10^{-4}, 7.5\times10^{-5}, 290, 290]^\top\) \\
-    \(T_s\) & Sampling time & \(1.0\,\text{s}\) \\
-    \bottomrule
-  \end{tabular}
-\end{table}
 
 \bibliographystyle{elsarticle-harv}
 \bibliography{bibfile}

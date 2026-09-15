@@ -1,0 +1,35 @@
+{
+  "objective": 114.22042525283311,
+  "state_error_cost": 80.15092409262509,
+  "control_increment_cost": 14.232850220630697,
+  "control_setpoint_cost": 19.836650939577368,
+  "objective_original_weights": 194.37134934545784,
+  "wall_s": 75.36562562501058,
+  "mpc_wall_sum_s": 71.79219489672687,
+  "mpc_wall_mean_s": 0.04786146326448458,
+  "mpc_wall_max_s": 0.18972945807036012,
+  "mpc_solver_sum_s": 33.868661642074585,
+  "mpc_solver_mean_s": 0.02257910776138306,
+  "mpc_solver_max_s": 0.045953989028930664,
+  "target_wall_sum_s": 2.2919928994961083,
+  "n_steps": 1500,
+  "controller": "N4SID",
+  "setup_name": "qy_x0.5",
+  "Qy_diag": [
+    1.0,
+    1.0,
+    1.0,
+    7.5
+  ],
+  "Qu_diag": [
+    0.2,
+    0.2,
+    0.2,
+    0.5,
+    0.5,
+    0.5
+  ],
+  "sim_time": 1500,
+  "notebook_of": null,
+  "pid": 29545
+}

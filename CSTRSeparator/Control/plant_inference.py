@@ -23,6 +23,47 @@ if _SRC not in sys.path:
 import models  # noqa: E402
 
 
+class PlantSession:
+    """Private CSTR–separator stepper (not the module-global plant)."""
+
+    def __init__(self, x0=None, Ts=1.0):
+        self.plant = models.CSTRSeparator()
+        data_dir = os.path.join(_HERE, "..", "data")
+        self.scaler = joblib.load(os.path.join(data_dir, "scaler_cstr_separator.pkl"))
+        self.scalerU = joblib.load(os.path.join(data_dir, "scalerU_cstr_separator.pkl"))
+        self.ts = float(Ts)
+        self.x = np.asarray(self.plant.x0_guess if x0 is None else x0, dtype=float).reshape(-1)
+        self.reset_disturbances()
+
+    def reset(self, x0, Ts=None):
+        if Ts is not None:
+            self.ts = float(Ts)
+        self.x = np.asarray(x0, dtype=float).reshape(-1)
+        self.reset_disturbances()
+
+    def reset_disturbances(self):
+        self.plant.T10 = 313.0
+        self.plant.T20 = 313.0
+        self.plant.xA10 = 1.0
+        self.plant.xB10 = 0.0
+        self.plant.xA20 = 1.0
+        self.plant.xB20 = 0.0
+
+    def apply_disturbance(self, attr: str, value: float):
+        if not hasattr(self.plant, attr):
+            raise AttributeError(f"Unknown plant attribute {attr!r}")
+        setattr(self.plant, attr, float(value))
+
+    def measure_ns(self):
+        return self.plant.measure(self.x)
+
+    def y_plus(self, u_scaled):
+        u_ns = self.scalerU.inverse_transform(np.asarray(u_scaled, dtype=float).reshape(1, -1))
+        self.x = np.asarray(self.plant.step(self.x, u_ns, self.ts), dtype=float).reshape(-1)
+        y_ns = self.measure_ns().reshape(1, -1)
+        return self.scaler.transform(y_ns)[0]
+
+
 def init(x0=None, Ts=1.0):
     """Instantiate the plant, scalers, and internal state. Call once."""
     global plant, scaler, scalerU, x, ts, y_names, u_names
