@@ -81,7 +81,7 @@ def closed_loop_of(
 
     y_start = np.asarray(loaded["y_start"]).reshape(1, -1)
     reference = np.asarray(loaded["reference"], dtype=float)
-    u_sp = np.asarray(loaded["reference_u"], dtype=float).reshape(-1)
+    reference_u = np.asarray(loaded["reference_u"], dtype=float)
     scaler = plant_inference.scaler
     scalerU = plant_inference.scalerU
 
@@ -102,7 +102,7 @@ def closed_loop_of(
 
     KF = helper.KF(A_, B_, C_, z_est_, P0, Q, R)
     target_estimation = helper.TargetEstimation(A, B, C, loaded["Qy"], loaded["Qu_te"], Bd, Cd)
-    z_s, y_s, u_s = target_estimation.get_target(z_est_[:, nz:], reference[:, 0], u_sp)
+    z_s, y_s, u_s = target_estimation.get_target(z_est_[:, nz:], reference[:, 0], reference_u[:, 0])
     Qx = C.T @ loaded["Qy"] @ C + 2e-8 * np.eye(nz)
     mpc = helper.MPC(A, B, C, loaded["Qy"], loaded["Qu"], loaded["Qdu"], Bd, Cd)
     mpc.build_problem(Qx)
@@ -130,7 +130,7 @@ def closed_loop_of(
         if k in dist_by_k:
             d = dist_by_k[k]
             plant_inference.apply_disturbance(d["attr"], d["value"])
-        zs, ys, us = target_estimation.get_target(z_sim[nz:, k], reference[:, k], u_sp)
+        zs, ys, us = target_estimation.get_target(z_sim[nz:, k], reference[:, k], reference_u[:, k])
         us_sim[:, k] = us
         u_opt = mpc.get_u_optimal(z_sim[:nz, k], z_sim[nz:, k], us, u_prev, zs)
         u_sim[:, k] = u_opt

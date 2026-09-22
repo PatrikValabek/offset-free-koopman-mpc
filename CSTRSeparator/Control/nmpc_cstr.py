@@ -313,6 +313,11 @@ class TargetSelector:
         dy = y - y_sp
         du = u - u_sp
         cost = dy.T @ ca.DM(Qy) @ dy + du.T @ ca.DM(Qu) @ du
+        fp_row = loaded_setup.get("fp_row_ns")
+        fp_weight = float(loaded_setup.get("throughput_weight", 0.0))
+        if fp_row is not None and fp_weight != 0.0:
+            fp_err = ca.dot(ca.DM(np.asarray(fp_row, dtype=float)), u - u_sp)
+            cost = cost + fp_weight * fp_err ** 2
 
         nlp = {
             "x": ca.vertcat(x, u),

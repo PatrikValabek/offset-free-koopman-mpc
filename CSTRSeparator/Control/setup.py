@@ -94,9 +94,21 @@ reference_ns[:, 350:1000] = y_premium.reshape(-1, 1)
 reference_ns[:, 1000:] = y_nom.reshape(-1, 1)
 reference = scaler.transform(reference_ns.T).T
 
-# Preferred economic input (nominal utilities / throughput), constant.
-reference_u_ns = u_nom.copy()
-reference_u = scalerU.transform(reference_u_ns.reshape(1, -1))[0]
+# Input reference follows the same grade schedule as the outputs.
+reference_u_ns = np.zeros((nu, sim_time))
+reference_u_ns[:, :350] = u_nom.reshape(-1, 1)
+reference_u_ns[:, 350:1000] = u_premium.reshape(-1, 1)
+reference_u_ns[:, 1000:] = u_nom.reshape(-1, 1)
+reference_u = scalerU.transform(reference_u_ns.T).T
+
+# Steady-state target penalizes the fresh-feed sum F10 + F20 against the sum
+# of those two entries of reference_u (8.8 m³/s nominal, 11.8 m³/s premium).
+# The two flows are not tracked separately: Qu_te stays zero. fp_row is in the
+# scaled input coordinates used by the linear and Taylor targets, so that
+# fp_row @ (u - u_sp) is the physical sum error. The weight is per (m³/s)².
+fp_row_ns = np.array([0.0, 0.0, 0.0, 1.0, 1.0, 0.0])
+fp_row = fp_row_ns * np.asarray(scalerU.scale_, dtype=float)
+throughput_weight = 10.0
 
 # Unmeasured plant disturbances (applied in the closed-loop notebook).
 # Times are sample indices (Ts = 1 s).
@@ -122,7 +134,7 @@ R = 0.3
 N = 60
 # Quality (xB3) is the primary CV; temperatures are regulated but softer.
 Qy_te = np.diag([1.0, 1.0, 1.0, 20.0])
-Qu_te = np.diag([0.2, 0.2, 0.2, 0.5, 0.5, 0.5]) * 0
+Qu_te = np.diag([0, 0, 0, 0.5, 0.5, 0]) * 0
 
 Qy = np.diag([2.0, 2.0, 2.0, 15.0])
 Qu = np.diag([0.2, 0.2, 0.2, 0.5, 0.5, 0.5])
@@ -165,6 +177,9 @@ sim_setup = {
     "reference_ns": reference_ns,
     "reference_u": reference_u,
     "reference_u_ns": reference_u_ns,
+    "fp_row": fp_row,
+    "fp_row_ns": fp_row_ns,
+    "throughput_weight": throughput_weight,
     "disturbances": disturbances,
     "noise_sigma": noise_sigma * 0,
     "y_names": y_names,

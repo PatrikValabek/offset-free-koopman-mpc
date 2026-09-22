@@ -13,6 +13,20 @@ def _load_sim_setup():
     return joblib.load(path)
 
 
+def _throughput_penalty(loaded_setup, u, u_sp):
+    """Penalize the fresh-feed sum against the sum implied by ``u_sp``.
+
+    ``fp_row`` is the row such that ``fp_row @ (u - u_sp)`` equals
+    ``(F10 + F20) - (F10_ref + F20_ref)`` in physical units. Absent on
+    plants that do not use a throughput reference.
+    """
+    row = loaded_setup.get("fp_row")
+    weight = float(loaded_setup.get("throughput_weight", 0.0))
+    if row is None or weight == 0.0:
+        return 0
+    return weight * cp.square(np.asarray(row, dtype=float) @ (u - u_sp))
+
+
 _PROCESS_GUROBI_ENV = None
 _PROCESS_GUROBI_ENV_FAILED = False
 
@@ -412,6 +426,7 @@ class TargetEstimation():
         cost_s = 0
         cost_s += cp.quad_form(self.y_s - self.y_sp, self.Qy)
         cost_s += cp.quad_form(self.u_s - self.u_sp, self.Qu)
+        cost_s += _throughput_penalty(_load_sim_setup(), self.u_s, self.u_sp)
 
         self.te = cp.Problem(cp.Minimize(cost_s), constraints_s)
         
@@ -690,6 +705,7 @@ class TaylorTargetEstimation():
         
         cost_s = cp.quad_form(self.y_s - self.y_sp, self.Qy)
         cost_s += cp.quad_form(self.u_s - self.u_sp, self.Qu)
+        cost_s += _throughput_penalty(_load_sim_setup(), self.u_s, self.u_sp)
         self.te = cp.Problem(cp.Minimize(cost_s), constraints_s)
     
     def get_target(self, d0, y_sp, u_sp, y_k, z_k, C_k):
