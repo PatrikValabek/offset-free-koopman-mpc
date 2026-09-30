@@ -571,13 +571,15 @@ For a fair comparison, this transformation is applied to every model identified 
 \label{sec:ident}
 
 {\generatedstyle
-In this section, we introduce the benchmark process, the data collected from it, and the three prediction models whose closed-loop performance is compared in Sec.~\ref{sec:Results}. All models are identified from the same data set with the same scaling, and the parameters reported here are the final ones used in every closed-loop experiment of this work.
+In this section, we introduce the benchmark process, the data collected from it, and the three prediction models whose closed-loop performance is compared in Sec.~\ref{sec:Results}. All models are identified from the same data set with the same scaling.
 
 \subsection{Reactor--separator process}
 
 The considered plant consists of two continuous stirred tank reactors in series followed by a flash separator, with a recycle stream from the separator back to the first reactor. The plant structure is the one of~\cite{liu2009distributed} and the kinetic, thermodynamic, and geometric parameters are those reported by~\cite{li2019dynamic}. Two consecutive first-order reactions $\text{A} \rightarrow \text{B} \rightarrow \text{C}$ take place in both reactors, where B is the desired product and C an undesired by-product. The plant is therefore a selectivity problem, since additional heat increases the conversion of the reactant A but also the loss of the product B into C.
 
-The plant has nine states, namely the mass fractions of A and B and the temperature in each of the three vessels, and the third vessel is the separator, in which no reaction occurs. The manipulated variables are the three heat duties $Q_1$, $Q_2$, $Q_3$, the fresh feed flow rates $F_{10}$ and $F_{20}$ to the first and the second reactor, and the recycle flow rate $\ui{F}{r}$. The measured and controlled outputs are the three vessel temperatures $T_1$, $T_2$, $T_3$ and the bottoms quality $x_{\text{B}3}$, which is the mass fraction of B leaving the separator. The vessel inventories are constant, so the internal flow rates follow from the manipulated ones. The nominal operating point and the box within which the inputs are moved during identification are listed in Table~\ref{tab:cstr-sep-inputs}.
+{\renewcommand{\gensource}{grok4.7}\genopen
+The plant has nine states, namely the mass fractions of A and B and the temperature in each of the three vessels, and the third vessel is the separator, in which no reaction occurs. The manipulated variables are the three heat duties $Q_1$, $Q_2$, $Q_3$ and the fresh feed flow rate $F_{10}$ to the first reactor. The fresh feed flow rate $F_{20}$ to the second reactor and the recycle flow rate $\ui{F}{r}$ are held fixed at the nominal values $0.5$ m$^3$/s and $4.0$ m$^3$/s. The measured and controlled outputs are the three vessel temperatures $T_1$, $T_2$, $T_3$ and the bottoms quality $x_{\text{B}3}$, which is the mass fraction of B leaving the separator. The vessel inventories are constant, so the internal flow rates follow from $F_{10}$ together with two fixed flows. The nominal operating point and the box within which the manipulated inputs are moved during identification are listed in Table~\ref{tab:cstr-sep-inputs}.
+\genclose}
 
 \begin{table}[h]
   \centering
@@ -590,29 +592,31 @@ The plant has nine states, namely the mass fractions of A and B and the temperat
     \midrule
     $Q_1$, $Q_2$, $Q_3$ [kJ/s] & Heat duties of the three vessels & 10.0 & $[0.0,\; 25.0]$ \\
     $F_{10}$ [m$^3$/s] & Fresh feed to the first reactor & 8.3 & $[3.0,\; 16.0]$ \\
-    $F_{20}$ [m$^3$/s] & Fresh feed to the second reactor & 0.5 & $[0.1,\; 3.0]$ \\
-    $\ui{F}{r}$ [m$^3$/s] & Recycle from the separator & 4.0 & $[0.5,\; 10.0]$ \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-Two mechanisms make the plant nonlinear. The first one is the Arrhenius dependence of both reaction rates on the vessel temperatures, and the second one is the relative-volatility flash of the separator, which makes the composition of the recycle stream a nonlinear function of the composition in the separator and closes a nonlinear loop back to the first reactor. As a consequence, the bottoms quality is not monotone in the supplied heat: the yield of B reaches a peak and then decreases again as more of the product is converted into C. A model identified around a single operating point can therefore reproduce only one branch of this behavior, which is the reason for choosing this plant as the benchmark. The plant equations are integrated with the explicit Runge--Kutta solver of SciPy, and the sampling period used for identification and for control is $\Ts = 1\,\text{s}$.
+Two mechanisms make the plant nonlinear. The first one is the Arrhenius dependence of both reaction rates on the vessel temperatures, and the second one is the relative-volatility flash of the separator, which makes the composition of the recycle stream a nonlinear function of the composition in the separator and closes a nonlinear loop back to the first reactor. As a consequence, the bottoms quality is not monotone in the supplied heat: the yield of B reaches a peak and then decreases again as more of the product is converted into C. A model identified around a single operating point can therefore reproduce only one branch of this behavior, which is the reason for choosing this plant as the benchmark. The plant equations are integrated in Python with the explicit Runge--Kutta solver of SciPy, and the sampling period used for identification and for control is $\Ts = 1\,\text{s}$.
 
 \subsection{Identification data}
 
-The excitation is a sequence of $100$ piecewise-constant input steps, each held for $180\,\text{s}$, which gives $18\,000$ samples of input--output data. All six inputs are stepped within the box of Table~\ref{tab:cstr-sep-inputs}, and the levels of the heat duties are paired with the fresh feed flow rate so that the excitation crosses the yield peak of the bottoms quality instead of staying on one of its branches. Over the whole data set the temperatures cover the range from $325\,\text{K}$ to $393\,\text{K}$ and the bottoms quality the range from $0.42$ to $0.77$.
+The excitation is a sequence of $100$ piecewise-constant input steps, each held for $180\,\text{s}$, which gives $18\,000$ samples of input--output data. All four manipulated inputs are stepped within the box of Table~\ref{tab:cstr-sep-inputs}.
+%, and the levels of the heat duties are paired with $F_{10}$ so that the excitation crosses the yield peak of the bottoms quality instead of staying on one of its branches.
+ Over the whole data set the temperatures cover the range from $326\,\text{K}$ to $396\,\text{K}$ and the bottoms quality the range from $0.40$ to $0.76$.
 
-Zero-mean Gaussian measurement noise is added to all four outputs, with a standard deviation equal to $1\%$ of the range of the respective output, that is $0.494\,\text{K}$, $0.508\,\text{K}$, and $0.556\,\text{K}$ for the three temperatures and $0.0033$ for the bottoms quality. The data set is split into the first $12\,960$ samples used for training, the following $2880$ samples used for validation and early stopping, and the remaining $2160$ samples, which are never seen during identification and serve as the test data. Inputs and outputs are standardized to zero mean and unit variance using the statistics of the training split only, and all three models are identified in these coordinates, so that the four outputs contribute to the identification criteria on a comparable scale.
+Zero-mean Gaussian measurement noise is added to all four outputs, with a standard deviation equal to $1\%$ of the range of the respective output, that is $0.487\,\text{K}$, $0.527\,\text{K}$, and $0.610\,\text{K}$ for the three temperatures and $0.0034$ for the bottoms quality. The data set is split into the first $12\,960$ samples used for training, the following $2880$ samples used for validation and early stopping, and the remaining $2160$ samples, which are never seen during identification and serve as the test data. Inputs and outputs are standardized to zero mean and unit variance using the statistics of the training split only, and all three models are identified in these coordinates, to even the different scales of each variable.
 
 \subsection{Subspace model}
 
-The baseline model is identified with the N4SID algorithm~\cite{van2012subspace} as implemented in the SIPPY package~\cite{armenise2018sippy}, with the direct input--output term fixed to zero. The final model has the order $17$ and the past and future horizons equal to $57$, no centering is applied to the data, and no stability constraint is imposed during identification, which results in the spectral radius of $0.9897$. Identifying this model takes $2.6\,\text{s}$ on a Mac mini with an Apple M4 Pro processor.
+The baseline model is identified with the N4SID algorithm~\cite{van2012subspace} as implemented in the SIPPY package~\cite{armenise2018sippy}. This identification process was chosen as the industrial standard. The model order, the past and future horizons, the spectral radius, and the identification time on a Mac mini with an Apple M4 Pro processor are TBA.
+\todo{Replace TBA with the 4×4 N4SID order, past and future horizons, spectral radius, and runtime on the named machine. The six-input values (order 17, horizons 57, spectral radius 0.9897, 2.6 s) must not be copied in.}
 
 \subsection{Koopman models}
 
-Two Koopman models are trained with the loss~\eqref{eq:dk:loss} on the same data. The first one restricts the decoder to a single matrix and thus provides the LTI model required by the standard offset-free Koopman MPC of Sec.~\ref{sec:easy-mpc}. Its lifted dimension is $n_z = 19$ and its encoder is a network with one hidden layer of four GELU units, which gives $666$ trainable parameters in total and the spectral radius of $0.9337$. The second one keeps the nonlinear decoder and is the model used by the proposed scheme. Its lifted dimension is $n_z = 26$, the encoder has the widths $4$--$7$--$14$--$26$ and the decoder the mirrored widths $26$--$14$--$7$--$4$, both with ELU activations, which gives $1884$ trainable parameters and the spectral radius of $0.9622$.
+Two Koopman models are trained with the loss~\eqref{eq:dk:loss} on the same data. The first one restricts the decoder to a single matrix and thus provides the LTI model required by the standard offset-free Koopman MPC of Sec.~\ref{sec:easy-mpc}. The second one keeps the nonlinear decoder and is the model used by the proposed scheme. For each model, the lifted dimension, the network widths, the number of trainable parameters, and the spectral radius are TBA.
 
-Both models are trained with the Adam optimizer in PyTorch~\cite{paszke2019pytorch} through the Neuromancer library~\cite{Neuromancer2023}, on minibatches of $40$ windows of $N_\text{r} = 120$ samples, for at most $4000$ epochs, with early stopping after $300$ epochs without an improvement of the validation loss and a warm-up of $100$ epochs. The learning rate is $9.9 \cdot 10^{-4}$ for the model with the linear decoder and $8.0 \cdot 10^{-4}$ for the model with the nonlinear decoder, and the loss weights $(\ui{w}{y}, \ui{w}{z}, \ui{w}{r})$ of~\eqref{eq:dk:loss} are $(1.14,\, 2.15,\, 4.84)$ and $(17.38,\, 1.59,\, 2.28)$, respectively. Training took $131\,\text{s}$, terminated by early stopping after $2937$ epochs, for the model with the linear decoder, and $239\,\text{s}$ for the model with the nonlinear decoder, on the same Mac mini with an Apple M4 Pro processor. As stated in Sec.~\ref{sec:blockdiag}, all three models are transformed into the real block-diagonal form before they are used in any control problem.
+Both models are trained with the Adam optimizer in PyTorch~\cite{paszke2019pytorch} through the Neuromancer library~\cite{Neuromancer2023}. The minibatch size, the training-window length, the epoch budget, the learning rates, the loss weights of~\eqref{eq:dk:loss}, and the training times on the same Mac mini with an Apple M4 Pro processor are TBA. As stated in Sec.~\ref{sec:blockdiag}, all three models are transformed into the real block-diagonal form before they are used in any control problem.
+\todo{Replace each TBA in this subsection with the 4×4 Koopman configuration: lifted dimensions, widths, parameter counts, spectral radii, minibatch size, window length, epoch budget, learning rates, loss weights, and runtimes on the named machine. Do not reuse the six-input values.}
 
 \subsection{Open-loop accuracy on the test data}
 
@@ -635,16 +639,17 @@ To compare the models on the data that none of them has seen, each model is init
     \toprule
     Model & $T_1$ [K] & $T_2$ [K] & $T_3$ [K] & $x_{\text{B}3}$ [--] & $\Sigma$ MAE [--] \\
     \midrule
-    N4SID, order $17$ & 3.79 & 3.32 & 3.42 & 0.0193 & 1.21 \\
-    Koopman, linear $h$, $n_z = 19$ & 4.41 & 3.93 & 4.10 & 0.0224 & 1.43 \\
-    Koopman, nonlinear $h$, $n_z = 26$ & 0.47 & 0.50 & 0.61 & 0.0034 & 0.19 \\
+    N4SID & TBA & TBA & TBA & TBA & TBA \\
+    Koopman, linear $h$ & TBA & TBA & TBA & TBA & TBA \\
+    Koopman, nonlinear $h$ & TBA & TBA & TBA & TBA & TBA \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-The Koopman model with the nonlinear decoder is significantly more accurate than both linear alternatives, and it reduces the sum of the mean absolute errors by approximately $85\%$ with respect to the N4SID model. Its prediction error is of the same magnitude as the standard deviation of the measurement noise on all four outputs, which means that the model captures the plant dynamics down to the resolution of the data. As can be seen in Fig.~\ref{fig:ident-test}, the two linear models follow the direction of every response but consistently miss the steady-state values reached after a step, and the deviation is largest for the bottoms quality, which is exactly the output whose dependence on the inputs is not monotone. The nonlinear decoder, in contrast, tracks both the transients and the steady states.
+The numerical comparison on this test window is TBA.
+\todo{Fill Table~\ref{tab:ident-accuracy} from the 4×4 test split and restore the comparison with the N4SID model. Fig.~\ref{fig:ident-test} is still the six-input test and has to be redrawn for the four manipulated inputs. Do not reuse the six-input errors or the statements that the nonlinear decoder reduces the summed error by about 85\% and that the linear decoder is about 18\% worse.}
 
-The Koopman model with the linear decoder is not better than the subspace model in open loop; its error is approximately $18\%$ higher than that of the N4SID model, even though its lifted dimension exceeds the order of the subspace model. Restricting the decoder to a matrix removes most of the benefit of the lifting, since the lifted state then has to be a linear image of the outputs and the whole model remains an input--output map of an LTI system, for which subspace identification is a mature and well-tuned tool. This model is nevertheless retained in the comparison, because it is the model that the standard offset-free Koopman MPC formulation of Sec.~\ref{sec:easy-mpc} requires, and it therefore isolates the effect of the nonlinear output mapping proposed in Sec.~\ref{sec:method:ident} from the effect of the lifting itself.
+The Koopman model with the linear decoder is retained in the comparison, because it is the model that the standard offset-free Koopman MPC formulation of Sec.~\ref{sec:easy-mpc} requires. Restricting the decoder to a matrix leaves an input--output map of an LTI system, for which subspace identification is a mature and well-tuned tool, and the pair therefore isolates the effect of the nonlinear output mapping proposed in Sec.~\ref{sec:method:ident} from the effect of the lifting itself.
 }
 
 \section{Control setup}
@@ -653,19 +658,19 @@ The Koopman model with the linear decoder is not better than the subspace model 
 {\generatedstyle
 In this section, we describe the closed-loop scenario on which the models of Sec.~\ref{sec:ident} are compared, together with the tuning, the observer, and the benchmark against which every controller is measured. The scenario, the weights, the constraints, and the disturbance sequence are identical in all runs reported in Sec.~\ref{sec:Results}, so that the differences between the controllers are attributable to the prediction model and to the way the output mapping enters the control problem, and not to the way the loop was set up.
 
-All four measured outputs $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$ are controlled, and all six manipulated variables of Table~\ref{tab:cstr-sep-inputs} are available to the controller, so the plant has two more inputs than outputs and the remaining degrees of freedom have to be resolved by the input target of the target optimization. The sampling period is the one used for identification, $\Ts = 1\,\text{s}$, and the prediction horizon is $N = 60$ samples. The input constraints~\eqref{eq:cs:mpc:u} are the identification box of Table~\ref{tab:cstr-sep-inputs}, so that the controller never drives the plant outside the region from which the models were identified. The output constraints~\eqref{eq:cs:mpc:ycon} are an operating window rather than equipment limits, namely $310\,\text{K} \leq T_i \leq 380\,\text{K}$ for the three vessel temperatures and $0.35 \leq x_{\text{B}3} \leq 0.85$ for the bottoms quality. All signals, weights, and bounds are expressed in the standardized coordinates of Sec.~\ref{sec:ident}, so that the three temperatures and the mass fraction contribute to the objective function on a comparable scale.
+All four measured outputs $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$ are controlled, and the four manipulated variables of Table~\ref{tab:cstr-sep-inputs} are available to the controller, so the plant is square and the output specifications determine the steady-state target. The sampling period is the one used for identification, $\Ts = 1\,\text{s}$, and the prediction horizon is $N = 60$ samples. The input constraints~\eqref{eq:cs:mpc:u} are the identification box of Table~\ref{tab:cstr-sep-inputs}, so that the controller never drives the plant outside the region from which the models were identified. The output constraints~\eqref{eq:cs:mpc:ycon} are an operating window rather than equipment limits, namely $310\,\text{K} \leq T_i \leq 380\,\text{K}$ for the three vessel temperatures and $0.35 \leq x_{\text{B}3} \leq 0.85$ for the bottoms quality. All signals, weights, and bounds are expressed in the standardized coordinates of Sec.~\ref{sec:ident}, so that the three temperatures and the mass fraction contribute to the objective function on a comparable scale.
 
 \subsection{Grade campaign and reference changes}
 
 The scenario is a grade campaign on the bottoms quality, which is the specification that the separator has to deliver. The plant starts at the nominal steady state of~\cite{li2019dynamic} and the setpoint is held there for the first $350\,\text{s}$, so that the observer of every controller converges from its initialization before the first reference change. At $t = 350\,\text{s}$ the campaign switches to a premium grade, in which the mass fraction of the product B leaving the separator rises from $0.637$ to $0.702$, and at $t = 1000\,\text{s}$ the plant returns to the nominal grade. The whole simulation lasts $1500\,\text{s}$.
 
-Both grades are steady states of the plant, obtained by simulating it to steady state at the nominal input of Table~\ref{tab:cstr-sep-inputs} and at the premium input $[8.0,\, 8.0,\, 8.0,\, 11.0,\, 0.8,\, 3.0]$, and both are reachable inside the identification box, so that no reference change asks for an operating point that the models were never shown. The setpoints of the three temperatures are the corresponding steady-state values, $336.7$, $344.1$, and $346.2\,\text{K}$ at the nominal grade and $331.5$, $338.6$, and $340.1\,\text{K}$ at the premium grade, which means that the controller has to move the whole operating point and not the quality alone. The premium grade is reached with less heat and a larger fresh feed, because the yield of B is not monotone in the supplied heat, and the three temperatures consequently fall by approximately $6\,\text{K}$ instead of rising. This is the direction in which a model identified around a single operating point is most likely to fail, and the grade change is chosen for exactly this reason.
+Both grades are steady states of the plant, obtained by simulating it to steady state at the nominal input of Table~\ref{tab:cstr-sep-inputs} and at the premium input $[6.619,\, 8.544,\, 8.499,\, 11.224]$, and both are reachable inside the identification box, so that no reference change asks for an operating point that the models were never shown. The setpoints of the three temperatures are the corresponding steady-state values, $336.7$, $344.1$, and $346.2\,\text{K}$ at the nominal grade and $331.5$, $338.6$, and $340.1\,\text{K}$ at the premium grade, which means that the controller has to move the whole operating point and not the quality alone. The premium grade is reached with less heat and a larger fresh feed, because the yield of B is not monotone in the supplied heat, and the three temperatures consequently fall by approximately $6\,\text{K}$ instead of rising. This is the direction in which a model identified around a single operating point is most likely to fail, and the grade change is chosen for exactly this reason.
 
 \subsection{Unmeasured feed disturbances}
 
-Two unmeasured feed upsets are applied to the plant while the premium grade is held. At $t = 600\,\text{s}$ the temperature of the fresh feed drops from $313\,\text{K}$ to $310\,\text{K}$, which represents a drift of the feed preheater or of the utility that supplies it. At $t = 850\,\text{s}$ the fresh feed becomes leaner, with the mass fraction of the reactant A falling from $1.00$ to $0.97$, which represents a switch of the feed tank or a carry-over of an inert. Both upsets act on the plant only, and the encoder, the observer, the target optimizer, and the MPC problem are left unchanged, so that the four controllers built on an identified model can reject them only through the output disturbance estimate $\hat{d}(t)$.
+Two unmeasured feed upsets are applied to the plant while the premium grade is held. At $t = 600\,\text{s}$ the temperature of the fresh feed drops from $313\,\text{K}$ to $311\,\text{K}$, which represents a drift of the feed preheater or of the utility that supplies it. At $t = 850\,\text{s}$ the fresh feed becomes leaner, with the mass fraction of the reactant A falling from $1.00$ to $0.98$, which represents a switch of the feed tank or a carry-over of an inert. Both upsets act on the plant only, and the encoder, the observer, the target optimizer, and the MPC problem are left unchanged, so that the four controllers built on an identified model can reject them only through the output disturbance estimate $\hat{d}(t)$.
 
-The magnitudes are deliberately modest, because both grades have to remain reachable inside the identification box after the upsets. A drop of $10\,\text{K}$ in the feed temperature at the premium throughput would require approximately $40\,\text{kJ/s}$ of additional heat in the first vessel, which exceeds the $25\,\text{kJ/s}$ available there, and would leave the requested grade unreachable for every controller including the benchmark. The measurements are noise-free in all closed-loop runs, although the models were identified from noisy data as described in Sec.~\ref{sec:ident}. This is a deliberate choice, because the differences between the compared controllers are of the same order as the spread that a single noise realization introduces, and reporting one realization would attribute to the formulation what belongs to the noise.
+The magnitudes are deliberately modest, because both grades have to remain reachable inside the identification box after the upsets. The measurements are noise-free in all closed-loop runs, although the models were identified from noisy data as described in Sec.~\ref{sec:ident}. This is a deliberate choice, because the differences between the compared controllers are of the same order as the spread that a single noise realization introduces, and reporting one realization would attribute to the formulation what belongs to the noise.
 
 \subsection{Tuning}
 
@@ -674,11 +679,11 @@ The target optimization~\eqref{eq:cs:target} uses $\ui{Q}{y}^\text{t} = \diag([1
   \label{eq:cl:weights}
   \begin{gathered}
     \ui{Q}{y} = \diag([2,\, 2,\, 2,\, 15]), \quad
-    Q_{\Delta\text{u}} = \diag([0.5,\, 0.5,\, 0.5,\, 1,\, 1,\, 1]), \\
-    \ui{Q}{u} = \diag([0.2,\, 0.2,\, 0.2,\, 0.5,\, 0.5,\, 0.5]),
+    Q_{\Delta\text{u}} = \diag([0.5,\, 0.5,\, 0.5,\, 1]), \\
+    \ui{Q}{u} = \diag([0.2,\, 0.2,\, 0.2,\, 0.5]),
   \end{gathered}
 \end{equation}
-where the entries of $\ui{Q}{y}$ follow the order $T_1$, $T_2$, $T_3$, $x_{\text{B}3}$ of the outputs and the entries of $Q_{\Delta\text{u}}$ and $\ui{Q}{u}$ the order $Q_1$, $Q_2$, $Q_3$, $F_{10}$, $F_{20}$, $\ui{F}{r}$ of the inputs. The bottoms quality again carries the largest output weight, because it is the variable that the campaign has to meet, while the temperatures are regulated but act mainly as operating limits. The input target towards which $\ui{Q}{u}$ pulls is the nominal utility and throughput setting of Table~\ref{tab:cstr-sep-inputs}, held constant over the whole campaign, so that this term expresses the economic preference of the plant rather than a tracking requirement.
+where the entries of $\ui{Q}{y}$ follow the order $T_1$, $T_2$, $T_3$, $x_{\text{B}3}$ of the outputs and the entries of $Q_{\Delta\text{u}}$ and $\ui{Q}{u}$ the order $Q_1$, $Q_2$, $Q_3$, $F_{10}$ of the inputs. The bottoms quality again carries the largest output weight, because it is the variable that the campaign has to meet, while the temperatures are regulated but act mainly as operating limits. The input target towards which $\ui{Q}{u}$ pulls is the nominal utility and throughput setting of Table~\ref{tab:cstr-sep-inputs}, held constant over the whole campaign, so that this term expresses the economic preference of the plant rather than a tracking requirement.
 
 Three tunings are reported. The first one is the original setup~\eqref{eq:cl:weights}. In the second one, $\ui{Q}{y}$ is multiplied by two and everything else is left unchanged, and in the third one, $\ui{Q}{y}$ is divided by two and everything else is left unchanged, so that the relative weight of the outputs against the inputs is moved by a factor of two in each direction. The purpose of this sweep is not to search for a good controller but to test the mechanism of the proposed formulation. The proposed scheme differs from the standard one only in the way the output mapping is used, in the objective function through~\eqref{eq:cs:Qz} and in the output constraints through~\eqref{eq:cs:mpc:y}. Its advantage is therefore expected to grow with the weight that the objective function places on the outputs, and to shrink when $\ui{Q}{y}$ is reduced and the outputs become a secondary concern.
 
@@ -709,7 +714,7 @@ In this section, we present and analyze the closed-loop results obtained in the 
 
 \subsection{The effect of block-diagonal transformation}
 
-After this transformation we are able to enhace the performance in optimization as can be seen in Table~\ref{tab:block-diagonal}. This table is done using the formulation of Koopman MPC which can be seen in Sec.~\ref{sec:easy-mpc}. The table shows the decrease in a computational times. Also with this formulation we are able to obtain optimal solution \(100\%\) time during simulation. Contrary, the full Koopman MPC formulation is able to obtain optimal solution only \(26.7\%\) of the time with the rest of the time giving warning, that the solution is suboptimal. We can see also increase in a control performance, which is measured by the objective function value, which is in optimal case arounf \(6\%\) lower. Also the settling time for both levels is lower. 
+After this transformation we are able to enhace the performance in optimization as can be seen in Table~\ref{tab:block-diagonal}. This table is done using the formulation of Koopman MPC which can be seen in Sec.~\ref{sec:easy-mpc}. The table shows the decrease in a computational times. Also with this formulation we are able to obtain optimal solution TBA of the time during simulation. Contrary, the full Koopman MPC formulation is able to obtain optimal solution only TBA of the time with the rest of the time giving warning, that the solution is suboptimal. We can see also increase in a control performance, which is measured by the objective function value, which is in optimal case arounf TBA lower. Also the settling time for both levels is lower. 
 \begin{table}[h]
   \centering
   \caption{Comparison of structure of problem to solver time and control performance.}
@@ -718,11 +723,12 @@ After this transformation we are able to enhace the performance in optimization 
       \toprule
         Structure & Time TE/MPC & Optimal? \([\%]\) & OBJ & ST \(h_1\) & ST \(h_2\) \\
         \midrule
-        Full          & 0.2392 / 2.3884 & 26.7 & 100.0 & 43 & 48 \\
-        Block Diagonal & 0.2191 / 1.6204 & 100.0 & 94.1 & 25 & 31 \\
+        Full          & TBA & TBA & TBA & TBA & TBA \\
+        Block Diagonal & TBA & TBA & TBA & TBA & TBA \\
         \bottomrule
   \end{tabular}
 \end{table}
+\todo{Fill Table~\ref{tab:block-diagonal} from the 4×4 runs: solver times, the fraction of optimal solutions, the objective, and both settling times. The paragraph above still marks those quantities TBA, and the six-input entries must not be copied back.}
 
 
 The second option how to obtain the block diagonal structure is to learn the Koopman operator directly in the block diagonal form. This can be done by limiting the number of learnable parameters in a Koopman matrix during training to those that are in the block diagonal form. This also speeds the training as less parameters are learned.
@@ -830,12 +836,12 @@ As can be seen in Fig.~\ref{fig:cl-trajectories}, every plotted controller track
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/cl_inputs.pdf}
-  \caption{\textgenerated{\genopen Closed-loop manipulated variables of the grade campaign in the original setup. The panels are $Q_1$, $Q_2$, $Q_3$, $F_{10}$, $F_{20}$, and $\ui{F}{r}$. The solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}, and the grey bands are the input bounds of Table~\ref{tab:cstr-sep-inputs}. \genclose}}
+  \caption{\textgenerated{\genopen Closed-loop manipulated variables of the grade campaign in the original setup. The panels are $Q_1$, $Q_2$, $Q_3$, and $F_{10}$. The solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}, and the grey bands are the input bounds of Table~\ref{tab:cstr-sep-inputs}. \genclose}}
   \label{fig:cl-inputs}
 \end{figure}
 
 \genopen
-As can be seen in Fig.~\ref{fig:cl-inputs}, the subspace controller departs more from the nonlinear benchmark on the manipulated variables, in particular on $F_{20}$ and $\ui{F}{r}$. Both proposed linearizations stay close to the nonlinear benchmark, closer than the MPC that uses the Koopman model with the linear decoder, and none of the plotted inputs leaves the identification box of Table~\ref{tab:cstr-sep-inputs}.
+As can be seen in Fig.~\ref{fig:cl-inputs}, the subspace controller departs more from the nonlinear benchmark on the manipulated variables. Both proposed linearizations stay close to the nonlinear benchmark, closer than the MPC that uses the Koopman model with the linear decoder, and none of the plotted inputs leaves the identification box of Table~\ref{tab:cstr-sep-inputs}.
 \genclose
 
 \genopen
@@ -860,11 +866,11 @@ Fig.~\ref{fig:cl-disturbances} shows the four components of the output disturban
     \toprule
     Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
     \midrule
-    Nonlinear MPC, exact model & 123.8 & 11.3 & 10.5 & 145.6 & 100.0 \\
-    N4SID, order $17$ & 140.8 & 19.6 & 30.0 & 190.4 & 130.8 \\
-    Koopman, linear $h$, $n_z = 19$ & 149.5 & 13.3 & 12.0 & 174.8 & 120.0 \\
-    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 134.6 & 15.0 & 12.8 & 162.3 & 111.5 \\
-    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 134.9 & 13.0 & 13.0 & 160.9 & 110.5 \\
+    Nonlinear MPC, exact model & TBA & TBA & TBA & TBA & TBA \\
+    N4SID & TBA & TBA & TBA & TBA & TBA \\
+    Koopman, linear $h$ & TBA & TBA & TBA & TBA & TBA \\
+    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & TBA & TBA & TBA & TBA & TBA \\
+    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & TBA & TBA & TBA & TBA & TBA \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -879,11 +885,11 @@ Fig.~\ref{fig:cl-disturbances} shows the four components of the output disturban
     \toprule
     Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
     \midrule
-    Nonlinear MPC, exact model & 234.5 & 16.0 & 14.9 & 265.5 & 100.0 \\
-    N4SID, order $17$ & 257.8 & 28.4 & 45.3 & 331.6 & 124.9 \\
-    Koopman, linear $h$, $n_z = 19$ & 281.4 & 18.3 & 16.1 & 315.8 & 118.9 \\
-    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 256.8 & 25.2 & 23.8 & 305.8 & 115.1 \\
-    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 257.8 & 20.9 & 25.7 & 304.4 & 114.6 \\
+    Nonlinear MPC, exact model & TBA & TBA & TBA & TBA & TBA \\
+    N4SID & TBA & TBA & TBA & TBA & TBA \\
+    Koopman, linear $h$ & TBA & TBA & TBA & TBA & TBA \\
+    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & TBA & TBA & TBA & TBA & TBA \\
+    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & TBA & TBA & TBA & TBA & TBA \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -898,18 +904,18 @@ Fig.~\ref{fig:cl-disturbances} shows the four components of the output disturban
     \toprule
     Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
     \midrule
-    Nonlinear MPC, exact model & 67.5 & 7.2 & 6.9 & 81.6 & 100.0 \\
-    N4SID, order $17$ & 80.2 & 14.2 & 19.8 & 114.2 & 139.9 \\
-    Koopman, linear $h$, $n_z = 19$ & 81.4 & 8.7 & 8.1 & 98.3 & 120.4 \\
-    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 72.0 & 9.2 & 7.2 & 88.4 & 108.2 \\
-    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 73.0 & 8.8 & 7.7 & 89.4 & 109.5 \\
+    Nonlinear MPC, exact model & TBA & TBA & TBA & TBA & TBA \\
+    N4SID & TBA & TBA & TBA & TBA & TBA \\
+    Koopman, linear $h$ & TBA & TBA & TBA & TBA & TBA \\
+    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & TBA & TBA & TBA & TBA & TBA \\
+    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & TBA & TBA & TBA & TBA & TBA \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-Two comparisons are drawn from the tables. The first one is the comparison of each controller with the nonlinear benchmark, which quantifies how much of the achievable performance is lost when the plant equations are replaced by an identified model. The second one is the comparison of the proposed formulation with the standard offset-free Koopman MPC of Sec.~\ref{sec:easy-mpc}, which isolates the effect of the nonlinear output mapping, since the two controllers share the scenario, the tuning, the constraints, and the disturbance sequence, and differ only in the model and in the way the outputs are recovered from the lifted state. The subspace baseline is reported as well, because it is the model that would be identified first for a plant of this kind and, as Table~\ref{tab:ident-accuracy} shows, it is the more accurate of the two linear models in open loop.
+Two comparisons are drawn from the tables. The first one is the comparison of each controller with the nonlinear benchmark, which quantifies how much of the achievable performance is lost when the plant equations are replaced by an identified model. The second one is the comparison of the proposed formulation with the standard offset-free Koopman MPC of Sec.~\ref{sec:easy-mpc}, which isolates the effect of the nonlinear output mapping, since the two controllers share the scenario, the tuning, the constraints, and the disturbance sequence, and differ only in the model and in the way the outputs are recovered from the lifted state. The subspace baseline is reported as well, because it is the model that would be identified first for a plant of this kind.
 
-\todo{state the objective of every controller relative to the benchmark for the original setup, the gap between the proposed formulation and the standard Koopman MPC, and the position of the subspace baseline}
+\todo{Tables~\ref{tab:cl-original}--\ref{tab:cl-qy-half} are TBA because they still held the six-input campaign. Fill every cell from the 4×4 runs, then state each controller relative to the benchmark, the gap between the proposed formulation and the standard Koopman MPC, and the position of the subspace baseline. Figs.~\ref{fig:cl-trajectories}--\ref{fig:cl-disturbances} and the sentences that quote a temperature excursion of about 1 K are still the six-input campaign and have to be replaced with the same runs.}
 
 The three tunings answer whether the improvement is attributable to the output mapping. The proposed formulation replaces the linear recovery $y_k = C z_k$ by the first-order expansion of the decoder, both in the weighting matrix~\eqref{eq:cs:Qz} and in the output constraints~\eqref{eq:cs:mpc:y}, so that its advantage acts on the part of the objective function that involves the outputs. The larger the share of $\ui{J}{y}$ in the total, the larger the advantage should be, and the advantage should shrink when $\ui{Q}{y}$ is halved and the accuracy of the predicted outputs influences the computed input less.
 
