@@ -187,7 +187,7 @@ def closed_loop_taylor(
 
     y_start = np.asarray(loaded["y_start"]).reshape(1, -1)
     reference = np.asarray(loaded["reference"], dtype=float)
-    u_sp = np.asarray(loaded["reference_u"], dtype=float).reshape(-1)
+    reference_u = np.asarray(loaded["reference_u"], dtype=float)
     u_previous = np.asarray(loaded["u_previous"], dtype=float).reshape(-1)
     scaler = session.scaler
 
@@ -213,7 +213,7 @@ def closed_loop_taylor(
         A, B, loaded["Qy"], loaded["Qu_te"], Bd, Cd
     )
     z_s, y_s, u_s = target_estimation.get_target(
-        z_est_[:, nz:], reference[:, 0], u_sp, y_lp, z_est_[0, :nz], J
+        z_est_[:, nz:], reference[:, 0], reference_u[:, 0], y_lp, z_est_[0, :nz], J
     )
     if mode == "t2d2":
         J = jacobian_at(z_s)
@@ -271,7 +271,7 @@ def closed_loop_taylor(
             zs_sim[:, k], _, us_sim[:, k] = target_estimation.get_target(
                 z_sim[nz:, k],
                 reference[:, k],
-                u_sp,
+                reference_u[:, k],
                 y_lp,
                 zs_sim[:, idx_prev],
                 J,
@@ -283,7 +283,7 @@ def closed_loop_taylor(
             zs_sim[:, k], _, us_sim[:, k] = target_estimation.get_target(
                 z_sim[nz:, k],
                 reference[:, k],
-                u_sp,
+                reference_u[:, k],
                 y_lp,
                 z_sim[:nz, k],
                 J,

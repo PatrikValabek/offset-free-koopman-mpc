@@ -218,7 +218,7 @@ def run_linear_c(controller: str, loaded: dict):
 
     y_start = np.asarray(loaded["y_start"]).reshape(1, -1)
     reference = np.asarray(loaded["reference"], dtype=float)
-    u_sp = np.asarray(loaded["reference_u"], dtype=float).reshape(-1)
+    reference_u = np.asarray(loaded["reference_u"], dtype=float)
     u_previous = np.asarray(loaded["u_previous"], dtype=float).reshape(-1)
     qd_scale = 10.0 if controller == "N4SID" else 1.0
 
@@ -238,7 +238,7 @@ def run_linear_c(controller: str, loaded: dict):
     C_ = np.hstack([C, Cd])
     kf = helper.KF(A_, B_, C_, z_est_, P0, Q, R)
     target = helper.TargetEstimation(A, B, C, loaded["Qy"], loaded["Qu_te"], Bd, Cd)
-    z_s, y_s, u_s = target.get_target(z_est_[:, nz:], reference[:, 0], u_sp)
+    z_s, y_s, u_s = target.get_target(z_est_[:, nz:], reference[:, 0], reference_u[:, 0])
     Qx = C.T @ loaded["Qy"] @ C + 2e-8 * np.eye(nz)
     mpc = helper.MPC(A, B, C, loaded["Qy"], loaded["Qu"], loaded["Qdu"], Bd, Cd)
     mpc.build_problem(Qx)
@@ -274,7 +274,7 @@ def run_linear_c(controller: str, loaded: dict):
             d = dist_by_k[k]
             session.apply_disturbance(d["attr"], d["value"])
         (zs_sim[:, k], ys_sim[:, k], us_sim[:, k]), te_wall[k], _ = _time_solve(
-            lambda: target.get_target(z_sim[nz:, k], reference[:, k], u_sp),
+            lambda: target.get_target(z_sim[nz:, k], reference[:, k], reference_u[:, k]),
             problem=target.te,
         )
         u_opt, mpc_wall[k], mpc_solver[k] = _time_solve(
@@ -339,7 +339,7 @@ def run_taylor(controller: str, loaded: dict):
     scaler, scalerU = session.scaler, session.scalerU
     y_start = np.asarray(loaded["y_start"]).reshape(1, -1)
     reference = np.asarray(loaded["reference"], dtype=float)
-    u_sp = np.asarray(loaded["reference_u"], dtype=float).reshape(-1)
+    reference_u = np.asarray(loaded["reference_u"], dtype=float)
     u_previous = np.asarray(loaded["u_previous"], dtype=float).reshape(-1)
 
     z_est_ = np.hstack(((inv(T_real) @ get_x(y_start)).T, np.zeros((1, nd))))
@@ -360,7 +360,9 @@ def run_taylor(controller: str, loaded: dict):
     J = jacobian_at(z_est_[0, :nz])
     y_lp = get_y(T_real @ z_est_[0, :nz])
     target = helper.TaylorTargetEstimation(A, B, loaded["Qy"], loaded["Qu_te"], Bd, Cd)
-    z_s, y_s, u_s = target.get_target(z_est_[:, nz:], reference[:, 0], u_sp, y_lp, z_est_[0, :nz], J)
+    z_s, y_s, u_s = target.get_target(
+        z_est_[:, nz:], reference[:, 0], reference_u[:, 0], y_lp, z_est_[0, :nz], J
+    )
     mode = controller.lower()
     if mode == "t2d2":
         J = jacobian_at(z_s)
@@ -420,7 +422,7 @@ def run_taylor(controller: str, loaded: dict):
             z_lin = z_sim[:nz, k]
         (zs_sim[:, k], ys_sim[:, k], us_sim[:, k]), te_wall[k], _ = _time_solve(
             lambda: target.get_target(
-                z_sim[nz:, k], reference[:, k], u_sp, y_lp, z_lin, J
+                z_sim[nz:, k], reference[:, k], reference_u[:, k], y_lp, z_lin, J
             ),
             problem=target.te,
         )
@@ -476,7 +478,7 @@ def _pack_linear_result(
     ys_sim_ns = scaler.inverse_transform(ys_sim.T).T
     us_sim_ns = scalerU.inverse_transform(us_sim.T).T
     y_hat_ns = scaler.inverse_transform(y_hat.T).T
-    u_sp = np.asarray(loaded["reference_u"], dtype=float).reshape(-1)
+    reference_u_ns = np.asarray(loaded["reference_u_ns"], dtype=float)
     nz = z_sim.shape[0] - y_sim.shape[0]
     traj = {
         "y_true_ns": y_true_ns,
@@ -486,7 +488,7 @@ def _pack_linear_result(
         "ys_sim_ns": ys_sim_ns,
         "u_sim_ns": u_sim_ns,
         "us_sim_ns": us_sim_ns,
-        "u_sp_ns": scalerU.inverse_transform(u_sp.reshape(1, -1))[0],
+        "u_sp_ns": reference_u_ns,
         "u_min_ns": np.asarray(loaded["u_min_ns"], dtype=float),
         "u_max_ns": np.asarray(loaded["u_max_ns"], dtype=float),
         "d_est": z_sim[nz:],
@@ -547,7 +549,7 @@ def run_nmpc(loaded: dict):
     dist_by_k = {int(d["k"]): d for d in loaded["disturbances"]}
     noise_sigma = np.asarray(loaded["noise_sigma"], dtype=float)
     reference_ns = np.asarray(loaded["reference_ns"], dtype=float)
-    u_sp_ns = np.asarray(loaded["reference_u_ns"], dtype=float).reshape(-1)
+    u_sp_ns = np.asarray(loaded["reference_u_ns"], dtype=float)
     rng = np.random.default_rng(0)
     u_prev_ns = u0.copy()
     mpc_wall = np.zeros(sim_time)
@@ -560,7 +562,7 @@ def run_nmpc(loaded: dict):
             session.apply_disturbance(d["attr"], d["value"])
             feed.set(d["attr"], d["value"])
         (xs_sim[:, k], ys_sim[:, k], us_sim[:, k]), te_wall[k], _ = _time_solve(
-            lambda: target.get_target(reference_ns[:, k], u_sp_ns, x_guess=ekf.x, u_guess=u_prev_ns)
+            lambda: target.get_target(reference_ns[:, k], u_sp_ns[:, k], x_guess=ekf.x, u_guess=u_prev_ns)
         )
         current_ref.set(ys_sim[:, k], us_sim[:, k])
         t0 = time.perf_counter()
