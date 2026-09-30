@@ -221,3 +221,65 @@ class CSTRSeparator(Model):
 
         index = min(index, self.u_data.shape[0] - 1)
         return self.u_data[index, :]
+
+
+class CSTRSeparator4x4(CSTRSeparator):
+    """
+    Square 4x4 variant of :class:`CSTRSeparator`: only the heaters and the
+    fresh feed to vessel 1 are manipulated. The recycle flow ``Fr`` and the
+    fresh feed to vessel 2 ``F20`` are held fixed at their Li & Swartz
+    nominal values, removing two inputs that are rarely manipulated in
+    practice (recycle is often set by level control; F20 is a secondary
+    feed).
+
+    States (9): unchanged, see :class:`CSTRSeparator`.
+
+    Inputs (4): [Q1, Q2, Q3, F10]
+        - Q1, Q2, Q3: heat inputs [kJ/s]
+        - F10: feed to vessel 1 [m^3/s]
+
+    Fixed (not manipulated):
+        - F20 = 0.5 m^3/s (feed to vessel 2)
+        - Fr = 4.0 m^3/s (recycle from separator to vessel 1)
+
+    Typical measurements: [T1, T2, T3, xB3] (unchanged).
+    """
+
+    def __init__(self, F20_fixed: float = 0.5, Fr_fixed: float = 4.0, **kwargs):
+        super().__init__(**kwargs)
+        self.model_name = "CSTR-Separator 4x4 (Li & Swartz 2019, fixed F20/Fr)"
+
+        self.F20_fixed = F20_fixed
+        self.Fr_fixed = Fr_fixed
+
+        # Nominal plant input [Q1, Q2, Q3, F10]
+        self.u_nom = np.array([10.0, 10.0, 10.0, 8.3], dtype=float)
+        # Identification box for the four manipulated plant inputs.
+        self.mv_constraints = np.array(
+            [
+                [0.0, 25.0],  # Q1 [kJ/s]
+                [0.0, 25.0],  # Q2 [kJ/s]
+                [0.0, 25.0],  # Q3 [kJ/s]
+                [3.0, 16.0],  # F10 [m^3/s]
+            ],
+            dtype=float,
+        )
+        self.u_names = ["Q1", "Q2", "Q3", "F10"]
+
+    def get_input(self, t: float) -> np.ndarray:
+        """
+        Return the full 6-vector [Q1, Q2, Q3, F10, F20, Fr] at time t, built
+        from the 4-column ``u_data`` (manipulated inputs) plus the fixed
+        F20 / Fr.
+        """
+        if t % self.Ts == 0 and t != 0:
+            index = int(t // self.Ts) - 1
+        else:
+            index = int(t // self.Ts)
+
+        index = min(index, self.u_data.shape[0] - 1)
+        u4 = self.u_data[index, :]
+        return np.array(
+            [u4[0], u4[1], u4[2], u4[3], self.F20_fixed, self.Fr_fixed],
+            dtype=float,
+        )
