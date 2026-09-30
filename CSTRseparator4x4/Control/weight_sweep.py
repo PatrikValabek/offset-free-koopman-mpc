@@ -6,8 +6,8 @@ separate 3-process pool. Both pools use spawn so Gurobi / IPOPT objects are
 never forked or shared. Each run logs the closed-loop objective, timings, and
 the trajectories that the notebooks plot.
 
-Closed-loop HPO baselines (original weights): CT trial 44, T2D2/T3D3 trial 43,
-N4SID trial 91 (not the SIPPY OF-minimizer), NMPC from NMPC.ipynb.
+Closed-loop HPO baselines (original weights): CT trial 871, T2D2/T3D3 trial 256,
+N4SID trial 117 (SIPPY OF-minimizer), NMPC from NMPC.ipynb.
 """
 
 from __future__ import annotations
@@ -39,15 +39,15 @@ DATA_DIR = HERE.parent / "data"
 SRC = REPO_ROOT / "src"
 
 NOTEBOOK_OF = {
-    "N4SID": 156.59778727537304,
-    "CT": 141.70891965218857,
-    "T2D2": 120.98547667418424,
-    "T3D3": 118.89174838889856,
+    "N4SID": 139.4097727934089,
+    "CT": 125.77015886572708,
+    "T2D2": 111.49519271514686,
+    "T3D3": 112.24386995813704,
     "NMPC": 107.07567270237818,
 }
 LINEAR_CONTROLLERS = ("N4SID", "CT", "T2D2", "T3D3")
 SETUP_NAMES = ("original", "qy_x10", "qy_x5", "qy_x2", "qy_x0.5", "qu_x10", "qu_x5")
-TAYLOR_PARAMS = {"encoder_depth": 1, "width_mult": 1.0, "nonlin": "elu"}
+TAYLOR_PARAMS = {"encoder_depth": 1, "width_mult": 0.5, "nonlin": "elu"}
 
 
 def _ensure_paths():

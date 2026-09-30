@@ -436,7 +436,7 @@ if __name__ == "__main__":
         params = {
             "nz": int(A.shape[0]),
             "encoder_depth": 1,
-            "width_mult": 1.0,
+            "width_mult": 0.5,
             "nonlin": "elu",
         }
     params["nz"] = int(A.shape[0])
