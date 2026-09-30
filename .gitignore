@@ -2,9 +2,9 @@
 # Ignore trained artefacts in the repo-root data folder, but keep the ident dataset.
 /data/*
 !/data/cstr_separator_ident.npz
-# Document figures
-document/figures/*.pdf
-**/figures/**/*.pdf
+# Generated control figures (PDFs only; document/figures PDFs are tracked)
+/figures/*.pdf
+/figures/**/*.pdf
 old/
 # Byte-compiled / optimized / DLL files
 __pycache__/
