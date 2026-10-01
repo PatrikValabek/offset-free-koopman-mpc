@@ -1,0 +1,9 @@
+{
+  "controller": "T2D2",
+  "setup_name": "qy_x0.5",
+  "job_id": "T2D2_qy_x0.5_run",
+  "pid": 87647,
+  "error": "RuntimeError: Solver did not return an optimal solution",
+  "traceback": "Traceback (most recent call last):\n  File \"/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRseparator4x4/Control/weight_sweep.py\", line 655, in worker\n    elif controller in (\"T2D2\", \"T3D3\"):\n                                         \n  File \"/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRseparator4x4/Control/weight_sweep.py\", line 442, in run_taylor\n    us_k = us_sim[:, k]\n                        \n  File \"/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRseparator4x4/Control/weight_sweep.py\", line 106, in _time_solve\n    out = fn()\n          ^^^^\n  File \"/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/CSTRseparator4x4/Control/weight_sweep.py\", line 443, in <lambda>\n    u_opt, mpc_wall[k], mpc_solver[k] = _time_solve(\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/src/helper/control.py\", line 875, in get_u_optimal\n    raise RuntimeError(\"Solver did not return an optimal solution\")\nRuntimeError: Solver did not return an optimal solution\n",
+  "wall_s": 272.0778906249907
+}

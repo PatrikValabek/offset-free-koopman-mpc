@@ -1,14 +1,14 @@
 # Fdb version 4
-["bibtex main"] 0 "main.aux" "main.bbl" "main" 0 -1
+["bibtex main"] 1790773529 "main.aux" "main.bbl" "main" 1790773531 0
   "./bibfile.bib" 1789556293 59562 6fc98d0261859be338273c6737b7d6d3 ""
   "/usr/local/texlive/2023/texmf-dist/bibtex/bst/elsarticle/elsarticle-harv.bst" 1606256092 30002 8c0c5833f37bea3ec214cf315a72975d ""
-  "main.aux" 1790758292 24488 658b6c655b905b518a3fa6b469e3edbb "pdflatex"
+  "main.aux" 1790773530 24488 9fb8792d0822c314c6eb90138cb2191c "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1790758291 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" "main.pdf" "main" 1790758293 2
-  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" 1790758291 83977 4a3dd02b8e5d1106745d82b04951cce3 ""
+["pdflatex"] 1790773529 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" "main.pdf" "main" 1790773531 0
+  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" 1790773527 83977 4a3dd02b8e5d1106745d82b04951cce3 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/jknappen/ec/tcbx1200.tfm" 1136768653 1536 c09172c8f235393e6235bb4758357c41 ""
@@ -297,18 +297,18 @@
   "/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1695101518 4623355 b8cad38412faebe1ce5b780a45db67bd ""
   "/usr/local/texlive/2023/texmf-var/web2c/pdftex/pdflatex.fmt" 1695101503 7883454 557e60c9a507e5eb9adaf486a9c0de14 ""
   "/usr/local/texlive/2023/texmf.cnf" 1678822455 577 1b2b1af17af2508fb20dd85783af4050 ""
-  "figures/DK-linear-model.pdf" 1782463763 19679 3cf45bef63a6a50bc6e6b85c9e6d2f95 ""
-  "figures/DK-simulation.pdf" 1782463777 20544 092874ab003ee73e2fdf0b21e8157952 ""
-  "figures/cl_disturbances.pdf" 0 -1 0 ""
-  "figures/cl_inputs.pdf" 0 -1 0 ""
-  "figures/cl_trajectories.pdf" 0 -1 0 ""
-  "figures/close_loop.pdf" 1780404637 17017 bfbcca677b0b78bd601e846f05072e8d ""
-  "figures/ident_test_comparison.pdf" 0 -1 0 ""
-  "main.aux" 1790758292 24488 658b6c655b905b518a3fa6b469e3edbb "pdflatex"
-  "main.bbl" 1789556293 7777 1c0c8a12ce613cb39a2fc494a5a578ae "bibtex main"
-  "main.out" 1790758293 5067 0fe5395398476a768f90761e026cea97 "pdflatex"
-  "main.spl" 1790758291 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "main.tex" 1790758291 83977 4a3dd02b8e5d1106745d82b04951cce3 ""
+  "figures/DK-linear-model.pdf" 1790773524 19679 3cf45bef63a6a50bc6e6b85c9e6d2f95 ""
+  "figures/DK-simulation.pdf" 1790773524 20544 092874ab003ee73e2fdf0b21e8157952 ""
+  "figures/cl_disturbances.pdf" 1790773524 36025 791796a9d53df2fab4eb0af81a15c575 ""
+  "figures/cl_inputs.pdf" 1790773524 54198 f830b9a52f12ded54984752df875dffb ""
+  "figures/cl_trajectories.pdf" 1790773524 38464 761683052937eec051f2bdb97ec69fe8 ""
+  "figures/close_loop.pdf" 1790773524 17017 bfbcca677b0b78bd601e846f05072e8d ""
+  "figures/ident_test_comparison.pdf" 1790773524 29282 7249e5c576c5ce6d4142186aeaaf7ec7 ""
+  "main.aux" 1790773530 24488 9fb8792d0822c314c6eb90138cb2191c "pdflatex"
+  "main.bbl" 1790773529 7777 1c0c8a12ce613cb39a2fc494a5a578ae "bibtex main"
+  "main.out" 1790773530 5067 0fe5395398476a768f90761e026cea97 "pdflatex"
+  "main.spl" 1790773529 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "main.tex" 1790773527 83977 4a3dd02b8e5d1106745d82b04951cce3 ""
   (generated)
   "main.aux"
   "main.log"

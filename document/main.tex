@@ -608,15 +608,15 @@ Zero-mean Gaussian measurement noise is added to all four outputs, with a standa
 
 \subsection{Subspace model}
 
-The baseline model is identified with the N4SID algorithm~\cite{van2012subspace} as implemented in the SIPPY package~\cite{armenise2018sippy}. This identification process was chosen as the industrial standard. The model order, the past and future horizons, the spectral radius, and the identification time on a Mac mini with an Apple M4 Pro processor are TBA.
-\todo{Replace TBA with the 4×4 N4SID order, past and future horizons, spectral radius, and runtime on the named machine. The six-input values (order 17, horizons 57, spectral radius 0.9897, 2.6 s) must not be copied in.}
+The baseline model is identified with the PARSIM-K method as implemented in the SIPPY package~\cite{armenise2018sippy}, with the direct input--output term fixed to zero. The model loaded for the closed-loop comparison has order $6$ and spectral radius $0.9865$.
+\todo{The order-6 PARSIM-K file loaded by the subspace notebook does not record the past and future horizons or the identification time. Supply those two horizons and the runtime on the named machine if they are to appear here.}
 
 \subsection{Koopman models}
 
-Two Koopman models are trained with the loss~\eqref{eq:dk:loss} on the same data. The first one restricts the decoder to a single matrix and thus provides the LTI model required by the standard offset-free Koopman MPC of Sec.~\ref{sec:easy-mpc}. The second one keeps the nonlinear decoder and is the model used by the proposed scheme. For each model, the lifted dimension, the network widths, the number of trainable parameters, and the spectral radius are TBA.
+Two Koopman models are trained with the loss~\eqref{eq:dk:loss} on the same data. The first one restricts the decoder to a single matrix and thus provides the LTI model required by the standard offset-free Koopman MPC of Sec.~\ref{sec:easy-mpc}. Its lifted dimension is $n_z = 26$ and its encoder is a network with one hidden layer of $20$ ELU units, which gives $1530$ trainable parameters and the spectral radius of $0.9854$. The second one keeps the nonlinear decoder and is the model used by the proposed scheme. Its lifted dimension is $n_z = 24$, the encoder has one hidden layer of $5$ ELU units and the decoder the mirrored width, which gives $990$ trainable parameters and the spectral radius of $0.9499$.
 
-Both models are trained with the Adam optimizer in PyTorch~\cite{paszke2019pytorch} through the Neuromancer library~\cite{Neuromancer2023}. The minibatch size, the training-window length, the epoch budget, the learning rates, the loss weights of~\eqref{eq:dk:loss}, and the training times on the same Mac mini with an Apple M4 Pro processor are TBA. As stated in Sec.~\ref{sec:blockdiag}, all three models are transformed into the real block-diagonal form before they are used in any control problem.
-\todo{Replace each TBA in this subsection with the 4×4 Koopman configuration: lifted dimensions, widths, parameter counts, spectral radii, minibatch size, window length, epoch budget, learning rates, loss weights, and runtimes on the named machine. Do not reuse the six-input values.}
+Both models are trained with the Adam optimizer in PyTorch~\cite{paszke2019pytorch} through the Neuromancer library~\cite{Neuromancer2023}, on minibatches of $40$ windows. The training window is $N_\text{r} = 20$ samples for the linear decoder and $N_\text{r} = 120$ samples for the nonlinear decoder, and the epoch budgets are $500$ and $4000$, respectively. The learning rate is $1.59 \cdot 10^{-3}$ for the linear decoder and $1.36 \cdot 10^{-3}$ for the nonlinear decoder, and the loss weights $(\ui{w}{y}, \ui{w}{z}, \ui{w}{r})$ of~\eqref{eq:dk:loss} are $(1.77,\, 10.01,\, 4.85)$ and $(5.99,\, 1.48,\, 1.29)$, respectively. As stated in Sec.~\ref{sec:blockdiag}, all three models are transformed into the real block-diagonal form before they are used in any control problem.
+\todo{The training times of these two Koopman models were not stored with the files the notebooks load. Add them, with the machine named, if a timing comparison is required.}
 
 \subsection{Open-loop accuracy on the test data}
 
@@ -625,7 +625,7 @@ To compare the models on the data that none of them has seen, each model is init
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/ident_test_comparison.pdf}
-  \caption{\textgenerated{Open-loop predictions of the identified models on the first four input steps of the test data. The black solid line is the noise-free plant, the dash-dotted \textcolor{deepkoopman}{red} line is the Koopman model with the nonlinear decoder, the dashed \textcolor{koopmanc}{orange} line is the Koopman model with the linear decoder, and the dotted \textcolor{parsimk}{green} line is the N4SID model.}}
+  \caption{\textgenerated{Open-loop predictions of the identified models on the first four input steps of the test data. The black solid line is the noise-free plant, the dash-dotted \textcolor{deepkoopman}{red} line is the Koopman model with the nonlinear decoder, the dashed \textcolor{koopmanc}{orange} line is the Koopman model with the linear decoder, and the dotted \textcolor{parsimk}{green} line is the PARSIM-K model.}}
   \label{fig:ident-test}
 \end{figure}
 
@@ -639,17 +639,15 @@ To compare the models on the data that none of them has seen, each model is init
     \toprule
     Model & $T_1$ [K] & $T_2$ [K] & $T_3$ [K] & $x_{\text{B}3}$ [--] & $\Sigma$ MAE [--] \\
     \midrule
-    N4SID & TBA & TBA & TBA & TBA & TBA \\
-    Koopman, linear $h$ & TBA & TBA & TBA & TBA & TBA \\
-    Koopman, nonlinear $h$ & TBA & TBA & TBA & TBA & TBA \\
+    PARSIM-K, order $6$ & 3.53 & 3.43 & 3.83 & 0.0239 & 1.18 \\
+    Koopman, linear $h$, $n_z = 26$ & 3.67 & 3.56 & 4.05 & 0.0229 & 1.21 \\
+    Koopman, nonlinear $h$, $n_z = 24$ & 0.56 & 0.66 & 0.74 & 0.0040 & 0.21 \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-The numerical comparison on this test window is TBA.
-\todo{Fill Table~\ref{tab:ident-accuracy} from the 4×4 test split and restore the comparison with the N4SID model. Fig.~\ref{fig:ident-test} is still the six-input test and has to be redrawn for the four manipulated inputs. Do not reuse the six-input errors or the statements that the nonlinear decoder reduces the summed error by about 85\% and that the linear decoder is about 18\% worse.}
-
-The Koopman model with the linear decoder is retained in the comparison, because it is the model that the standard offset-free Koopman MPC formulation of Sec.~\ref{sec:easy-mpc} requires. Restricting the decoder to a matrix leaves an input--output map of an LTI system, for which subspace identification is a mature and well-tuned tool, and the pair therefore isolates the effect of the nonlinear output mapping proposed in Sec.~\ref{sec:method:ident} from the effect of the lifting itself.
+The Koopman model with the nonlinear decoder is significantly more accurate than both linear alternatives, and it reduces the sum of the standardized mean absolute errors by approximately $82\%$ with respect to the subspace model. Its prediction error is of the same magnitude as the standard deviation of the measurement noise on all four outputs. The Koopman model with the linear decoder is not better than the subspace model in open loop; its summed standardized error is approximately $2\%$ higher, even though its lifted dimension exceeds the order of the subspace model. Restricting the decoder to a matrix leaves an input--output map of an LTI system, for which subspace identification is a mature and well-tuned tool. This model is nevertheless retained in the comparison, because it is the model that the standard offset-free Koopman MPC formulation of Sec.~\ref{sec:easy-mpc} requires, and it therefore isolates the effect of the nonlinear output mapping proposed in Sec.~\ref{sec:method:ident} from the effect of the lifting itself.
+\todo{Fig.~\ref{fig:ident-test} is still the six-input test. Redraw it from the 4×4 test split with the three models of Table~\ref{tab:ident-accuracy}.}
 }
 
 \section{Control setup}
@@ -689,7 +687,7 @@ Three tunings are reported. The first one is the original setup~\eqref{eq:cl:wei
 
 \subsection{Observers and the benchmark}
 
-Each controller is paired with the observer that its formulation requires. The two controllers built on an LTI model, namely the one using the subspace model and the one using the Koopman model with the linear decoder, use a stationary Kalman filter on the augmented system~\eqref{eq:of:ss}, while the proposed controllers use the time-varying filter of Sec.~\ref{sec:tvkf}. The number of estimated disturbances equals the number of measurements, $n_d = n_y = 4$, with $B_d = 0$ and $C_d = I$, so that the disturbance is purely additive on the outputs and the rank condition~\eqref{eq:of:rank} is satisfied. The covariances in the standardized coordinates are $P(0) = I$, $R = 0.3\,I$, and $Q = \diag([0.1\,I,\, 0.1\,I])$, with the two blocks acting on the lifted state and on the disturbance, respectively. The only exception is the subspace baseline, whose disturbance block had to be raised to $1.0\,I$ to obtain an acceptable closed-loop response; a larger disturbance covariance produces a faster estimate of $\hat{d}(t)$, so this exception favors the baseline.
+Each controller is paired with the observer that its formulation requires. The two controllers built on an LTI model, namely the one using the subspace model and the one using the Koopman model with the linear decoder, use a stationary Kalman filter on the augmented system~\eqref{eq:of:ss}, while the proposed controllers use the time-varying filter of Sec.~\ref{sec:tvkf}. The number of estimated disturbances equals the number of measurements, $n_d = n_y = 4$, with $B_d = 0$ and $C_d = I$, so that the disturbance is purely additive on the outputs and the rank condition~\eqref{eq:of:rank} is satisfied. The covariances in the standardized coordinates are $P(0) = I$, $R = 0.3\,I$, and $Q = \diag([0.1\,I,\, 0.1\,I])$, with the two blocks acting on the lifted state and on the disturbance, respectively.
 
 The benchmark is a nonlinear MPC that uses the plant equations themselves as the prediction model. It is paired with an extended Kalman filter and with a nonlinear steady-state target selector built on the same equations, both discretized by a fourth-order Runge--Kutta map with ten substeps per sampling period, so that the observer of the benchmark is not biased with respect to the plant stepper. Furthermore, the benchmark is informed of the new feed conditions at the instant at which each upset is applied, so that it suffers neither from process-model mismatch nor from a lag in the estimation of the disturbance. It uses the same horizon, the same weights, the same constraints, and the same references as every other controller. Its closed-loop performance is therefore the practical bound of this comparison, and we use it as the normalization of the results rather than as a competitor.
 
@@ -714,7 +712,7 @@ In this section, we present and analyze the closed-loop results obtained in the 
 
 \subsection{The effect of block-diagonal transformation}
 
-After this transformation we are able to enhace the performance in optimization as can be seen in Table~\ref{tab:block-diagonal}. This table is done using the formulation of Koopman MPC which can be seen in Sec.~\ref{sec:easy-mpc}. The table shows the decrease in a computational times. Also with this formulation we are able to obtain optimal solution TBA of the time during simulation. Contrary, the full Koopman MPC formulation is able to obtain optimal solution only TBA of the time with the rest of the time giving warning, that the solution is suboptimal. We can see also increase in a control performance, which is measured by the objective function value, which is in optimal case arounf TBA lower. Also the settling time for both levels is lower. 
+After this transformation we are able to enhace the performance in optimization as can be seen in Table~\ref{tab:block-diagonal}. This table is done using the formulation of Koopman MPC which can be seen in Sec.~\ref{sec:easy-mpc}. The table shows the decrease in a computational times. Also with this formulation we are able to obtain optimal solution \(100\%\) time during simulation. Contrary, the full Koopman MPC formulation is able to obtain optimal solution only \(26.7\%\) of the time with the rest of the time giving warning, that the solution is suboptimal. We can see also increase in a control performance, which is measured by the objective function value, which is in optimal case arounf \(6\%\) lower. Also the settling time for both levels is lower. 
 \begin{table}[h]
   \centering
   \caption{Comparison of structure of problem to solver time and control performance.}
@@ -723,12 +721,11 @@ After this transformation we are able to enhace the performance in optimization 
       \toprule
         Structure & Time TE/MPC & Optimal? \([\%]\) & OBJ & ST \(h_1\) & ST \(h_2\) \\
         \midrule
-        Full          & TBA & TBA & TBA & TBA & TBA \\
-        Block Diagonal & TBA & TBA & TBA & TBA & TBA \\
+        Full          & 0.2392 / 2.3884 & 26.7 & 100.0 & 43 & 48 \\
+        Block Diagonal & 0.2191 / 1.6204 & 100.0 & 94.1 & 25 & 31 \\
         \bottomrule
   \end{tabular}
 \end{table}
-\todo{Fill Table~\ref{tab:block-diagonal} from the 4×4 runs: solver times, the fraction of optimal solutions, the objective, and both settling times. The paragraph above still marks those quantities TBA, and the six-input entries must not be copied back.}
 
 
 The second option how to obtain the block diagonal structure is to learn the Koopman operator directly in the block diagonal form. This can be done by limiting the number of learnable parameters in a Koopman matrix during training to those that are in the block diagonal form. This also speeds the training as less parameters are learned.
@@ -825,18 +822,18 @@ Fig.~\ref{fig:cl-trajectories} shows the controlled outputs over the whole campa
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/cl_trajectories.pdf}
-  \caption{\textgenerated{\genopen Closed-loop outputs of the grade campaign in the original setup. The panels are $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$. The black dashed line is the setpoint, the solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the two grade changes at $350\,\text{s}$ and $1000\,\text{s}$ and the two unmeasured feed upsets at $600\,\text{s}$ and $850\,\text{s}$. \genclose}}
+  \caption{\textgenerated{\genopen Closed-loop outputs of the grade campaign in the original setup. The panels are $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$. The black dashed line is the setpoint, the solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the PARSIM-K model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the two grade changes at $350\,\text{s}$ and $1000\,\text{s}$ and the two unmeasured feed upsets at $600\,\text{s}$ and $850\,\text{s}$. \genclose}}
   \label{fig:cl-trajectories}
 \end{figure}
 
-\genopen
-As can be seen in Fig.~\ref{fig:cl-trajectories}, every plotted controller tracks both grade changes, and the steady-state offset in $x_{\text{B}3}$ is removed after each unmeasured feed upset. The nonlinear benchmark, which is informed of the new feed conditions, barely moves the temperatures after the upsets, whereas the identified-model controllers show a temperature excursion of approximately $1\,\text{K}$ after the drop in the feed temperature and a smaller one after the feed becomes leaner. The subspace controller retains a temperature offset of a few tenths of a kelvin during the holds, which both proposed linearizations remove. The two proposed series nearly coincide, except at the grade-change transients.
-\genclose
+{\renewcommand{\gensource}{grok4.7}\genopen
+On the runs of Table~\ref{tab:cl-original}, every controller tracks both grade changes, and the offset in $x_{\text{B}3}$ is removed on both holds. The nonlinear benchmark, which is informed of the new feed conditions, has a peak temperature deviation of $0.16\,\text{K}$ after the cold-feed upset. The identified-model controllers reach peak deviations of $0.5$ to $0.94\,\text{K}$ on the same interval, and the largest of them, $0.94\,\text{K}$ on $T_3$, belongs to the two proposed linearizations; after the lean-feed upset the peaks stay between $0.2$ and $0.5\,\text{K}$. On the premium hold the PARSIM-K controller keeps a temperature offset of $0.25$ to $0.36\,\text{K}$, and on the return to the nominal grade that offset is $0.15$ to $0.20\,\text{K}$. The Koopman controller with the linear decoder keeps an offset of about $0.05\,\text{K}$ on the premium hold. Both proposed linearizations sit on the temperature setpoints during the holds, and the two series nearly coincide except at the grade-change transients.
+\genclose}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/cl_inputs.pdf}
-  \caption{\textgenerated{\genopen Closed-loop manipulated variables of the grade campaign in the original setup. The panels are $Q_1$, $Q_2$, $Q_3$, and $F_{10}$. The solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}, and the grey bands are the input bounds of Table~\ref{tab:cstr-sep-inputs}. \genclose}}
+  \caption{\textgenerated{\genopen Closed-loop manipulated variables of the grade campaign in the original setup. The panels are $Q_1$, $Q_2$, $Q_3$, and $F_{10}$. The solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the PARSIM-K model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}, and the grey bands are the input bounds of Table~\ref{tab:cstr-sep-inputs}. \genclose}}
   \label{fig:cl-inputs}
 \end{figure}
 
@@ -851,7 +848,7 @@ Fig.~\ref{fig:cl-disturbances} shows the four components of the output disturban
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/cl_disturbances.pdf}
-  \caption{\textgenerated{\genopen Output disturbance estimates $\hat{d}(t)$ of the four linear MPCs in the original setup, expressed in the physical output units. The four panels correspond to $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$. The dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the previous target. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}. \genclose}}
+  \caption{\textgenerated{\genopen Output disturbance estimates $\hat{d}(t)$ of the four linear MPCs in the original setup, expressed in the physical output units. The four panels correspond to $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$. The dotted \textcolor{parsimk}{green} line is the MPC using the PARSIM-K model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the previous target. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}. \genclose}}
   \label{fig:cl-disturbances}
 \end{figure}
 \todo{The disturbance panels are the stored scaled $\hat{d}(t)$ multiplied by the output scaler, so the units are K and mass fraction. Switch the figure to standardized coordinates if that is the intended comparison.}
@@ -866,11 +863,11 @@ Fig.~\ref{fig:cl-disturbances} shows the four components of the output disturban
     \toprule
     Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
     \midrule
-    Nonlinear MPC, exact model & TBA & TBA & TBA & TBA & TBA \\
-    N4SID & TBA & TBA & TBA & TBA & TBA \\
-    Koopman, linear $h$ & TBA & TBA & TBA & TBA & TBA \\
-    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & TBA & TBA & TBA & TBA & TBA \\
-    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & TBA & TBA & TBA & TBA & TBA \\
+    Nonlinear MPC, exact model & 91.0 & 8.5 & 7.6 & 107.1 & 100.0 \\
+    PARSIM-K, order $6$ & 102.0 & 12.9 & 22.3 & 137.1 & 128.1 \\
+    Koopman, linear $h$ & 104.6 & 8.5 & 12.6 & 125.8 & 117.5 \\
+    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 93.2 & 9.0 & 9.3 & 111.5 & 104.1 \\
+    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 92.9 & 9.1 & 10.2 & 112.2 & 104.8 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -885,11 +882,11 @@ Fig.~\ref{fig:cl-disturbances} shows the four components of the output disturban
     \toprule
     Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
     \midrule
-    Nonlinear MPC, exact model & TBA & TBA & TBA & TBA & TBA \\
-    N4SID & TBA & TBA & TBA & TBA & TBA \\
-    Koopman, linear $h$ & TBA & TBA & TBA & TBA & TBA \\
-    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & TBA & TBA & TBA & TBA & TBA \\
-    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & TBA & TBA & TBA & TBA & TBA \\
+    Nonlinear MPC, exact model & 174.5 & 11.6 & 9.5 & 195.6 & 100.0 \\
+    PARSIM-K, order $6$ & 204.1 & 18.5 & 34.4 & 257.1 & 131.4 \\
+    Koopman, linear $h$ & 210.3 & 12.6 & 19.6 & 242.5 & 124.0 \\
+    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 179.4 & 13.6 & 15.1 & 208.1 & 106.4 \\
+    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 181.4 & 15.3 & 22.6 & 219.3 & 112.1 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -904,26 +901,24 @@ Fig.~\ref{fig:cl-disturbances} shows the four components of the output disturban
     \toprule
     Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
     \midrule
-    Nonlinear MPC, exact model & TBA & TBA & TBA & TBA & TBA \\
-    N4SID & TBA & TBA & TBA & TBA & TBA \\
-    Koopman, linear $h$ & TBA & TBA & TBA & TBA & TBA \\
-    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & TBA & TBA & TBA & TBA & TBA \\
-    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & TBA & TBA & TBA & TBA & TBA \\
+    Nonlinear MPC, exact model & 49.8 & 5.2 & 4.8 & 59.9 & 100.0 \\
+    PARSIM-K, order $6$ & 54.1 & 9.1 & 14.4 & 77.6 & 129.5 \\
+    Koopman, linear $h$ & 54.3 & 5.3 & 7.5 & 67.1 & 112.0 \\
+    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 50.6 & 5.6 & 5.4 & 61.6 & 102.9 \\
+    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 50.6 & 5.4 & 5.5 & 61.5 & 102.6 \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-Two comparisons are drawn from the tables. The first one is the comparison of each controller with the nonlinear benchmark, which quantifies how much of the achievable performance is lost when the plant equations are replaced by an identified model. The second one is the comparison of the proposed formulation with the standard offset-free Koopman MPC of Sec.~\ref{sec:easy-mpc}, which isolates the effect of the nonlinear output mapping, since the two controllers share the scenario, the tuning, the constraints, and the disturbance sequence, and differ only in the model and in the way the outputs are recovered from the lifted state. The subspace baseline is reported as well, because it is the model that would be identified first for a plant of this kind.
+{\renewcommand{\gensource}{grok4.7}\genopen
+Table~\ref{tab:cl-original} measures each identified model against the nonlinear benchmark. With the original weights the PARSIM-K controller reaches $128.1\%$ of the benchmark objective, the Koopman controller with the linear decoder reaches $117.5\%$, and the proposed linearizations at the previous target and at the current state estimate reach $104.1\%$ and $104.8\%$. The nonlinear output mapping therefore accounts for thirteen percentage points of the objective against the standard Koopman MPC of Sec.~\ref{sec:easy-mpc}, taken at the previous-target linearization. The two controllers share the scenario, the tuning, the constraints, and the disturbance sequence, and they differ in the model and in the way the outputs are recovered from the lifted state. The subspace controller is the most expensive of the five, and the largest part of its excess is $\ui{J}{u}$.
+\genclose}
 
-\todo{Tables~\ref{tab:cl-original}--\ref{tab:cl-qy-half} are TBA because they still held the six-input campaign. Fill every cell from the 4×4 runs, then state each controller relative to the benchmark, the gap between the proposed formulation and the standard Koopman MPC, and the position of the subspace baseline. Figs.~\ref{fig:cl-trajectories}--\ref{fig:cl-disturbances} and the sentences that quote a temperature excursion of about 1 K are still the six-input campaign and have to be replaced with the same runs.}
+{\renewcommand{\gensource}{grok4.7}\genopen
+The three tunings ask whether that gain grows with the share of $\ui{J}{y}$. The proposed formulation replaces the linear recovery $y_k = C z_k$ by the first-order expansion of the decoder, both in the weighting matrix~\eqref{eq:cs:Qz} and in the output constraints~\eqref{eq:cs:mpc:y}. When $\ui{Q}{y}$ is doubled, the previous-target linearization reaches $106.4\%$ of the benchmark and the linear-decoder controller reaches $124.0\%$, so the gap widens. When $\ui{Q}{y}$ is halved, the same two controllers reach $102.9\%$ and $112.0\%$, so the gap shrinks. The linearization at the current state estimate reaches $112.1\%$ at the doubled output weight, where its input cost is $22.6$ against $15.1$ for the previous target, and $102.6\%$ at the halved weight, where the two variants differ by $0.3$ percentage points. The previous target is the linearization point with the lower objective at the original weights and at the doubled output weight. Both variants remain above the benchmark.
+\genclose}
 
-The three tunings answer whether the improvement is attributable to the output mapping. The proposed formulation replaces the linear recovery $y_k = C z_k$ by the first-order expansion of the decoder, both in the weighting matrix~\eqref{eq:cs:Qz} and in the output constraints~\eqref{eq:cs:mpc:y}, so that its advantage acts on the part of the objective function that involves the outputs. The larger the share of $\ui{J}{y}$ in the total, the larger the advantage should be, and the advantage should shrink when $\ui{Q}{y}$ is halved and the accuracy of the predicted outputs influences the computed input less.
-
-\todo{confirm or refute the expected trend across Tables~\ref{tab:cl-original}--\ref{tab:cl-qy-half}, and report the normalized objective of the proposed formulation at the two extremes of the sweep}
-
-A separate question is which of the two linearization points is to be preferred. Algorithm~\ref{alg:closed-loop} expands the output mapping at the target of the previous sampling instant, which is the point at which the target optimization is the most accurate, whereas Algorithm~\ref{alg:closed-loop-state} expands it at the current state estimate, which is the point at which the first predicted output is the most accurate. The two points are far apart during the transient after a grade change and nearly coincide during the holds, so the difference between the two variants is expected to be visible in the transients only.
-
-\todo{compare the two linearization points across the three tunings and state which one is recommended}
+\todo{Figs.~\ref{fig:cl-trajectories}--\ref{fig:cl-disturbances} are still the six-input campaign, so they do not show the excursions and the costs reported above. Redraw all three from the 4×4 runs of Tables~\ref{tab:cl-original}--\ref{tab:cl-qy-half}, keeping the line styles named in the present captions.}
 }
 
 % % \begin{table}[h]

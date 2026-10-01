@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99d (TeX Live 2023)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+The style file: elsarticle-harv.bst
+Database file #1: bibfile.bib
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--empty pages in armenise2018sippy
+Warning--empty journal in Neuromancer2023
+You've used 16 entries,
+            2990 wiz_defined-function locations,
+            733 strings with 8608 characters,
+and the built_in function-call counts, 11757 in all, are:
+= -- 876
+> -- 536
+< -- 9
++ -- 209
+- -- 189
+* -- 1312
+:= -- 1709
+add.period$ -- 46
+call.type$ -- 16
+change.case$ -- 142
+chr.to.int$ -- 16
+cite$ -- 18
+duplicate$ -- 840
+empty$ -- 816
+format.name$ -- 239
+if$ -- 2174
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 168
+newline$ -- 93
+num.names$ -- 64
+pop$ -- 316
+preamble$ -- 1
+purify$ -- 127
+quote$ -- 0
+skip$ -- 257
+stack$ -- 0
+substring$ -- 502
+swap$ -- 629
+text.length$ -- 2
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 141
+warning$ -- 2
+while$ -- 72
+width$ -- 0
+write$ -- 234
+(There were 2 warnings)

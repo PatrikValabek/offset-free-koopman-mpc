@@ -217,7 +217,8 @@ def run_linear_c(controller: str, loaded: dict):
     reference = np.asarray(loaded["reference"], dtype=float)
     u_sp = np.asarray(loaded["reference_u"], dtype=float).reshape(-1)
     u_previous = np.asarray(loaded["u_previous"], dtype=float).reshape(-1)
-    qd_scale = 10.0 if controller == "N4SID" else 1.0
+    # Notebooks use the disturbance covariance from sim_setup, without a further scale.
+    qd_scale = 1.0
 
     z_est_ = np.hstack(((np.linalg.pinv(C) @ y_start.T).T, np.zeros((1, nd))))
     P0 = np.eye(nz + nd) * loaded["P0"]
