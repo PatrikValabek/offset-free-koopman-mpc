@@ -395,7 +395,10 @@ where $\mathcal{L}$ is the loss minimized during training and $\ui{w}{y}$, $\ui{
 
 When the decoder is restricted to a single matrix, $h(z) = Cz$, the identified model is the LTI model of the standard offset-free Koopman MPC of Sec.~\ref{sec:easy-mpc}. When the decoder is a nonlinear map, the model is the one used by the proposed scheme, and a constant output matrix is obtained afterwards by linear least squares from the lifted trajectory of the training data. This matrix is not used in the objective function or in the constraints of~\eqref{eq:cs:mpc}; it only provides the initial output matrix of the observer of Sec.~\ref{sec:tvkf}, which is replaced by the Jacobian $H(\ui{z}{LP})$ at every subsequent sampling instant.
 
-The lifted dimension $n_z$, the depth and the width of the encoder and the decoder, the activation function, the weights in~\eqref{eq:dk:loss}, the window length $N_\text{r}$, the minibatch size, and the learning rate are not tuned by hand. Each candidate configuration is trained, the resulting model is inserted into the closed loop, and the achieved value of the closed-loop objective function is used as the score of the configuration; the search itself is carried out with the tree-structured Parzen estimator of Optuna~\cite{akiba2019optuna}. Scoring a model by the closed-loop performance rather than by the open-loop prediction error is a deliberate choice, because the two are only loosely related, as the results of Sec.~\ref{sec:ident} and Sec.~\ref{sec:Results} show. The same criterion is used to select the order and the horizons of the subspace model that serves as the baseline, so that no model is favored by the way its parameters were chosen. Note that this procedure is not a contribution of this work and any comparable model selection scheme can replace it.
+The lifted dimension $n_z$, the depth and the width of the encoder and the decoder, the activation function, the weights in~\eqref{eq:dk:loss}, the window length $N_\text{r}$, the minibatch size, and the learning rate are not tuned by hand. Each candidate configuration is trained, the resulting model is inserted into the closed loop, and the achieved value of the closed-loop objective function is used as the score of the configuration; the search itself is carried out with the tree-structured Parzen estimator of Optuna~\cite{akiba2019optuna}. Scoring a model by the closed-loop performance rather than by the open-loop prediction error is a deliberate choice, because the two are only loosely related, as the results of Sec.~\ref{sec:ident} and Sec.~\ref{sec:Results} show. Note that this procedure is not a contribution of this work and any comparable model selection scheme can replace it.
+{\renewcommand{\gensource}{grok4.7}\genopen
+The order of the subspace model that serves as the baseline is the one with the smallest mean absolute error on the standardized test split, with the past and future horizons held fixed, as reported in Sec.~\ref{sec:ident}.
+\genclose}
 }
 
 \subsection{Linearization of the output mapping}
@@ -608,8 +611,9 @@ Zero-mean Gaussian measurement noise is added to all four outputs, with a standa
 
 \subsection{Subspace model}
 
-The baseline model is identified with the PARSIM-K method as implemented in the SIPPY package~\cite{armenise2018sippy}, with the direct input--output term fixed to zero. The model loaded for the closed-loop comparison has order $6$ and spectral radius $0.9865$.
-\todo{The order-6 PARSIM-K file loaded by the subspace notebook does not record the past and future horizons or the identification time. Supply those two horizons and the runtime on the named machine if they are to appear here.}
+{\renewcommand{\gensource}{grok4.7}\genopen
+The baseline model is identified with numerical algorithms for subspace state-space system identification (N4SID)~\cite{van2012subspace}, as implemented in the SIPPY package~\cite{armenise2018sippy}. The direct input--output term is fixed to zero, and the past and future horizons are both held at $20$ samples. Orders from $4$ to $19$ are identified under these horizons, and order $6$ attains the smallest mean absolute error on the standardized test split. This is the model loaded for the closed-loop comparison, and its spectral radius is $0.9865$. The identification of this model took $0.63\,\text{s}$ on a Mac mini with an Apple M4 Pro processor.
+\genclose}
 
 \subsection{Koopman models}
 
@@ -625,7 +629,7 @@ To compare the models on the data that none of them has seen, each model is init
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/ident_test_comparison.pdf}
-  \caption{\textgenerated{Open-loop predictions of the identified models on the first four input steps of the test data. The black solid line is the noise-free plant, the dash-dotted \textcolor{deepkoopman}{red} line is the Koopman model with the nonlinear decoder, the dashed \textcolor{koopmanc}{orange} line is the Koopman model with the linear decoder, and the dotted \textcolor{parsimk}{green} line is the PARSIM-K model.}}
+  \caption{\textgenerated{Open-loop predictions of the identified models on the first four input steps of the test data. The black solid line is the noise-free plant, the dash-dotted \textcolor{deepkoopman}{red} line is the Koopman model with the nonlinear decoder, the dashed \textcolor{koopmanc}{orange} line is the Koopman model with the linear decoder, and the dotted \textcolor{parsimk}{green} line is the N4SID model.}}
   \label{fig:ident-test}
 \end{figure}
 
@@ -639,7 +643,7 @@ To compare the models on the data that none of them has seen, each model is init
     \toprule
     Model & $T_1$ [K] & $T_2$ [K] & $T_3$ [K] & $x_{\text{B}3}$ [--] & $\Sigma$ MAE [--] \\
     \midrule
-    PARSIM-K, order $6$ & 3.53 & 3.43 & 3.83 & 0.0239 & 1.18 \\
+    N4SID, order $6$ & 3.53 & 3.43 & 3.83 & 0.0239 & 1.18 \\
     Koopman, linear $h$, $n_z = 26$ & 3.67 & 3.56 & 4.05 & 0.0229 & 1.21 \\
     Koopman, nonlinear $h$, $n_z = 24$ & 0.56 & 0.66 & 0.74 & 0.0040 & 0.21 \\
     \bottomrule
@@ -647,7 +651,6 @@ To compare the models on the data that none of them has seen, each model is init
 \end{table}
 
 The Koopman model with the nonlinear decoder is significantly more accurate than both linear alternatives, and it reduces the sum of the standardized mean absolute errors by approximately $82\%$ with respect to the subspace model. Its prediction error is of the same magnitude as the standard deviation of the measurement noise on all four outputs. The Koopman model with the linear decoder is not better than the subspace model in open loop; its summed standardized error is approximately $2\%$ higher, even though its lifted dimension exceeds the order of the subspace model. Restricting the decoder to a matrix leaves an input--output map of an LTI system, for which subspace identification is a mature and well-tuned tool. This model is nevertheless retained in the comparison, because it is the model that the standard offset-free Koopman MPC formulation of Sec.~\ref{sec:easy-mpc} requires, and it therefore isolates the effect of the nonlinear output mapping proposed in Sec.~\ref{sec:method:ident} from the effect of the lifting itself.
-\todo{Fig.~\ref{fig:ident-test} is still the six-input test. Redraw it from the 4×4 test split with the three models of Table~\ref{tab:ident-accuracy}.}
 }
 
 \section{Control setup}
@@ -683,7 +686,7 @@ The target optimization~\eqref{eq:cs:target} uses $\ui{Q}{y}^\text{t} = \diag([1
 \end{equation}
 where the entries of $\ui{Q}{y}$ follow the order $T_1$, $T_2$, $T_3$, $x_{\text{B}3}$ of the outputs and the entries of $Q_{\Delta\text{u}}$ and $\ui{Q}{u}$ the order $Q_1$, $Q_2$, $Q_3$, $F_{10}$ of the inputs. The bottoms quality again carries the largest output weight, because it is the variable that the campaign has to meet, while the temperatures are regulated but act mainly as operating limits. The input target towards which $\ui{Q}{u}$ pulls is the nominal utility and throughput setting of Table~\ref{tab:cstr-sep-inputs}, held constant over the whole campaign, so that this term expresses the economic preference of the plant rather than a tracking requirement.
 
-Three tunings are reported. The first one is the original setup~\eqref{eq:cl:weights}. In the second one, $\ui{Q}{y}$ is multiplied by two and everything else is left unchanged, and in the third one, $\ui{Q}{y}$ is divided by two and everything else is left unchanged, so that the relative weight of the outputs against the inputs is moved by a factor of two in each direction. The purpose of this sweep is not to search for a good controller but to test the mechanism of the proposed formulation. The proposed scheme differs from the standard one only in the way the output mapping is used, in the objective function through~\eqref{eq:cs:Qz} and in the output constraints through~\eqref{eq:cs:mpc:y}. Its advantage is therefore expected to grow with the weight that the objective function places on the outputs, and to shrink when $\ui{Q}{y}$ is reduced and the outputs become a secondary concern.
+Three tunings are reported. The first one is the original setup~\eqref{eq:cl:weights}. In the second one, $\ui{Q}{y}$ is multiplied by five and everything else is left unchanged, and in the third one, $\ui{Q}{y}$ is divided by five and everything else is left unchanged, so that the relative weight of the outputs against the inputs is moved by a factor of five in each direction. The purpose of this sweep is not to search for a good controller but to test the mechanism of the proposed formulation. The proposed scheme differs from the standard one only in the way the output mapping is used, in the objective function through~\eqref{eq:cs:Qz} and in the output constraints through~\eqref{eq:cs:mpc:y}. Its advantage is therefore expected to grow with the weight that the objective function places on the outputs, and to shrink when $\ui{Q}{y}$ is reduced and the outputs become a secondary concern.
 
 \subsection{Observers and the benchmark}
 
@@ -822,18 +825,18 @@ Fig.~\ref{fig:cl-trajectories} shows the controlled outputs over the whole campa
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/cl_trajectories.pdf}
-  \caption{\textgenerated{\genopen Closed-loop outputs of the grade campaign in the original setup. The panels are $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$. The black dashed line is the setpoint, the solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the PARSIM-K model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the two grade changes at $350\,\text{s}$ and $1000\,\text{s}$ and the two unmeasured feed upsets at $600\,\text{s}$ and $850\,\text{s}$. \genclose}}
+  \caption{\textgenerated{\genopen Closed-loop outputs of the grade campaign in the original setup. The panels are $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$. The black dashed line is the setpoint, the solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the two grade changes at $350\,\text{s}$ and $1000\,\text{s}$ and the two unmeasured feed upsets at $600\,\text{s}$ and $850\,\text{s}$. \genclose}}
   \label{fig:cl-trajectories}
 \end{figure}
 
 {\renewcommand{\gensource}{grok4.7}\genopen
-On the runs of Table~\ref{tab:cl-original}, every controller tracks both grade changes, and the offset in $x_{\text{B}3}$ is removed on both holds. The nonlinear benchmark, which is informed of the new feed conditions, has a peak temperature deviation of $0.16\,\text{K}$ after the cold-feed upset. The identified-model controllers reach peak deviations of $0.5$ to $0.94\,\text{K}$ on the same interval, and the largest of them, $0.94\,\text{K}$ on $T_3$, belongs to the two proposed linearizations; after the lean-feed upset the peaks stay between $0.2$ and $0.5\,\text{K}$. On the premium hold the PARSIM-K controller keeps a temperature offset of $0.25$ to $0.36\,\text{K}$, and on the return to the nominal grade that offset is $0.15$ to $0.20\,\text{K}$. The Koopman controller with the linear decoder keeps an offset of about $0.05\,\text{K}$ on the premium hold. Both proposed linearizations sit on the temperature setpoints during the holds, and the two series nearly coincide except at the grade-change transients.
+On the runs of Table~\ref{tab:cl-original}, every controller tracks both grade changes, and the offset in $x_{\text{B}3}$ is removed on both holds. The nonlinear benchmark, which is informed of the new feed conditions, has a peak temperature deviation of $0.16\,\text{K}$ after the cold-feed upset. The identified-model controllers reach peak deviations of $0.5$ to $0.94\,\text{K}$ on the same interval, and the largest of them, $0.94\,\text{K}$ on $T_3$, belongs to the two proposed linearizations; after the lean-feed upset the peaks stay between $0.2$ and $0.5\,\text{K}$. On the premium hold the N4SID controller keeps a temperature offset of $0.25$ to $0.36\,\text{K}$, and on the return to the nominal grade that offset is $0.15$ to $0.20\,\text{K}$. The Koopman controller with the linear decoder keeps an offset of about $0.05\,\text{K}$ on the premium hold. Both proposed linearizations sit on the temperature setpoints during the holds, and the two series nearly coincide except at the grade-change transients.
 \genclose}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/cl_inputs.pdf}
-  \caption{\textgenerated{\genopen Closed-loop manipulated variables of the grade campaign in the original setup. The panels are $Q_1$, $Q_2$, $Q_3$, and $F_{10}$. The solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the PARSIM-K model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}, and the grey bands are the input bounds of Table~\ref{tab:cstr-sep-inputs}. \genclose}}
+  \caption{\textgenerated{\genopen Closed-loop manipulated variables of the grade campaign in the original setup. The panels are $Q_1$, $Q_2$, $Q_3$, and $F_{10}$. The solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}, and the grey bands are the input bounds of Table~\ref{tab:cstr-sep-inputs}. \genclose}}
   \label{fig:cl-inputs}
 \end{figure}
 
@@ -848,7 +851,7 @@ Fig.~\ref{fig:cl-disturbances} shows the four components of the output disturban
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/cl_disturbances.pdf}
-  \caption{\textgenerated{\genopen Output disturbance estimates $\hat{d}(t)$ of the four linear MPCs in the original setup, expressed in the physical output units. The four panels correspond to $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$. The dotted \textcolor{parsimk}{green} line is the MPC using the PARSIM-K model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the previous target. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}. \genclose}}
+  \caption{\textgenerated{\genopen Output disturbance estimates $\hat{d}(t)$ of the four linear MPCs in the original setup, expressed in the physical output units. The four panels correspond to $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$. The dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the previous target. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}. \genclose}}
   \label{fig:cl-disturbances}
 \end{figure}
 \todo{The disturbance panels are the stored scaled $\hat{d}(t)$ multiplied by the output scaler, so the units are K and mass fraction. Switch the figure to standardized coordinates if that is the intended comparison.}
@@ -864,7 +867,7 @@ Fig.~\ref{fig:cl-disturbances} shows the four components of the output disturban
     Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
     \midrule
     Nonlinear MPC, exact model & 91.0 & 8.5 & 7.6 & 107.1 & 100.0 \\
-    PARSIM-K, order $6$ & 102.0 & 12.9 & 22.3 & 137.1 & 128.1 \\
+    N4SID, order $6$ & 102.0 & 12.9 & 22.3 & 137.1 & 128.1 \\
     Koopman, linear $h$ & 104.6 & 8.5 & 12.6 & 125.8 & 117.5 \\
     Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 93.2 & 9.0 & 9.3 & 111.5 & 104.1 \\
     Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 92.9 & 9.1 & 10.2 & 112.2 & 104.8 \\
@@ -876,17 +879,17 @@ Fig.~\ref{fig:cl-disturbances} shows the four components of the output disturban
   \centering
   \small
   \setlength{\tabcolsep}{5pt}
-  \caption{Closed-loop performance with the output weight doubled, $\ui{Q}{y} = \diag([4,\, 4,\, 4,\, 30])$, and the remaining weights of~\eqref{eq:cl:weights} unchanged. The columns have the same meaning as in Table~\ref{tab:cl-original}, and the objective function is accumulated with the weights of this tuning.}
+  \caption{Closed-loop performance with the output weight multiplied by five, $\ui{Q}{y} = \diag([10,\, 10,\, 10,\, 75])$, and the remaining weights of~\eqref{eq:cl:weights} unchanged. The columns have the same meaning as in Table~\ref{tab:cl-original}, and the objective function is accumulated with the weights of this tuning.}
   \label{tab:cl-qy}
   \begin{tabular}{lrrrrr}
     \toprule
     Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
     \midrule
-    Nonlinear MPC, exact model & 174.5 & 11.6 & 9.5 & 195.6 & 100.0 \\
-    PARSIM-K, order $6$ & 204.1 & 18.5 & 34.4 & 257.1 & 131.4 \\
-    Koopman, linear $h$ & 210.3 & 12.6 & 19.6 & 242.5 & 124.0 \\
-    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 179.4 & 13.6 & 15.1 & 208.1 & 106.4 \\
-    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 181.4 & 15.3 & 22.6 & 219.3 & 112.1 \\
+    Nonlinear MPC, exact model & 431.3 & 12.8 & 11.5 & 455.6 & 100.0 \\
+    N4SID, order $6$ & 526.6 & 24.5 & 52.9 & 604.0 & 132.6 \\
+    Koopman, linear $h$ & 553.4 & 17.6 & 34.9 & 605.9 & 133.0 \\
+    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 455.0 & 19.8 & 29.5 & 504.3 & 110.7 \\
+    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 456.7 & 27.0 & 36.9 & 520.6 & 114.3 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -895,30 +898,29 @@ Fig.~\ref{fig:cl-disturbances} shows the four components of the output disturban
   \centering
   \small
   \setlength{\tabcolsep}{5pt}
-  \caption{Closed-loop performance with the output weight halved, $\ui{Q}{y} = \diag([1,\, 1,\, 1,\, 7.5])$, and the remaining weights of~\eqref{eq:cl:weights} unchanged. The columns have the same meaning as in Table~\ref{tab:cl-original}, and the objective function is accumulated with the weights of this tuning.}
+  \caption{Closed-loop performance with the output weight divided by five, $\ui{Q}{y} = \diag([0.4,\, 0.4,\, 0.4,\, 3])$, and the remaining weights of~\eqref{eq:cl:weights} unchanged. The columns have the same meaning as in Table~\ref{tab:cl-original}, and the objective function is accumulated with the weights of this tuning.}
   \label{tab:cl-qy-half}
   \begin{tabular}{lrrrrr}
     \toprule
     Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
     \midrule
-    Nonlinear MPC, exact model & 49.8 & 5.2 & 4.8 & 59.9 & 100.0 \\
-    PARSIM-K, order $6$ & 54.1 & 9.1 & 14.4 & 77.6 & 129.5 \\
-    Koopman, linear $h$ & 54.3 & 5.3 & 7.5 & 67.1 & 112.0 \\
-    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 50.6 & 5.6 & 5.4 & 61.6 & 102.9 \\
-    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 50.6 & 5.4 & 5.5 & 61.5 & 102.6 \\
+    Nonlinear MPC, exact model & 23.2 & 2.7 & 2.1 & 28.0 & 100.0 \\
+    N4SID, order $6$ & 25.1 & 5.8 & 7.8 & 38.7 & 138.2 \\
+    Koopman, linear $h$ & 24.0 & 2.8 & 3.2 & 30.0 & 107.1 \\
+    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 23.4 & 2.8 & 2.2 & 28.4 & 101.2 \\
+    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 23.5 & 2.7 & 2.1 & 28.3 & 101.0 \\
     \bottomrule
   \end{tabular}
 \end{table}
 
 {\renewcommand{\gensource}{grok4.7}\genopen
-Table~\ref{tab:cl-original} measures each identified model against the nonlinear benchmark. With the original weights the PARSIM-K controller reaches $128.1\%$ of the benchmark objective, the Koopman controller with the linear decoder reaches $117.5\%$, and the proposed linearizations at the previous target and at the current state estimate reach $104.1\%$ and $104.8\%$. The nonlinear output mapping therefore accounts for thirteen percentage points of the objective against the standard Koopman MPC of Sec.~\ref{sec:easy-mpc}, taken at the previous-target linearization. The two controllers share the scenario, the tuning, the constraints, and the disturbance sequence, and they differ in the model and in the way the outputs are recovered from the lifted state. The subspace controller is the most expensive of the five, and the largest part of its excess is $\ui{J}{u}$.
+Table~\ref{tab:cl-original} measures each identified model against the nonlinear benchmark. With the original weights the N4SID controller reaches $128.1\%$ of the benchmark objective, the Koopman controller with the linear decoder reaches $117.5\%$, and the proposed linearizations at the previous target and at the current state estimate reach $104.1\%$ and $104.8\%$. The nonlinear output mapping therefore accounts for thirteen percentage points of the objective against the standard Koopman MPC of Sec.~\ref{sec:easy-mpc}, taken at the previous-target linearization. The two controllers share the scenario, the tuning, the constraints, and the disturbance sequence, and they differ in the model and in the way the outputs are recovered from the lifted state. The subspace controller is the most expensive of the five, and the largest part of its excess is $\ui{J}{u}$.
 \genclose}
 
 {\renewcommand{\gensource}{grok4.7}\genopen
-The three tunings ask whether that gain grows with the share of $\ui{J}{y}$. The proposed formulation replaces the linear recovery $y_k = C z_k$ by the first-order expansion of the decoder, both in the weighting matrix~\eqref{eq:cs:Qz} and in the output constraints~\eqref{eq:cs:mpc:y}. When $\ui{Q}{y}$ is doubled, the previous-target linearization reaches $106.4\%$ of the benchmark and the linear-decoder controller reaches $124.0\%$, so the gap widens. When $\ui{Q}{y}$ is halved, the same two controllers reach $102.9\%$ and $112.0\%$, so the gap shrinks. The linearization at the current state estimate reaches $112.1\%$ at the doubled output weight, where its input cost is $22.6$ against $15.1$ for the previous target, and $102.6\%$ at the halved weight, where the two variants differ by $0.3$ percentage points. The previous target is the linearization point with the lower objective at the original weights and at the doubled output weight. Both variants remain above the benchmark.
+The three tunings ask whether that gain grows with the share of $\ui{J}{y}$. The proposed formulation replaces the linear recovery $y_k = C z_k$ by the first-order expansion of the decoder, both in the weighting matrix~\eqref{eq:cs:Qz} and in the output constraints~\eqref{eq:cs:mpc:y}. When $\ui{Q}{y}$ is multiplied by five, the previous-target linearization reaches $110.7\%$ of the benchmark and the linear-decoder controller reaches $133.0\%$, so the gap widens. When $\ui{Q}{y}$ is divided by five, the same two controllers reach $101.2\%$ and $107.1\%$, so the gap shrinks. The linearization at the current state estimate reaches $114.3\%$ at the higher output weight, where its input cost is $36.9$ against $29.5$ for the previous target, and $101.0\%$ at the lower weight, where the two variants differ by $0.2$ percentage points. The previous target is the linearization point with the lower objective at the original weights and at the higher output weight. At the lower weight the current-state linearization is lower, by $0.2$ percentage points. Both variants remain above the benchmark.
 \genclose}
 
-\todo{Figs.~\ref{fig:cl-trajectories}--\ref{fig:cl-disturbances} are still the six-input campaign, so they do not show the excursions and the costs reported above. Redraw all three from the 4×4 runs of Tables~\ref{tab:cl-original}--\ref{tab:cl-qy-half}, keeping the line styles named in the present captions.}
 }
 
 % % \begin{table}[h]

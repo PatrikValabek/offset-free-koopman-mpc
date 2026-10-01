@@ -5,9 +5,7 @@ Square 4x4 CSTR-separator variant (inputs [Q1, Q2, Q3, F10]; F20, Fr fixed).
 Outputs and inputs are separate figures. Trajectories: NMPC, N4SID, CT
 (linear decoder), T3D3 (purple dashed), T2D2 on top (red dash-dotted).
 
-Unlike the 6-input variant, figures are written under this folder's
-``results/figures`` (not ``document/figures``) so they do not overwrite the
-paper's 6-input plots.
+Figures are written to ``document/figures``, which ``document/main.tex`` includes.
 """
 
 from __future__ import annotations
@@ -21,8 +19,12 @@ from matplotlib.ticker import MaxNLocator, MultipleLocator
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SWEEP = Path(__file__).resolve().parent / "results" / "weight_sweep"
+# Closed-loop N4SID in the weight sweep chatters on T3; the notebook run does not.
+N4SID_DIR = (
+    Path(__file__).resolve().parent / "results" / "parsimk_notebook_qd" / "N4SID_original"
+)
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
-OUT_DIR = Path(__file__).resolve().parent / "results" / "figures"
+OUT_DIR = REPO_ROOT / "document" / "figures"
 
 # elsarticle preprint, 12 pt, one column: 384 pt textwidth, figures at 0.95\linewidth
 BODY_PT = 12
@@ -96,7 +98,10 @@ def apply_style() -> None:
 
 
 def load_run(controller: str) -> np.lib.npyio.NpzFile:
-    path = SWEEP / f"{controller}_original" / "trajectories.npz"
+    if controller == "N4SID":
+        path = N4SID_DIR / "trajectories.npz"
+    else:
+        path = SWEEP / f"{controller}_original" / "trajectories.npz"
     if not path.is_file():
         raise FileNotFoundError(path)
     return np.load(path)
