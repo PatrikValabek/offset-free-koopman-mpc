@@ -1299,10 +1299,8 @@ INPUT main.aux
 INPUT ./main.out
 INPUT ./main.out
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb
-INPUT /usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmbsy8.pfb
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
-INPUT /usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx6.pfb
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb
 INPUT /usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb

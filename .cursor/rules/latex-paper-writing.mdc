@@ -87,7 +87,7 @@ Format: `- $symbol$ — meaning (first defined in \label{...})`
 - `$u_0^*$` — optimal first element of the MPC input sequence (first defined in `\label{eq:of:mpc}`)
 - `$h(\cdot)$` — nonlinear projection from the lifted state to the output, $h : \mathbb{R}^{n_z} \to \mathbb{R}^{n_y}$ (first defined in `\label{eq:linearization}`). In this work it is the decoder of a neural network; it may instead be the inverse of a single invertible lifting function, as in DMD. The control formulation uses only $h$ and its Jacobian
 - `$\bar{z}(t-T_\text{s})$` — steady-state lifted state from the previous sampling instant (first defined in `\label{eq:linearization:target}`)
-- `$H(\cdot) \in \mathbb{R}^{n_y \times n_z}$` — Jacobian of $h$ evaluated at its argument (first defined in `\label{eq:linearization}`). **This is the only symbol for the Jacobian; never $J$**
+- `$H(\cdot) \in \mathbb{R}^{n_y \times n_z}$` — Jacobian of $h$ evaluated at its argument (first defined in `\label{eq:linearization}`). **This is the only symbol for the Jacobian.** `$J$` is the closed-loop objective, not a Jacobian
 - `$z_\text{LP}$` (macro `\ui{z}{LP}`, a *subscript*) — linearization point of the output mapping; equal to $\bar{z}(t-T_\text{s})$ in Algorithm 1 and to $\hat{z}(t)$ in Algorithm 2 (first defined in `\label{eq:linearization:affine}`)
 - `$g(\cdot)$` — vector-valued lifting map collecting the $n_z$ retained lifting functions, $g = [\psi_1, \ldots, \psi_{n_z}]^\intercal$ (first defined in `\label{eq:koopman:lift}`). Evaluated at the measured output rather than at the state, since $x$ is not measured, so $g : \mathbb{R}^{n_y} \to \mathbb{R}^{n_z}$. In this work it is a neural-network encoder; together with $h$ it may instead be one invertible function, as in DMD. **Do not restate this signature in later sections**
 - `$\tilde{z}(t)$` — augmented state $[z(t)^\intercal, d(t)^\intercal]^\intercal \in \mathbb{R}^{n_z+n_d}$ used in the TVKF (first defined in `\label{eq:tvkf:aug}`)
@@ -109,3 +109,8 @@ Format: `- $symbol$ — meaning (first defined in \label{...})`
 - `$T_1, T_2, T_3$` — vessel temperatures of the reactor--separator plant, the first three controlled outputs (first defined in `\label{tab:cstr-sep-inputs}`)
 - `$x_{\text{B}3}$` — mass fraction of the product B leaving the separator, the bottoms quality and fourth controlled output (first defined in `\label{tab:cstr-sep-inputs}`)
 - Species of the reaction `$\text{A} \rightarrow \text{B} \rightarrow \text{C}$` are set upright, so that the species C is distinguishable from the output matrix `$C$`
+- `$J$` — closed-loop objective, the sum of the three costs below (first defined in `\label{eq:cl:obj:sum}`). **Not the Jacobian**, which is `$H$`
+- `$\ui{J}{y}$`, `$J_{\Delta\text{u}}$`, `$\ui{J}{u}$` — closed-loop output, input-increment, and input-target costs (first defined in `\label{eq:cl:obj:y}`, `\label{eq:cl:obj:du}`, `\label{eq:cl:obj:u}`). The increment cost is written `$J_{\Delta\text{u}}$`, since `\ui{J}{\Delta u}` would put `\Delta` inside `\text{}`
+- `$\mathcal{T}$` — set of sampling instants of the closed-loop campaign (first defined in `\label{eq:cl:obj}`)
+- `$\ui{n}{sim}$` — length of the campaign in samples (first defined in `\label{eq:cl:obj}`)
+- `$\|v\|_Q^2 = v^\intercal Q v$` — weighted squared norm (first defined in `\label{eq:cl:obj}`)

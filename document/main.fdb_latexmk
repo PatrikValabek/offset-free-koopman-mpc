@@ -1,14 +1,14 @@
 # Fdb version 4
-["bibtex main"] 1791365923 "main.aux" "main.bbl" "main" 1791365927 0
+["bibtex main"] 1791384827 "main.aux" "main.bbl" "main" 1791384862 0
   "./bibfile.bib" 1791271314 60338 cc37816c5e66faac3e9131d65276d985 ""
   "/usr/local/texlive/2023/texmf-dist/bibtex/bst/elsarticle/elsarticle-harv.bst" 1606256092 30002 8c0c5833f37bea3ec214cf315a72975d ""
-  "main.aux" 1791365927 26842 88e3bc3fd466c5800b46f0b87f2c6680 "pdflatex"
+  "main.aux" 1791384862 27775 b215c1f47c3753f0f0e952a9df8ff92f "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1791365925 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" "main.pdf" "main" 1791365927 0
-  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" 1791365924 89613 96475cfa467d4aa15fe51b67606e8c54 ""
+["pdflatex"] 1791384860 "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" "main.pdf" "main" 1791384862 0
+  "/Users/patrik/Documents/Research/2025-2026/offset-free-koopman-mpc/document/main.tex" 1791384860 88674 0639080443cf0a7c61aab90fc8ac20a9 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
@@ -56,7 +56,6 @@
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb" 1248133631 34793 87a84b12f86dfd35a1cf1bb142b75602 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb" 1248133631 34811 78b52f49e893bcba91bd7581cdc144c0 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb" 1248133631 32080 340ef9bf63678554ee606688e7b5339d ""
-  "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx6.pfb" 1248133631 32378 2b20eba6bb36c716382b6d96240eaa69 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb" 1248133631 32007 e8fa0078355f39467039935974716569 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb" 1248133631 32166 b0c356b15f19587482a9217ce1d8fa67 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb" 1248133631 30251 6afa5cb1d0204815a708a080681d4674 ""
@@ -78,7 +77,6 @@
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb" 1248133631 36118 fad905eba93cff5bce1e185fe980a177 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti7.pfb" 1248133631 36607 d654cb3f2bc54f57509240071db3bffa ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb" 1248133631 24252 1e4e051947e12dfb50fee0b7f4e26e3a ""
-  "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmbsy8.pfb" 1248133631 29407 8c6dfc0f2d83bfc4807c3b1dc90ef23e ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib6.pfb" 1248133631 38151 b99966dad75d57fae7995e2606557fa7 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib8.pfb" 1248133631 35479 892d27442ef9ef29ce1ee57aa0e8a665 ""
   "/usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb" 1248133631 31764 459c573c03a4949a528c2cc7f557e217 ""
@@ -304,11 +302,11 @@
   "figures/cl_trajectories.pdf" 1790852461 29203 2f67e32e91095e2e3ffc46ac8efae847 ""
   "figures/close_loop.pdf" 1790773524 17017 bfbcca677b0b78bd601e846f05072e8d ""
   "figures/ident_test_comparison.pdf" 1790852461 28291 3965ebfccfce313c16c27f871b568e0c ""
-  "main.aux" 1791365927 26842 88e3bc3fd466c5800b46f0b87f2c6680 "pdflatex"
-  "main.bbl" 1791365923 8654 c64eb493bdedadedbd52ac8e42c27bf8 "bibtex main"
-  "main.out" 1791365927 4971 91f67f4b5ee0f29b5d8b42a64439430d "pdflatex"
-  "main.spl" 1791365926 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "main.tex" 1791365924 89613 96475cfa467d4aa15fe51b67606e8c54 ""
+  "main.aux" 1791384862 27775 b215c1f47c3753f0f0e952a9df8ff92f "pdflatex"
+  "main.bbl" 1791384827 8654 c64eb493bdedadedbd52ac8e42c27bf8 "bibtex main"
+  "main.out" 1791384862 4773 ec862b4451921a9ce32e0299ab6eb0a8 "pdflatex"
+  "main.spl" 1791384860 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "main.tex" 1791384860 88674 0639080443cf0a7c61aab90fc8ac20a9 ""
   (generated)
   "main.aux"
   "main.log"

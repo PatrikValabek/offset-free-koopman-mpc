@@ -696,22 +696,40 @@ The Koopman model with the nonlinear decoder is significantly more accurate than
 \section{Control setup}
 \label{sec:control-setup}
 
-{\generatedstyle
 In this section, we describe the closed-loop scenario on which the models of Sec.~\ref{sec:ident} are compared, together with the tuning, the observer, and the benchmark against which every controller is measured. The scenario, the weights, the constraints, and the disturbance sequence are identical in all runs reported in Sec.~\ref{sec:Results}, so that the differences between the controllers are attributable to the prediction model and to the way the output mapping enters the control problem, and not to the way the loop was set up.
 
-All four measured outputs $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$ are controlled, and the four manipulated variables of Table~\ref{tab:cstr-sep-inputs} are available to the controller, so the plant is square and the output specifications determine the steady-state target. The sampling period is the one used for identification, $\Ts = 1\,\text{s}$, and the prediction horizon is $N = 60$ samples. The input constraints~\eqref{eq:cs:mpc:u} are the identification box of Table~\ref{tab:cstr-sep-inputs}, so that the controller never drives the plant outside the region from which the models were identified. The output constraints~\eqref{eq:cs:mpc:ycon} are an operating window rather than equipment limits, namely $310\,\text{K} \leq T_i \leq 380\,\text{K}$ for the three vessel temperatures and $0.35 \leq x_{\text{B}3} \leq 0.85$ for the bottoms quality. All signals, weights, and bounds are expressed in the standardized coordinates of Sec.~\ref{sec:ident}, so that the three temperatures and the mass fraction contribute to the objective function on a comparable scale.
+All four measured outputs $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$ are controlled, and the four manipulated variables of Table~\ref{tab:cstr-sep-inputs} are available to the controller, so the plant is square and the output specifications determine the steady-state target. The sampling period is the one used for identification, $\Ts = 1\,\text{s}$, and the prediction horizon is $N = 60$ samples. The input constraints~\eqref{eq:cs:mpc:u} are the identification box of Table~\ref{tab:cstr-sep-inputs}. The output constraints~\eqref{eq:cs:mpc:ycon} are an operating window rather than equipment limits, namely $310\,\text{K} \leq T_i \leq 380\,\text{K}$ for the three vessel temperatures and $0.35 \leq x_{\text{B}3} \leq 0.85$ for the bottoms quality\todo{actually neccessary? not hitting, also make table not in text?}. All signals, weights, and bounds are expressed in the standardized coordinates of Sec.~\ref{sec:ident}, so that the three temperatures and the mass fraction contribute to the objective function on a comparable scale.
 
-\subsection{Grade campaign and reference changes}
+\subsection{Simulation scenario and disturbances}
 
-The scenario is a grade campaign on the bottoms quality, which is the specification that the separator has to deliver. The plant starts at the nominal steady state of~\cite{li2019dynamic} and the setpoint is held there for the first $350\,\text{s}$, so that the observer of every controller converges from its initialization before the first reference change. At $t = 350\,\text{s}$ the campaign switches to a premium grade, in which the mass fraction of the product B leaving the separator rises from $0.637$ to $0.702$, and at $t = 1000\,\text{s}$ the plant returns to the nominal grade. The whole simulation lasts $1500\,\text{s}$.
+The scenario is a grade campaign on the bottoms quality, combined with two unmeasured feed disturbances, and its schedule is listed in Table~\ref{tab:campaign}. The plant starts at the nominal steady state of~\cite{li2019dynamic}. The campaign then switches to a premium grade with a higher bottoms quality and later returns to the nominal grade. Both grades are steady states of the plant reachable inside the identification box, and the setpoints of the three temperatures are the corresponding steady-state values, so the controller has to move the whole operating point and not the quality alone. 
+%Since the yield of B is not monotone in the supplied heat, the premium grade is reached with less heat and a larger fresh feed, and the temperatures fall by approximately $6\,\text{K}$ instead of rising, which is the direction in which a model identified around a single operating point is most likely to fail. 
+While the premium grade is held, the fresh feed first becomes colder, which represents a drift of the feed preheater, and then leaner in the reactant A, which represents a switch of the feed tank, and both disturbances persist until the end of the simulation.\todo{change times after changing the graphs}
 
-Both grades are steady states of the plant, obtained by simulating it to steady state at the nominal input of Table~\ref{tab:cstr-sep-inputs} and at the premium input $[6.619,\, 8.544,\, 8.499,\, 11.224]$, and both are reachable inside the identification box, so that no reference change asks for an operating point that the models were never shown. The setpoints of the three temperatures are the corresponding steady-state values, $336.7$, $344.1$, and $346.2\,\text{K}$ at the nominal grade and $331.5$, $338.6$, and $340.1\,\text{K}$ at the premium grade, which means that the controller has to move the whole operating point and not the quality alone. The premium grade is reached with less heat and a larger fresh feed, because the yield of B is not monotone in the supplied heat, and the three temperatures consequently fall by approximately $6\,\text{K}$ instead of rising. This is the direction in which a model identified around a single operating point is most likely to fail, and the grade change is chosen for exactly this reason.
+\begin{table}[htbp]
+  \centering
+  \small
+  \setlength{\tabcolsep}{3pt}
+  \caption{Schedule of the closed-loop campaign. Each row lists the output setpoints and the fresh-feed conditions in force from the given time onwards, and the simulation ends at $t = 1500\,\text{s}$. The feed conditions act on the plant only and are not measured by any controller.}
+  \label{tab:campaign}
+  \begin{tabular}{rlcccccc}
+    \toprule
+    & & \multicolumn{4}{c}{Setpoint} & \multicolumn{2}{c}{Fresh feed} \\
+    \cmidrule(lr){3-6} \cmidrule(lr){7-8}
+    $t$ & Event & $T_1$ & $T_2$ & $T_3$ & $x_{\text{B}3}$ & Temperature & Fraction of A \\
+    {[s]} & & [K] & [K] & [K] & [--] & [K] & [--] \\
+    \midrule
+    $0$ & Nominal grade & $336.7$ & $344.1$ & $346.2$ & $0.637$ & $313$ & $1.00$ \\
+    $350$ & Premium grade & $331.5$ & $338.6$ & $340.1$ & $0.702$ & $313$ & $1.00$ \\
+    $600$ & Colder feed & $331.5$ & $338.6$ & $340.1$ & $0.702$ & $311$ & $1.00$ \\
+    $850$ & Leaner feed & $331.5$ & $338.6$ & $340.1$ & $0.702$ & $311$ & $0.98$ \\
+    $1000$ & Nominal grade & $336.7$ & $344.1$ & $346.2$ & $0.637$ & $311$ & $0.98$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
-\subsection{Unmeasured feed disturbances}
+Both disturbances act on the plant only, and the encoder, the observer, the target optimizer, and the MPC problem are left unchanged, so that the four controllers built on an identified model can reject them only through the output disturbance estimate $\hat{d}(t)$. Their magnitudes are deliberately modest, so that both grades remain reachable inside the identification box after the disturbances. The measurements are noise-free in all closed-loop runs.
 
-Two unmeasured feed upsets are applied to the plant while the premium grade is held. At $t = 600\,\text{s}$ the temperature of the fresh feed drops from $313\,\text{K}$ to $311\,\text{K}$, which represents a drift of the feed preheater or of the utility that supplies it. At $t = 850\,\text{s}$ the fresh feed becomes leaner, with the mass fraction of the reactant A falling from $1.00$ to $0.98$, which represents a switch of the feed tank or a carry-over of an inert. Both upsets act on the plant only, and the encoder, the observer, the target optimizer, and the MPC problem are left unchanged, so that the four controllers built on an identified model can reject them only through the output disturbance estimate $\hat{d}(t)$.
-
-The magnitudes are deliberately modest, because both grades have to remain reachable inside the identification box after the upsets. The measurements are noise-free in all closed-loop runs, although the models were identified from noisy data as described in Sec.~\ref{sec:ident}. This is a deliberate choice, because the differences between the compared controllers are of the same order as the spread that a single noise realization introduces, and reporting one realization would attribute to the formulation what belongs to the noise.
 
 \subsection{Tuning}
 
@@ -726,25 +744,29 @@ The target optimization~\eqref{eq:cs:target} uses $\ui{Q}{y}^\text{t} = \diag([1
 \end{equation}
 where the entries of $\ui{Q}{y}$ follow the order $T_1$, $T_2$, $T_3$, $x_{\text{B}3}$ of the outputs and the entries of $Q_{\Delta\text{u}}$ and $\ui{Q}{u}$ the order $Q_1$, $Q_2$, $Q_3$, $F_{10}$ of the inputs. The bottoms quality again carries the largest output weight, because it is the variable that the campaign has to meet, while the temperatures are regulated but act mainly as operating limits. The input target towards which $\ui{Q}{u}$ pulls is the nominal utility and throughput setting of Table~\ref{tab:cstr-sep-inputs}, held constant over the whole campaign, so that this term expresses the economic preference of the plant rather than a tracking requirement.
 
-Three tunings are reported. The first one is the original setup~\eqref{eq:cl:weights}. In the second one, $\ui{Q}{y}$ is multiplied by five and everything else is left unchanged, and in the third one, $\ui{Q}{y}$ is divided by five and everything else is left unchanged, so that the relative weight of the outputs against the inputs is moved by a factor of five in each direction. The purpose of this sweep is not to search for a good controller but to test the mechanism of the proposed formulation. The proposed scheme differs from the standard one only in the way the output mapping is used, in the objective function through~\eqref{eq:cs:Qz} and in the output constraints through~\eqref{eq:cs:mpc:y}. Its advantage is therefore expected to grow with the weight that the objective function places on the outputs, and to shrink when $\ui{Q}{y}$ is reduced and the outputs become a secondary concern.
-
-\subsection{Observers and the benchmark}
+\subsection{Observers}
 
 Each controller is paired with the observer that its formulation requires. The two controllers built on an LTI model, namely the one using the subspace model and the one using the Koopman model with the linear decoder, use a stationary Kalman filter on the augmented system~\eqref{eq:of:ss}, while the proposed controllers use the time-varying filter of Sec.~\ref{sec:tvkf}. The number of estimated disturbances equals the number of measurements, $n_d = n_y = 4$, with $B_d = 0$ and $C_d = I$, so that the disturbance is purely additive on the outputs and the rank condition~\eqref{eq:of:rank} is satisfied. The covariances in the standardized coordinates are $P(0) = I$, $R = 0.3\,I$, and $Q = \diag([0.1\,I,\, 0.1\,I])$, with the two blocks acting on the lifted state and on the disturbance, respectively.
 
-The benchmark is a nonlinear MPC that uses the plant equations themselves as the prediction model. It is paired with an extended Kalman filter and with a nonlinear steady-state target selector built on the same equations, both discretized by a fourth-order Runge--Kutta map with ten substeps per sampling period, so that the observer of the benchmark is not biased with respect to the plant stepper. Furthermore, the benchmark is informed of the new feed conditions at the instant at which each upset is applied, so that it suffers neither from process-model mismatch nor from a lag in the estimation of the disturbance. It uses the same horizon, the same weights, the same constraints, and the same references as every other controller. Its closed-loop performance is therefore the practical bound of this comparison, and we use it as the normalization of the results rather than as a competitor.
+% The benchmark is a nonlinear MPC that uses the plant equations themselves as the prediction model. It is paired with an extended Kalman filter and with a nonlinear steady-state target selector built on the same equations, both discretized by a fourth-order Runge--Kutta map with ten substeps per sampling period, so that the observer of the benchmark is not biased with respect to the plant stepper. Furthermore, the benchmark is informed of the new feed conditions at the instant at which each upset is applied, so that it suffers neither from process-model mismatch nor from a lag in the estimation of the disturbance. It uses the same horizon, the same weights, the same constraints, and the same references as every other controller. Its closed-loop performance is therefore the practical bound of this comparison, and we use it as the normalization of the results rather than as a competitor.
+\subsection{Evaluation}
 
 To evaluate the closed-loop performance, we accumulate over the whole simulation the same quantities that the MPC problem penalizes, which gives
-\begin{equation}
+\begin{subequations}
   \label{eq:cl:obj}
-  J = \underbrace{\sum_{t \in \mathcal{T}} \bigl\| y(t) - \ui{y}{sp}(t) \bigr\|_{\ui{Q}{y}}^2}_{\ui{J}{y}}
-  + \underbrace{\sum_{t \in \mathcal{T}} \bigl\| u(t) - u(t - \Ts) \bigr\|_{Q_{\Delta\text{u}}}^2}_{J_{\Delta\text{u}}}
-  + \underbrace{\sum_{t \in \mathcal{T}} \bigl\| u(t) - \bar{u}(t) \bigr\|_{\ui{Q}{u}}^2}_{\ui{J}{u}},
-\end{equation}
-where $J$ is the closed-loop objective, $\ui{J}{y}$, $J_{\Delta\text{u}}$, and $\ui{J}{u}$ are its three parts, $\mathcal{T} = \{0,\, \Ts,\, \ldots,\, (\ui{n}{sim}-1)\Ts\}$ is the set of the sampling instants of the campaign, $\ui{n}{sim} = 1500$ is its length in samples, and $\|v\|_Q^2 = v^\intercal Q v$. The three parts are the closed-loop counterparts of the three terms of~\eqref{eq:of:mpc:obj} and are evaluated with the weights of the tuning that is being reported. A large $\ui{J}{y}$ means that the plant spends time away from the requested grade, which in a campaign is off-specification product, whereas a large $J_{\Delta\text{u}}$ or $\ui{J}{u}$ means that the duties and the flow rates are moved far and held far from the economically preferred operating point, which is paid for in utilities and in throughput.
+  \begin{align}
+    \ui{J}{y} &= \sum_{t \in \mathcal{T}} \bigl\| y(t) - \ui{y}{sp}(t) \bigr\|_{\ui{Q}{y}}^2, \label{eq:cl:obj:y} \\
+    J_{\Delta\text{u}} &= \sum_{t \in \mathcal{T}} \bigl\| u(t) - u(t - \Ts) \bigr\|_{Q_{\Delta\text{u}}}^2, \label{eq:cl:obj:du} \\
+    \ui{J}{u} &= \sum_{t \in \mathcal{T}} \bigl\| u(t) - \bar{u}(t) \bigr\|_{\ui{Q}{u}}^2, \label{eq:cl:obj:u} \\
+    J &= \ui{J}{y} + J_{\Delta\text{u}} + \ui{J}{u}, \label{eq:cl:obj:sum}
+  \end{align}
+\end{subequations}
+where $\ui{J}{y}$ is the closed-loop output cost, $\|v\|_Q^2 = v^\intercal Q v$, and $\mathcal{T} = \{0,\, \Ts,\, \ldots,\, (\ui{n}{sim}-1)\Ts\}$ is the set of the sampling instants of the campaign, with $\ui{n}{sim} = 1500$ its length in samples; $J_{\Delta\text{u}}$ is the closed-loop input-increment cost and $\ui{J}{u}$ the closed-loop input-target cost; and $J$ is their sum. The three parts are the closed-loop counterparts of the three terms of~\eqref{eq:of:mpc:obj} and are evaluated with the weights of the tuning that is being reported. 
+%A large $\ui{J}{y}$ means that the plant spends time away from the requested grade, which in a campaign is off-specification product, whereas a large $J_{\Delta\text{u}}$ or $\ui{J}{u}$ means that the duties and the flow rates are moved far and held far from the economically preferred operating point, which is paid for in utilities and in throughput.
 
-The target optimization~\eqref{eq:cs:target} and the MPC problem~\eqref{eq:cs:mpc} are quadratic programs, formulated in CVXPY and solved with Gurobi~\cite{gurobi} restricted to a single thread. The decoder $h(\ui{z}{LP})$ and its Jacobian $H(\ui{z}{LP})$ are evaluated in PyTorch~\cite{paszke2019pytorch} at every sampling instant. The nonlinear benchmark and its target selector are formulated in CasADi through the do-mpc toolbox and solved with IPOPT using the MUMPS linear solver, and the plant itself is integrated by the explicit Runge--Kutta solver of SciPy. All closed-loop runs were carried out on a Mac mini with an Apple M4 Pro processor. \todo{add bibliography entries for CVXPY, CasADi, do-mpc, IPOPT, and SciPy}
-}
+The target optimization~\eqref{eq:cs:target} and the MPC problem~\eqref{eq:cs:mpc} are quadratic programs, formulated in CVXPY and solved with Gurobi~\cite{gurobi}. The decoder $h(\ui{z}{LP})$ and its Jacobian $H(\ui{z}{LP})$ are evaluated in PyTorch~\cite{paszke2019pytorch} at every sampling instant. 
+%The nonlinear benchmark and its target selector are formulated in CasADi through the do-mpc toolbox and solved with IPOPT using the MUMPS linear solver, and the plant itself is integrated by the explicit Runge--Kutta solver of SciPy. 
+All closed-loop runs were carried out on a Mac mini with an Apple M4 Pro processor. \todo{add bibliography entries for CVXPY}
 
 \section{Closed-loop results}
 \label{sec:Results}
