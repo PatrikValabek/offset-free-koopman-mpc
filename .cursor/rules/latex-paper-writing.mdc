@@ -49,8 +49,16 @@ After every edit that introduces or renames a symbol (writing a `where` clause, 
 
 Format: `- $symbol$ — meaning (first defined in \label{...})`
 
+**Transpose.** Every transposition is written `^\intercal`, as in `$z^\intercal$` and `$A^\intercal$`. Do not use `$^T$`, `$^\top$`, `$^\mathrm{T}$`, or `$^\mathsf{T}$`. The upright superscript in `$Q_\text{y}^\text{t}$` marks the target-optimization weight and is not a transpose.
+
 ---
 
+- `$f(\cdot)$` — nonlinear transition map of the controlled system $x_{k+1} = f(x_k, u_k)$ (first defined in `\label{eq:koopman:sys}`). The autonomous case is not presented separately
+- `$\mathcal{K}$` — Koopman operator (first defined in `\label{eq:koopman:def}`)
+- `$\psi$` — scalar lifting function of the state, $\psi : \mathbb{R}^{n_x} \to \mathbb{R}$ (first defined in `\label{eq:koopman:def}`). Called *lifting function* throughout; the synonym *observable* is mentioned once, where $\mathcal{K}$ is defined, and never again
+- `$\mathcal{F}$` — space of lifting functions on which $\mathcal{K}$ is defined (first defined in `\label{eq:koopman:def}`)
+- `$\mathbf{u}_k \in \ell(\mathcal{U})$` — input sequence applied from the step $k$ onwards; `$\ell(\mathcal{U})$` is the space of such sequences and `$\mathcal{U}$` the input constraint set (first defined in `\label{eq:koopman:def}`)
+- `$\mathcal{S}$` — left shift operator, $(\mathcal{S}\mathbf{u}_k)(i) = \mathbf{u}_k(i+1)$ (first defined in `\label{eq:koopman:def}`)
 - `$z$` — lifted (Koopman) state
 - `$y$` — original system output
 - `$u$` — control input
@@ -77,15 +85,15 @@ Format: `- $symbol$ — meaning (first defined in \label{...})`
 - `$\hat{z}(t)$` — Kalman filter lifted state estimate at current time (first defined in `\label{eq:of:mpc:init}`)
 - `$u_{-1}$` — input applied at the previous sampling instant, i.e. $u(t - T_\text{s})$ (first defined in `\label{eq:of:mpc:init}`)
 - `$u_0^*$` — optimal first element of the MPC input sequence (first defined in `\label{eq:of:mpc}`)
-- `$h(\cdot)$` — decoder, acting as the nonlinear output mapping $h : \mathbb{R}^{n_z} \to \mathbb{R}^{n_y}$ (first defined in `\label{eq:dk:rollout:out}`)
+- `$h(\cdot)$` — nonlinear projection from the lifted state to the output, $h : \mathbb{R}^{n_z} \to \mathbb{R}^{n_y}$ (first defined in `\label{eq:linearization}`). In this work it is the decoder of a neural network; it may instead be the inverse of a single invertible lifting function, as in DMD. The control formulation uses only $h$ and its Jacobian
 - `$\bar{z}(t-T_\text{s})$` — steady-state lifted state from the previous sampling instant (first defined in `\label{eq:linearization:target}`)
 - `$H(\cdot) \in \mathbb{R}^{n_y \times n_z}$` — Jacobian of $h$ evaluated at its argument (first defined in `\label{eq:linearization}`). **This is the only symbol for the Jacobian; never $J$**
-- `$z_\text{LP}$` (macro `\ui{z}{LP}`, a *subscript*) — linearization point of the output mapping; equal to $\bar{z}(t-T_\text{s})$ in Algorithm 1 and to $\hat{z}(t)$ in Algorithm 2 (first used in `\label{eq:cs:target:y}`)
-- `$g(\cdot)$` — encoder, i.e. the Koopman lifting function $g : \mathbb{R}^{n_y} \to \mathbb{R}^{n_z}$ (first defined in `\label{eq:dk:rollout:init}`)
+- `$z_\text{LP}$` (macro `\ui{z}{LP}`, a *subscript*) — linearization point of the output mapping; equal to $\bar{z}(t-T_\text{s})$ in Algorithm 1 and to $\hat{z}(t)$ in Algorithm 2 (first defined in `\label{eq:linearization:affine}`)
+- `$g(\cdot)$` — vector-valued lifting map collecting the $n_z$ retained lifting functions, $g = [\psi_1, \ldots, \psi_{n_z}]^\intercal$ (first defined in `\label{eq:koopman:lift}`). Evaluated at the measured output rather than at the state, since $x$ is not measured, so $g : \mathbb{R}^{n_y} \to \mathbb{R}^{n_z}$. In this work it is a neural-network encoder; together with $h$ it may instead be one invertible function, as in DMD. **Do not restate this signature in later sections**
 - `$\tilde{z}(t)$` — augmented state $[z(t)^\intercal, d(t)^\intercal]^\intercal \in \mathbb{R}^{n_z+n_d}$ used in the TVKF (first defined in `\label{eq:tvkf:aug}`)
 - `$\tilde{A}$`, `$\tilde{B}$` — augmented system matrices of the TVKF (first defined in `\label{eq:tvkf:aug}`)
 - `$\tilde{C}(t)$` — time-varying output matrix of the TVKF, $\tilde{C}(t) = [H(z_\text{LP}), C_d]$ (first defined in `\label{eq:tvkf:meas}`)
-- `$c(t)$` — linearization offset in the TVKF measurement equation (first defined in `\label{eq:tvkf:meas}`)
+- `$c(t)$` — linearization offset $h(z_\text{LP}) - H(z_\text{LP}) z_\text{LP}$ of the affine output equation (first defined in `\label{eq:linearization:affine}`). Reused unchanged in the TVKF measurement equation `\label{eq:tvkf:meas}`, where it must not be redefined
 - `$Q$` — process noise covariance matrix (first defined in `\label{eq:tvkf:predict:P}`)
 - `$R$` — measurement noise covariance matrix (first defined in `\label{eq:tvkf:update:S}`)
 - `$S(t)$` — innovation covariance in the TVKF update (first defined in `\label{eq:tvkf:update:S}`)
@@ -93,11 +101,8 @@ Format: `- $symbol$ — meaning (first defined in \label{...})`
 - `$P(t)$`, `$P^{-}(t)$` — posterior and prior error covariance matrices; the superscript minus marks any quantity available before $y(t)$ has been processed, as in `$\hat{\tilde{z}}^{-}(t)$` (first defined in `\label{eq:tvkf:predict:P}`)
 - `$V \in \mathbb{R}^{n_z \times n_z}$` — matrix of eigenvectors of $A$ that brings the model into real block-diagonal form (first defined in `\label{eq:bd:A}`). **Not $T$**, which is reserved for the vessel temperatures and the sampling period $T_\text{s}$
 - `$A^\text{bd}, B^\text{bd}, C^\text{bd}, z^\text{bd}, H^\text{bd}$` (macro `\uis{A}{bd}`) — block-diagonal model and its lifted state (first defined in `\label{eq:bd:A}`). **The bar accent is reserved for the steady-state target and must never mark the transformed coordinates**
-- `$N_\text{r}$` — length of the training window over which the Koopman model is unrolled (first defined in `\label{eq:dk:rollout}`)
-- `$i$` — sample index within the training window (first defined in `\label{eq:dk:rollout}`)
-- `$\hat{y}_i$` — output predicted by the Koopman model during training (first defined in `\label{eq:dk:rollout:out}`)
-- `$\mathcal{L}$` — training loss of the deep Koopman identification (first defined in `\label{eq:dk:loss}`)
-- `$w_\text{y}$`, `$w_\text{z}$`, `$w_1$`, `$w_\text{r}$` — weights of the multi-step output, latent consistency, one-step output, and reconstruction terms of the training loss (first defined in `\label{eq:dk:loss}`)
+- `$N_\text{r}$` — length of the training window, in samples (first defined in `\label{tab:koopman-hpo}`)
+- `$w_\text{y}$`, `$w_\text{z}$`, `$w_\text{r}$` — weights of the output, latent-state, and reconstruction terms of the Koopman training loss (first defined in `\label{tab:koopman-hpo}`)
 - `$Q_1, Q_2, Q_3$` — heat duties of the three vessels of the reactor--separator plant, in kJ/s (first defined in `\label{tab:cstr-sep-inputs}`). Note the numeric subscripts: the weighting matrices always carry text subscripts (`$Q_\text{y}$`) and the process noise covariance is the unsubscripted `$Q$`
 - `$F_{10}$` — fresh feed flow rate to the first reactor, a manipulated input (first defined in `\label{tab:cstr-sep-inputs}`)
 - `$F_{20}$`, `$F_\text{r}$` — fresh feed to the second reactor and the recycle flow rate, held fixed at the nominal values $0.5$ m$^3$/s and $4.0$ m$^3$/s (first defined in `\label{sec:ident}`, not manipulated)

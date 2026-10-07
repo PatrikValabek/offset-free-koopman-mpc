@@ -1,4 +1,4 @@
-\begin{thebibliography}{16}
+\begin{thebibliography}{18}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\href}[2]{#2}
@@ -20,6 +20,11 @@
 \bibinfo{author}{Armenise, G.}, \bibinfo{author}{Bacci~di Capaci, R.}, \bibinfo{author}{Vaccari, M.}, \bibinfo{author}{Pannocchia, G.}, \bibinfo{year}{2018}.
 \newblock \bibinfo{title}{An open-source system identification package for multivariable processes}, in: \bibinfo{booktitle}{2018 UKACC 12th International Conference on Control (CONTROL)}.
 \newblock \DOIprefix\doi{10.1109/CONTROL.2018.8516791}.
+%Type = Article
+\bibitem[{Chen et~al.(2022)Chen, Dang and Han}]{chen2022offset}
+\bibinfo{author}{Chen, J.}, \bibinfo{author}{Dang, Y.}, \bibinfo{author}{Han, J.}, \bibinfo{year}{2022}.
+\newblock \bibinfo{title}{Offset-free model predictive control of a soft manipulator using the koopman operator}.
+\newblock \bibinfo{journal}{Mechatronics} \bibinfo{volume}{86}, \bibinfo{pages}{102871}.
 %Type = Article
 \bibitem[{Drgo{\v{n}}a et~al.(2023)Drgo{\v{n}}a, Tuor, Koch, Shapiro and Vrabie}]{Neuromancer2023}
 \bibinfo{author}{Drgo{\v{n}}a, J.}, \bibinfo{author}{Tuor, A.}, \bibinfo{author}{Koch, J.}, \bibinfo{author}{Shapiro, M.}, \bibinfo{author}{Vrabie, D.}, \bibinfo{year}{2023}.
@@ -65,6 +70,11 @@
 \bibinfo{author}{Mezi{\'c}, I.}, \bibinfo{year}{2005}.
 \newblock \bibinfo{title}{Spectral properties of dynamical systems, model reduction and decompositions}.
 \newblock \bibinfo{journal}{Nonlinear Dynamics} \bibinfo{volume}{41}, \bibinfo{pages}{309--325}.
+%Type = Article
+\bibitem[{Pan et~al.(2024)Pan, Li and Dong}]{pan2024offset}
+\bibinfo{author}{Pan, C.}, \bibinfo{author}{Li, Y.}, \bibinfo{author}{Dong, L.}, \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{Offset-free koopman model predictive control of thermal comfort regulation for a variable refrigerant flow-dedicated outdoor air system-combined system}.
+\newblock \bibinfo{journal}{Journal of Dynamic Systems, Measurement, and Control} \bibinfo{volume}{146}, \bibinfo{pages}{051002}.
 %Type = Article
 \bibitem[{Pannocchia and Rawlings(2003)}]{pannocchia2003disturbance}
 \bibinfo{author}{Pannocchia, G.}, \bibinfo{author}{Rawlings, J.B.}, \bibinfo{year}{2003}.

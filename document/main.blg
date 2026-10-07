@@ -6,45 +6,45 @@ Database file #1: bibfile.bib
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Warning--empty pages in armenise2018sippy
 Warning--empty journal in Neuromancer2023
-You've used 16 entries,
+You've used 18 entries,
             2990 wiz_defined-function locations,
-            733 strings with 8608 characters,
-and the built_in function-call counts, 11757 in all, are:
-= -- 876
-> -- 536
+            747 strings with 9074 characters,
+and the built_in function-call counts, 13089 in all, are:
+= -- 974
+> -- 588
 < -- 9
-+ -- 209
-- -- 189
-* -- 1312
-:= -- 1709
-add.period$ -- 46
-call.type$ -- 16
-change.case$ -- 142
-chr.to.int$ -- 16
-cite$ -- 18
-duplicate$ -- 840
-empty$ -- 816
-format.name$ -- 239
-if$ -- 2174
++ -- 229
+- -- 207
+* -- 1462
+:= -- 1903
+add.period$ -- 52
+call.type$ -- 18
+change.case$ -- 158
+chr.to.int$ -- 18
+cite$ -- 20
+duplicate$ -- 942
+empty$ -- 916
+format.name$ -- 263
+if$ -- 2420
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 168
-newline$ -- 93
-num.names$ -- 64
-pop$ -- 316
+missing$ -- 188
+newline$ -- 103
+num.names$ -- 72
+pop$ -- 352
 preamble$ -- 1
-purify$ -- 127
+purify$ -- 141
 quote$ -- 0
-skip$ -- 257
+skip$ -- 283
 stack$ -- 0
-substring$ -- 502
-swap$ -- 629
+substring$ -- 560
+swap$ -- 703
 text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 141
+type$ -- 159
 warning$ -- 2
-while$ -- 72
+while$ -- 80
 width$ -- 0
-write$ -- 234
+write$ -- 262
 (There were 2 warnings)
