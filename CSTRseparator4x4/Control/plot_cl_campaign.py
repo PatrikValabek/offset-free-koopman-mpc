@@ -15,7 +15,7 @@ from pathlib import Path
 import joblib
 import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.ticker import MaxNLocator, MultipleLocator
+from matplotlib.ticker import FixedLocator, MaxNLocator, MultipleLocator
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SWEEP = Path(__file__).resolve().parent / "results" / "weight_sweep"
@@ -53,6 +53,12 @@ LW_EVENT = 0.6
 
 TS = 1.0
 EVENTS = (350.0, 600.0, 850.0, 1000.0)
+# Output figure only. Campaign window 250–1250 s; the axis origin is 250 s.
+T_LO = 250.0
+T_HI = 1250.0
+T_ORIGIN = 250.0
+ZOOM_LO = 990.0
+ZOOM_HI = 1070.0
 
 YLABELS = (
     r"$T_1$ [K]",
@@ -159,37 +165,117 @@ def _finish_stack(fig, axes, out: Path, bottom: float) -> Path:
 
 
 def plot_outputs() -> Path:
+    """Campaign from 250 s to 1250 s, with a 990–1070 s close-up.
+
+    The nonlinear MPC trajectory is omitted. The setpoint stays. Both columns share
+    the vertical scale and count time from 250 s, so that instant is 0.
+    """
     y_series, _, _, _, _ = _load_cl_series()
-    fig, axes = plt.subplots(
-        4, 1, figsize=(FIG_W_IN, FIG_H_Y_IN), sharex=True,
-        gridspec_kw={"hspace": 0.18},
+    y_series = tuple(
+        s for s in y_series if not (s[2] == COLOR_NMPC and s[3] == "-")
     )
-    for i, ax in enumerate(axes):
-        event_lines(ax)
-        for y, t, color, ls, lw, z in y_series:
-            ax.plot(t, y[i], color=color, linestyle=ls, linewidth=lw, zorder=z)
-        style_axis(ax, YLABELS[i])
-    return _finish_stack(fig, axes, OUT_DIR / "cl_trajectories.pdf", 0.08)
+    t_lo, t_hi = T_LO - T_ORIGIN, T_HI - T_ORIGIN
+    z_lo, z_hi = ZOOM_LO - T_ORIGIN, ZOOM_HI - T_ORIGIN
+
+    # Shorter than the single-column stack so the two-column figure and its caption fit the page.
+    fig = plt.figure(figsize=(FIG_W_IN, 5.32))
+    gs = fig.add_gridspec(
+        4, 2, width_ratios=(1.85, 1.0), wspace=0.28, hspace=0.18,
+    )
+    left_axes = []
+    right_axes = []
+    for i in range(4):
+        ax_l = fig.add_subplot(gs[i, 0])
+        ax_r = fig.add_subplot(gs[i, 1], sharey=ax_l)
+        for ax, x0, x1 in ((ax_l, t_lo, t_hi), (ax_r, z_lo, z_hi)):
+            for t_ev in EVENTS:
+                ax.axvline(t_ev - T_ORIGIN, color=COLOR_EVENT, linewidth=LW_EVENT, zorder=1)
+            for y, t, color, ls, lw, z in y_series:
+                ax.plot(t - T_ORIGIN, y[i], color=color, linestyle=ls, linewidth=lw, zorder=z)
+            ax.set_xlim(x0, x1)
+            ax.grid(True)
+            ax.yaxis.set_major_locator(MaxNLocator(nbins=3, prune=None))
+        ax_l.set_ylabel(YLABELS[i], fontsize=BODY_PT)
+        ax_r.tick_params(axis="y", which="both", left=False, labelleft=False)
+        left_axes.append(ax_l)
+        right_axes.append(ax_r)
+
+    for ax in (*left_axes[:-1], *right_axes[:-1]):
+        ax.tick_params(axis="x", which="both", labelbottom=False)
+    left_axes[-1].xaxis.set_major_locator(FixedLocator([0, 250, 500, 750, 1000]))
+    right_axes[-1].xaxis.set_major_locator(FixedLocator([740, 780, 820]))
+    fig.subplots_adjust(left=0.15, right=0.97, top=0.99, bottom=0.10)
+    x_mid = 0.5 * (
+        left_axes[-1].get_position().x1 + right_axes[-1].get_position().x0
+    )
+    fig.text(
+        x_mid, 0.012, r"Time $t$ [s]", ha="center", va="bottom", fontsize=BODY_PT,
+    )
+    out = OUT_DIR / "cl_trajectories.pdf"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out, format="pdf")
+    plt.close(fig)
+    return out
 
 
 def plot_inputs() -> Path:
+    """Same window, close-up, and time origin as the output figure.
+
+    The nonlinear MPC trajectory is omitted. The right column shares the vertical
+    scale, including the input-bound bands, and carries no separate y-axis.
+    """
     _, u_series, t_u, u_min, u_max = _load_cl_series()
-    fig, axes = plt.subplots(
-        4, 1, figsize=(FIG_W_IN, FIG_H_U_IN), sharex=True,
-        gridspec_kw={"hspace": 0.18},
+    u_series = tuple(
+        s for s in u_series if not (s[1] == COLOR_NMPC and s[2] == "-")
     )
-    for j, ax in enumerate(axes):
-        event_lines(ax)
+    t_lo, t_hi = T_LO - T_ORIGIN, T_HI - T_ORIGIN
+    z_lo, z_hi = ZOOM_LO - T_ORIGIN, ZOOM_HI - T_ORIGIN
+    t_plot = t_u - T_ORIGIN
+
+    fig = plt.figure(figsize=(FIG_W_IN, 4.85))
+    gs = fig.add_gridspec(
+        4, 2, width_ratios=(1.85, 1.0), wspace=0.28, hspace=0.18,
+    )
+    left_axes = []
+    right_axes = []
+    for j in range(4):
+        ax_l = fig.add_subplot(gs[j, 0])
+        ax_r = fig.add_subplot(gs[j, 1], sharey=ax_l)
         span = float(u_max[j] - u_min[j])
         pad = 0.08 * span
         ymin, ymax = u_min[j] - pad, u_max[j] + pad
-        ax.axhspan(ymin, u_min[j], color=COLOR_BOUND, alpha=0.10, zorder=0, lw=0)
-        ax.axhspan(u_max[j], ymax, color=COLOR_BOUND, alpha=0.10, zorder=0, lw=0)
-        for u, color, ls, lw, z in u_series:
-            ax.plot(t_u, u[j], color=color, linestyle=ls, linewidth=lw, zorder=z)
-        style_axis(ax, ULABELS[j])
-        ax.set_ylim(ymin, ymax)
-    return _finish_stack(fig, axes, OUT_DIR / "cl_inputs.pdf", 0.065)
+        for ax, x0, x1 in ((ax_l, t_lo, t_hi), (ax_r, z_lo, z_hi)):
+            for t_ev in EVENTS:
+                ax.axvline(t_ev - T_ORIGIN, color=COLOR_EVENT, linewidth=LW_EVENT, zorder=1)
+            ax.axhspan(ymin, u_min[j], color=COLOR_BOUND, alpha=0.10, zorder=0, lw=0)
+            ax.axhspan(u_max[j], ymax, color=COLOR_BOUND, alpha=0.10, zorder=0, lw=0)
+            for u, color, ls, lw, z in u_series:
+                ax.plot(t_plot, u[j], color=color, linestyle=ls, linewidth=lw, zorder=z)
+            ax.set_xlim(x0, x1)
+            ax.grid(True)
+            ax.yaxis.set_major_locator(MaxNLocator(nbins=3, prune=None))
+        ax_l.set_ylabel(ULABELS[j], fontsize=BODY_PT)
+        ax_l.set_ylim(ymin, ymax)
+        ax_r.tick_params(axis="y", which="both", left=False, labelleft=False)
+        left_axes.append(ax_l)
+        right_axes.append(ax_r)
+
+    for ax in (*left_axes[:-1], *right_axes[:-1]):
+        ax.tick_params(axis="x", which="both", labelbottom=False)
+    left_axes[-1].xaxis.set_major_locator(FixedLocator([0, 250, 500, 750, 1000]))
+    right_axes[-1].xaxis.set_major_locator(FixedLocator([740, 780, 820]))
+    fig.subplots_adjust(left=0.16, right=0.97, top=0.99, bottom=0.10)
+    x_mid = 0.5 * (
+        left_axes[-1].get_position().x1 + right_axes[-1].get_position().x0
+    )
+    fig.text(
+        x_mid, 0.012, r"Time $t$ [s]", ha="center", va="bottom", fontsize=BODY_PT,
+    )
+    out = OUT_DIR / "cl_inputs.pdf"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out, format="pdf")
+    plt.close(fig)
+    return out
 
 
 def d_physical(run, scale: np.ndarray) -> np.ndarray:
@@ -225,6 +311,65 @@ def plot_disturbances() -> Path:
     axes[-1].xaxis.set_major_locator(MultipleLocator(500))
     fig.subplots_adjust(left=0.20, right=0.98, top=0.99, bottom=0.08, hspace=0.18)
     out = OUT_DIR / "cl_disturbances.pdf"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out, format="pdf")
+    plt.close(fig)
+    return out
+
+
+def plot_cost_bars() -> Path:
+    """Grouped bars of J / J_{linear h} for three output-weight tunings.
+
+    Costs are the tabulated totals in document/main.tex. Columns are the
+    Koopman model with the linear decoder, the proposed linearization at
+    the previous target, and the proposed linearization at the current
+    estimate. Each row is divided by the linear-decoder cost of that tuning.
+    """
+    apply_style()
+    # Rows: Qy/5, original Qy, 5 Qy.
+    # Cols: linear h, previous target, current estimate.
+    costs = np.array(
+        [
+            [30.0, 28.4, 28.3],
+            [125.8, 111.5, 112.2],
+            [605.9, 504.3, 520.6],
+        ],
+        dtype=float,
+    )
+    rel = 100.0 * costs / costs[:, [0]]
+    colors = (COLOR_CT, COLOR_T2D2, COLOR_T3D3)
+    labels = (
+        r"$\frac{1}{5}Q_{\mathrm{y}}$",
+        r"$Q_{\mathrm{y}}$",
+        r"$5Q_{\mathrm{y}}$",
+    )
+    n_groups, n_series = rel.shape
+    x = np.arange(n_groups, dtype=float)
+    width = 0.22
+    offsets = (np.arange(n_series) - (n_series - 1) / 2.0) * width
+
+    fig, ax = plt.subplots(figsize=(FIG_W_IN, 3.15))
+    for i, color in enumerate(colors):
+        ax.bar(
+            x + offsets[i],
+            rel[:, i],
+            width=width * 0.92,
+            color=color,
+            edgecolor="black",
+            linewidth=0.6 if i >= 1 else 0.4,
+            zorder=3,
+        )
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, fontsize=TICK_PT)
+    ax.set_xlabel(r"Output weight", fontsize=BODY_PT)
+    ax.set_ylabel(r"$J/J_{\mathrm{linear}\,h}$", fontsize=BODY_PT)
+    ax.set_xlim(-0.55, n_groups - 0.45)
+    ax.set_ylim(80, 100)
+    ax.yaxis.set_major_locator(MultipleLocator(5))
+    ax.grid(axis="y", zorder=0)
+    ax.set_axisbelow(True)
+    fig.subplots_adjust(left=0.16, right=0.985, top=0.97, bottom=0.18)
+    out = OUT_DIR / "cl_cost_bars.pdf"
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, format="pdf")
     plt.close(fig)

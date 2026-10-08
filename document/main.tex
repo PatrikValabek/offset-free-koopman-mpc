@@ -583,7 +583,7 @@ The Jacobian of the output mapping is transformed in the same way, resulting in
   \label{eq:bd:H}
   \uis{H}{bd}(z_k) = H(z_k) V = H(V \uis{z}{bd}_k) V.
 \end{equation}
-For a fair comparison, this transformation is applied to every model identified in this work, not only to the Koopman models. The effects of the transformation are discussed in Sec.~\ref{sec:Results}.
+For a fair comparison, this transformation is applied to every model identified in this work, not only to the Koopman models. %The effects of the transformation are discussed in Sec.~\ref{sec:Results}.
 
 \section{Identification}
 \label{sec:ident}
@@ -696,7 +696,7 @@ The Koopman model with the nonlinear decoder is significantly more accurate than
 \section{Control setup}
 \label{sec:control-setup}
 
-In this section, we describe the closed-loop scenario on which the models of Sec.~\ref{sec:ident} are compared, together with the tuning, the observer, and the benchmark against which every controller is measured. The scenario, the weights, the constraints, and the disturbance sequence are identical in all runs reported in Sec.~\ref{sec:Results}, so that the differences between the controllers are attributable to the prediction model and to the way the output mapping enters the control problem, and not to the way the loop was set up.
+In this section, we describe the closed-loop scenario on which the models of Sec.~\ref{sec:ident} are compared, together with {\renewcommand{\gensource}{claude-opus-5.5}\textgenerated{\genopen{} the tuning and the observers of the compared controllers\genclose}}. The scenario, the weights, the constraints, and the disturbance sequence are identical in all runs reported in Sec.~\ref{sec:Results}, so that the differences between the controllers are attributable to the prediction model and to the way the output mapping enters the control problem, and not to the way the loop was set up.
 
 All four measured outputs $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$ are controlled, and the four manipulated variables of Table~\ref{tab:cstr-sep-inputs} are available to the controller, so the plant is square and the output specifications determine the steady-state target. The sampling period is the one used for identification, $\Ts = 1\,\text{s}$, and the prediction horizon is $N = 60$ samples. The input constraints~\eqref{eq:cs:mpc:u} are the identification box of Table~\ref{tab:cstr-sep-inputs}. The output constraints~\eqref{eq:cs:mpc:ycon} are an operating window rather than equipment limits, namely $310\,\text{K} \leq T_i \leq 380\,\text{K}$ for the three vessel temperatures and $0.35 \leq x_{\text{B}3} \leq 0.85$ for the bottoms quality\todo{actually neccessary? not hitting, also make table not in text?}. All signals, weights, and bounds are expressed in the standardized coordinates of Sec.~\ref{sec:ident}, so that the three temperatures and the mass fraction contribute to the objective function on a comparable scale.
 
@@ -704,13 +704,13 @@ All four measured outputs $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$ are controlle
 
 The scenario is a grade campaign on the bottoms quality, combined with two unmeasured feed disturbances, and its schedule is listed in Table~\ref{tab:campaign}. The plant starts at the nominal steady state of~\cite{li2019dynamic}. The campaign then switches to a premium grade with a higher bottoms quality and later returns to the nominal grade. Both grades are steady states of the plant reachable inside the identification box, and the setpoints of the three temperatures are the corresponding steady-state values, so the controller has to move the whole operating point and not the quality alone. 
 %Since the yield of B is not monotone in the supplied heat, the premium grade is reached with less heat and a larger fresh feed, and the temperatures fall by approximately $6\,\text{K}$ instead of rising, which is the direction in which a model identified around a single operating point is most likely to fail. 
-While the premium grade is held, the fresh feed first becomes colder, which represents a drift of the feed preheater, and then leaner in the reactant A, which represents a switch of the feed tank, and both disturbances persist until the end of the simulation.\todo{change times after changing the graphs}
+While the premium grade is held, the fresh feed first becomes colder, which represents a drift of the feed preheater, and then leaner in the reactant A, which represents a switch of the feed tank, and both disturbances persist until the end of the simulation.
 
 \begin{table}[htbp]
   \centering
   \small
   \setlength{\tabcolsep}{3pt}
-  \caption{Schedule of the closed-loop campaign. Each row lists the output setpoints and the fresh-feed conditions in force from the given time onwards, and the simulation ends at $t = 1500\,\text{s}$. The feed conditions act on the plant only and are not measured by any controller.}
+  \caption{Schedule of the closed-loop campaign. Each row lists the output setpoints and the fresh-feed conditions in force from the given time onwards, and the simulation ends at $t = 1250\,\text{s}$. The feed conditions act on the plant only and are not measured by any controller.}
   \label{tab:campaign}
   \begin{tabular}{rlcccccc}
     \toprule
@@ -720,10 +720,10 @@ While the premium grade is held, the fresh feed first becomes colder, which repr
     {[s]} & & [K] & [K] & [K] & [--] & [K] & [--] \\
     \midrule
     $0$ & Nominal grade & $336.7$ & $344.1$ & $346.2$ & $0.637$ & $313$ & $1.00$ \\
-    $350$ & Premium grade & $331.5$ & $338.6$ & $340.1$ & $0.702$ & $313$ & $1.00$ \\
-    $600$ & Colder feed & $331.5$ & $338.6$ & $340.1$ & $0.702$ & $311$ & $1.00$ \\
-    $850$ & Leaner feed & $331.5$ & $338.6$ & $340.1$ & $0.702$ & $311$ & $0.98$ \\
-    $1000$ & Nominal grade & $336.7$ & $344.1$ & $346.2$ & $0.637$ & $311$ & $0.98$ \\
+    $100$ & Premium grade & $331.5$ & $338.6$ & $340.1$ & $0.702$ & $313$ & $1.00$ \\
+    $350$ & Colder feed & $331.5$ & $338.6$ & $340.1$ & $0.702$ & $311$ & $1.00$ \\
+    $600$ & Leaner feed & $331.5$ & $338.6$ & $340.1$ & $0.702$ & $311$ & $0.98$ \\
+    $750$ & Nominal grade & $336.7$ & $344.1$ & $346.2$ & $0.637$ & $311$ & $0.98$ \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -761,7 +761,8 @@ To evaluate the closed-loop performance, we accumulate over the whole simulation
     J &= \ui{J}{y} + J_{\Delta\text{u}} + \ui{J}{u}, \label{eq:cl:obj:sum}
   \end{align}
 \end{subequations}
-where $\ui{J}{y}$ is the closed-loop output cost, $\|v\|_Q^2 = v^\intercal Q v$, and $\mathcal{T} = \{0,\, \Ts,\, \ldots,\, (\ui{n}{sim}-1)\Ts\}$ is the set of the sampling instants of the campaign, with $\ui{n}{sim} = 1500$ its length in samples; $J_{\Delta\text{u}}$ is the closed-loop input-increment cost and $\ui{J}{u}$ the closed-loop input-target cost; and $J$ is their sum. The three parts are the closed-loop counterparts of the three terms of~\eqref{eq:of:mpc:obj} and are evaluated with the weights of the tuning that is being reported. 
+where $\ui{J}{y}$ is the closed-loop output cost, $\|v\|_Q^2 = v^\intercal Q v$, and $\mathcal{T} = \{0,\, \Ts,\, \ldots,\, (\ui{n}{sim}-1)\Ts\}$ is the set of the sampling instants of the campaign, with $\ui{n}{sim} = 1500$ its length in samples; $J_{\Delta\text{u}}$ is the closed-loop input-increment cost and $\ui{J}{u}$ the closed-loop input-target cost; and $J$ is their sum. The three parts are the closed-loop counterparts of the three terms of~\eqref{eq:of:mpc:obj} and are evaluated with the weights of the tuning that is being reported.
+\todo{Table~\ref{tab:campaign} now ends at $1250\,\text{s}$ on the same clock as the figures, while this sentence still sets $\ui{n}{sim} = 1500$. The tabulated objectives were summed over $1500$ samples of the unshifted run. Should $\ui{n}{sim}$ stay $1500$, or become $1250$ with the objectives recomputed on that window?} 
 %A large $\ui{J}{y}$ means that the plant spends time away from the requested grade, which in a campaign is off-specification product, whereas a large $J_{\Delta\text{u}}$ or $\ui{J}{u}$ means that the duties and the flow rates are moved far and held far from the economically preferred operating point, which is paid for in utilities and in throughput.
 
 The target optimization~\eqref{eq:cs:target} and the MPC problem~\eqref{eq:cs:mpc} are quadratic programs, formulated in CVXPY and solved with Gurobi~\cite{gurobi}. The decoder $h(\ui{z}{LP})$ and its Jacobian $H(\ui{z}{LP})$ are evaluated in PyTorch~\cite{paszke2019pytorch} at every sampling instant. 
@@ -771,31 +772,30 @@ All closed-loop runs were carried out on a Mac mini with an Apple M4 Pro process
 \section{Closed-loop results}
 \label{sec:Results}
 
-{\generatedstyle
-In this section, we present and analyze the closed-loop results obtained in the scenario of Sec.~\ref{sec:control-setup}. Four controllers are compared against the nonlinear benchmark, namely the offset-free MPC of Sec.~\ref{sec:easy-mpc} using the subspace model, the same formulation using the Koopman model with the linear decoder, and the proposed formulation of Sec.~\ref{sec:method} in its two variants, linearized at the target of the previous sampling instant as in Algorithm~\ref{alg:closed-loop} and at the current state estimate as in Algorithm~\ref{alg:closed-loop-state}.
-}
-
-\subsection{The effect of block-diagonal transformation}
-
-After this transformation we are able to enhace the performance in optimization as can be seen in Table~\ref{tab:block-diagonal}. This table is done using the formulation of Koopman MPC which can be seen in Sec.~\ref{sec:easy-mpc}. The table shows the decrease in a computational times. Also with this formulation we are able to obtain optimal solution \(100\%\) time during simulation. Contrary, the full Koopman MPC formulation is able to obtain optimal solution only \(26.7\%\) of the time with the rest of the time giving warning, that the solution is suboptimal. We can see also increase in a control performance, which is measured by the objective function value, which is in optimal case arounf \(6\%\) lower. Also the settling time for both levels is lower. 
-\begin{table}[h]
-  \centering
-  \caption{Comparison of structure of problem to solver time and control performance.}
-  \label{tab:block-diagonal}
-  \begin{tabular}{cccccc}
-      \toprule
-        Structure & Time TE/MPC & Optimal? \([\%]\) & OBJ & ST \(h_1\) & ST \(h_2\) \\
-        \midrule
-        Full          & 0.2392 / 2.3884 & 26.7 & 100.0 & 43 & 48 \\
-        Block Diagonal & 0.2191 / 1.6204 & 100.0 & 94.1 & 25 & 31 \\
-        \bottomrule
-  \end{tabular}
-\end{table}
+In this section, we report the closed-loop results of the simulation scenario of Sec.~\ref{sec:control-setup}. Four controllers are compared, namely the offset-free MPC of Sec.~\ref{sec:easy-mpc} using the N4SID model, the same formulation using the Koopman model with the linear decoder, and the proposed formulation of Sec.~\ref{sec:method} in its two variants, linearized at the target of the previous sampling instant as in Algorithm~\ref{alg:closed-loop} and at the current state estimate as in Algorithm~\ref{alg:closed-loop-state}. The N4SID controller is the reference to which the closed-loop objective is normalized, as a representation of the industrial benchmark. Fig.~\ref{fig:cl-trajectories} and Fig.~\ref{fig:cl-inputs} show the controlled outputs and the manipulated variables in the original setup~\eqref{eq:cl:weights}, Table~\ref{tab:cl-original} lists the closed-loop objective~\eqref{eq:cl:obj} and its three parts in the same setup. The interpretation of these results is given in Sec.~\ref{sec:discussion}.
 
 
-The second option how to obtain the block diagonal structure is to learn the Koopman operator directly in the block diagonal form. This can be done by limiting the number of learnable parameters in a Koopman matrix during training to those that are in the block diagonal form. This also speeds the training as less parameters are learned.
+% \subsection{The effect of block-diagonal transformation}
 
-To obtain an optimal performance, which is neccessary for the real time control, we are proposing to use the block diagonal structure of the Koopman operator. There is no neccessity to use the full Koopman operator, as the block diagonal structure is able to capture the same dynamics of the system and favors the optimization performance. The way this structure is obtained, during or after the training, is not important, as long as the Koopman operator is in the block diagonal form.
+% After this transformation we are able to enhace the performance in optimization as can be seen in Table~\ref{tab:block-diagonal}. This table is done using the formulation of Koopman MPC which can be seen in Sec.~\ref{sec:easy-mpc}. The table shows the decrease in a computational times. Also with this formulation we are able to obtain optimal solution \(100\%\) time during simulation. Contrary, the full Koopman MPC formulation is able to obtain optimal solution only \(26.7\%\) of the time with the rest of the time giving warning, that the solution is suboptimal. We can see also increase in a control performance, which is measured by the objective function value, which is in optimal case arounf \(6\%\) lower. Also the settling time for both levels is lower. 
+% \begin{table}[h]
+%   \centering
+%   \caption{Comparison of structure of problem to solver time and control performance.}
+%   \label{tab:block-diagonal}
+%   \begin{tabular}{cccccc}
+%       \toprule
+%         Structure & Time TE/MPC & Optimal? \([\%]\) & OBJ & ST \(h_1\) & ST \(h_2\) \\
+%         \midrule
+%         Full          & 0.2392 / 2.3884 & 26.7 & 100.0 & 43 & 48 \\
+%         Block Diagonal & 0.2191 / 1.6204 & 100.0 & 94.1 & 25 & 31 \\
+%         \bottomrule
+%   \end{tabular}
+% \end{table}
+
+
+% The second option how to obtain the block diagonal structure is to learn the Koopman operator directly in the block diagonal form. This can be done by limiting the number of learnable parameters in a Koopman matrix during training to those that are in the block diagonal form. This also speeds the training as less parameters are learned.
+
+% To obtain an optimal performance, which is neccessary for the real time control, we are proposing to use the block diagonal structure of the Koopman operator. There is no neccessity to use the full Koopman operator, as the block diagonal structure is able to capture the same dynamics of the system and favors the optimization performance. The way this structure is obtained, during or after the training, is not important, as long as the Koopman operator is in the block diagonal form.
 
 
 % \subsection{Simulation setups}
@@ -876,114 +876,109 @@ To obtain an optimal performance, which is neccessary for the real time control,
 %   \end{tabular}
 % \end{table}
 
-{\generatedstyle
-\subsection{Closed-loop performance of the grade campaign}
-\label{sec:results:cl}
-
-\genopen
-Fig.~\ref{fig:cl-trajectories} shows the controlled outputs over the whole campaign for the original setup~\eqref{eq:cl:weights}, Fig.~\ref{fig:cl-inputs} shows the manipulated variables, and Tables~\ref{tab:cl-original}--\ref{tab:cl-qy-half} report the closed-loop objective~\eqref{eq:cl:obj} and its three parts for the three tunings of Sec.~\ref{sec:control-setup}.
-\genclose
+% \subsection{Closed-loop performance of the grade campaign}
+% \label{sec:results:cl}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/cl_trajectories.pdf}
-  \caption{\textgenerated{\genopen Closed-loop outputs of the grade campaign in the original setup. The panels are $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$. The black dashed line is the setpoint, the solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the two grade changes at $350\,\text{s}$ and $1000\,\text{s}$ and the two unmeasured feed upsets at $600\,\text{s}$ and $850\,\text{s}$. \genclose}}
+  \caption{Closed-loop outputs of the simulation scenario. The black dashed line is the setpoint, the dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the setpoint changes and the feed disturbances listed in Table~\ref{tab:campaign}.}
   \label{fig:cl-trajectories}
 \end{figure}
 
-{\renewcommand{\gensource}{grok4.7}\genopen
-On the runs of Table~\ref{tab:cl-original}, every controller tracks both grade changes, and the offset in $x_{\text{B}3}$ is removed on both holds. The nonlinear benchmark, which is informed of the new feed conditions, has a peak temperature deviation of $0.16\,\text{K}$ after the cold-feed upset. The identified-model controllers reach peak deviations of $0.5$ to $0.94\,\text{K}$ on the same interval, and the largest of them, $0.94\,\text{K}$ on $T_3$, belongs to the two proposed linearizations; after the lean-feed upset the peaks stay between $0.2$ and $0.5\,\text{K}$. On the premium hold the N4SID controller keeps a temperature offset of $0.25$ to $0.36\,\text{K}$, and on the return to the nominal grade that offset is $0.15$ to $0.20\,\text{K}$. The Koopman controller with the linear decoder keeps an offset of about $0.05\,\text{K}$ on the premium hold. Both proposed linearizations sit on the temperature setpoints during the holds, and the two series nearly coincide except at the grade-change transients.
-\genclose}
+% \genopen
+% As can be seen in Fig.~\ref{fig:cl-trajectories}, all four controllers follow both grade changes. The bottoms quality $x_{\text{B}3}$ enters the band of $\pm 0.005$ around its setpoint within $18$ to $24\,\text{s}$ after either change, with small differences between the controllers. The temperatures differ more. Taking as the settling time the instant after which a temperature remains within $0.1\,\text{K}$ of its setpoint, both proposed variants settle within $27$ to $58\,\text{s}$ after either grade change, whereas the Koopman controller with the linear decoder needs $155$ to $176\,\text{s}$. The temperatures of the N4SID controller do not enter this band within $250\,\text{s}$ after either change. Over the last $30\,\text{s}$ before the colder feed at $350\,\text{s}$, they deviate from their setpoints by $0.22$ to $0.33\,\text{K}$, and over the last $30\,\text{s}$ of the plotted interval by $0.15$ to $0.22\,\text{K}$. Over the same two windows, the deviations of the linear-decoder controller are approximately $0.03\,\text{K}$ and $0.04\,\text{K}$, and those of both proposed variants are below $0.001\,\text{K}$. The close-up in the right-hand column shows that the two proposed variants nearly coincide after the return to the nominal grade, while the N4SID and the linear-decoder controllers approach the temperature setpoints more slowly.
+% \genclose
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.95\linewidth]{figures/cl_inputs.pdf}
-  \caption{\textgenerated{\genopen Closed-loop manipulated variables of the grade campaign in the original setup. The panels are $Q_1$, $Q_2$, $Q_3$, and $F_{10}$. The solid black line is the nonlinear benchmark, the dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}, and the grey bands are the input bounds of Table~\ref{tab:cstr-sep-inputs}. \genclose}}
+  \caption{Closed-loop manipulated variables of the simulation scenario. The dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the target of the previous sampling instant. The grey vertical lines mark the setpoint changes and the feed disturbances listed in Table~\ref{tab:campaign}, and the grey bands are the input bounds of Table~\ref{tab:cstr-sep-inputs}.}
   \label{fig:cl-inputs}
 \end{figure}
 
-\genopen
-As can be seen in Fig.~\ref{fig:cl-inputs}, the subspace controller departs more from the nonlinear benchmark on the manipulated variables. Both proposed linearizations stay close to the nonlinear benchmark, closer than the MPC that uses the Koopman model with the linear decoder, and none of the plotted inputs leaves the identification box of Table~\ref{tab:cstr-sep-inputs}.
-\genclose
+% \genopen
+% As can be seen in Fig.~\ref{fig:cl-inputs}, all inputs remain inside the identification box of Table~\ref{tab:cstr-sep-inputs}. The fresh feed $F_{10}$ is the only input that reaches a bound, namely the upper bound at the change to the premium grade and the lower bound at the return to the nominal grade, in both cases for a few sampling instants and for all four controllers. After the change to the premium grade, the linear-decoder controller lowers $Q_1$ to $0.6\,\text{kJ/s}$, close to its lower bound, whereas the other three controllers keep $Q_1$ above $4.3\,\text{kJ/s}$. The close-up shows that, after the return to the nominal grade, $Q_1$ and $Q_2$ oscillate more for the N4SID and the linear-decoder controllers than for the two proposed variants.
+% \genclose
 
-\genopen
-Fig.~\ref{fig:cl-disturbances} shows the four components of the output disturbance estimate $\hat{d}(t)$ for the linear MPCs. After each grade change the two LTI controllers accumulate several kelvin of correction on the temperatures, which is the amount by which those models miss the new steady state of the plant. The proposed controllers keep a smaller estimate over the same intervals, and the two linearization points nearly coincide except at the second grade change. Both feed upsets produce a further jump in $\hat{d}(t)$, since the observer is the only path through which those plant changes enter the control problem.
-\genclose
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.95\linewidth]{figures/cl_disturbances.pdf}
-  \caption{\textgenerated{\genopen Output disturbance estimates $\hat{d}(t)$ of the four linear MPCs in the original setup, expressed in the physical output units. The four panels correspond to $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$. The dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the previous target. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}. \genclose}}
-  \label{fig:cl-disturbances}
-\end{figure}
-\todo{The disturbance panels are the stored scaled $\hat{d}(t)$ multiplied by the output scaler, so the units are K and mass fraction. Switch the figure to standardized coordinates if that is the intended comparison.}
+% \begin{figure}[htbp]
+%   \centering
+%   \includegraphics[width=0.95\linewidth]{figures/cl_disturbances.pdf}
+%   \caption{\textgenerated{\genopen Output disturbance estimates $\hat{d}(t)$ of the four linear MPCs in the original setup, expressed in the physical output units. The four panels correspond to $T_1$, $T_2$, $T_3$, and $x_{\text{B}3}$. The dotted \textcolor{parsimk}{green} line is the MPC using the N4SID model, the dashed \textcolor{koopmanc}{orange} line is the MPC using the Koopman model with the linear decoder, the dashed \textcolor{koopmanb}{purple} line is the proposed formulation linearized at the current state estimate, and the dash-dotted \textcolor{deepkoopman}{red} line is the proposed formulation linearized at the previous target. The grey vertical lines mark the same grade changes and feed upsets as in Fig.~\ref{fig:cl-trajectories}. \genclose}}
+%   \label{fig:cl-disturbances}
+% \end{figure}
+% \todo{The disturbance panels are the stored scaled $\hat{d}(t)$ multiplied by the output scaler, so the units are K and mass fraction. Switch the figure to standardized coordinates if that is the intended comparison.}
 
 \begin{table}[h]
   \centering
   \small
   \setlength{\tabcolsep}{5pt}
-  \caption{Closed-loop performance in the original setup~\eqref{eq:cl:weights}. The three parts of the objective function are the ones defined in~\eqref{eq:cl:obj}, and the last column is normalized so that $100\%$ stands for the performance of the nonlinear benchmark, which uses the exact plant model.}
+  \caption{Closed-loop performance in the original setup~\eqref{eq:cl:weights}. The three parts of the objective function are the ones defined in~\eqref{eq:cl:obj}, and the last column is normalized so that $100\%$ stands for the performance of the N4SID controller.}
   \label{tab:cl-original}
   \begin{tabular}{lrrrrr}
     \toprule
-    Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
+    Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{N4SID}$ [\%] \\
     \midrule
-    Nonlinear MPC, exact model & 91.0 & 8.5 & 7.6 & 107.1 & 100.0 \\
-    N4SID, order $6$ & 102.0 & 12.9 & 22.3 & 137.1 & 128.1 \\
-    Koopman, linear $h$ & 104.6 & 8.5 & 12.6 & 125.8 & 117.5 \\
-    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 93.2 & 9.0 & 9.3 & 111.5 & 104.1 \\
-    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 92.9 & 9.1 & 10.2 & 112.2 & 104.8 \\
+    %Nonlinear MPC, exact model & 91.0 & 8.5 & 7.6 & 107.1 & 100.0 \\
+    N4SID, order $6$ & 102.0 & 12.9 & 22.3 & 137.1 & 100.0 \\
+    Koopman, linear $h$ & 104.6 & 8.5 & 12.6 & 125.8 & 91.8 \\
+    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 93.2 & 9.0 & 9.3 & 111.5 & 81.3 \\
+    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 92.9 & 9.1 & 10.2 & 112.2 & 81.8 \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-\begin{table}[h]
+% \begin{table}[h]
+%   \centering
+%   \small
+%   \setlength{\tabcolsep}{5pt}
+%   \caption{Closed-loop performance with the output weight multiplied by five, $\ui{Q}{y} = \diag([10,\, 10,\, 10,\, 75])$, and the remaining weights of~\eqref{eq:cl:weights} unchanged. The columns have the same meaning as in Table~\ref{tab:cl-original}, and the objective function is accumulated with the weights of this tuning.}
+%   \label{tab:cl-qy}
+%   \begin{tabular}{lrrrrr}
+%     \toprule
+%     Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
+%     \midrule
+%     Nonlinear MPC, exact model & 431.3 & 12.8 & 11.5 & 455.6 & 100.0 \\
+%     N4SID, order $6$ & 526.6 & 24.5 & 52.9 & 604.0 & 132.6 \\
+%     Koopman, linear $h$ & 553.4 & 17.6 & 34.9 & 605.9 & 133.0 \\
+%     Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 455.0 & 19.8 & 29.5 & 504.3 & 110.7 \\
+%     Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 456.7 & 27.0 & 36.9 & 520.6 & 114.3 \\
+%     \bottomrule
+%   \end{tabular}
+% \end{table}
+
+% \begin{table}[h]
+%   \centering
+%   \small
+%   \setlength{\tabcolsep}{5pt}
+%   \caption{Closed-loop performance with the output weight divided by five, $\ui{Q}{y} = \diag([0.4,\, 0.4,\, 0.4,\, 3])$, and the remaining weights of~\eqref{eq:cl:weights} unchanged. The columns have the same meaning as in Table~\ref{tab:cl-original}, and the objective function is accumulated with the weights of this tuning.}
+%   \label{tab:cl-qy-half}
+%   \begin{tabular}{lrrrrr}
+%     \toprule
+%     Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
+%     \midrule
+%     Nonlinear MPC, exact model & 23.2 & 2.7 & 2.1 & 28.0 & 100.0 \\
+%     N4SID, order $6$ & 25.1 & 5.8 & 7.8 & 38.7 & 138.2 \\
+%     Koopman, linear $h$ & 24.0 & 2.8 & 3.2 & 30.0 & 107.1 \\
+%     Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 23.4 & 2.8 & 2.2 & 28.4 & 101.2 \\
+%     Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 23.5 & 2.7 & 2.1 & 28.3 & 101.0 \\
+%     \bottomrule
+%   \end{tabular}
+% \end{table}
+
+
+Table~\ref{tab:cl-original} lists the closed-loop objective in the original setup. Compared with the industrial benchmark, represented by the MPC using the N4SID model, the proposed variants linearized at the previous target and at the current state estimate improve the closed-loop performance by $18.7\%$ and $18.2\%$, respectively. Compared with the state-of-the-art deep Koopman MPC, which uses the linear decoder and reaches $8.2\%$ improvement over the N4SID objective, the proposed variants improve the closed-loop performance by a further $10.5\%$ and $10.0\%$, respectively.
+
+
+\begin{figure}[htbp]
   \centering
-  \small
-  \setlength{\tabcolsep}{5pt}
-  \caption{Closed-loop performance with the output weight multiplied by five, $\ui{Q}{y} = \diag([10,\, 10,\, 10,\, 75])$, and the remaining weights of~\eqref{eq:cl:weights} unchanged. The columns have the same meaning as in Table~\ref{tab:cl-original}, and the objective function is accumulated with the weights of this tuning.}
-  \label{tab:cl-qy}
-  \begin{tabular}{lrrrrr}
-    \toprule
-    Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
-    \midrule
-    Nonlinear MPC, exact model & 431.3 & 12.8 & 11.5 & 455.6 & 100.0 \\
-    N4SID, order $6$ & 526.6 & 24.5 & 52.9 & 604.0 & 132.6 \\
-    Koopman, linear $h$ & 553.4 & 17.6 & 34.9 & 605.9 & 133.0 \\
-    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 455.0 & 19.8 & 29.5 & 504.3 & 110.7 \\
-    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 456.7 & 27.0 & 36.9 & 520.6 & 114.3 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+  \includegraphics[width=0.95\linewidth]{figures/cl_cost_bars.pdf}
+  \caption{ Closed-loop objective $J$ divided by the objective of the Koopman controller with the linear decoder at the same tuning. The \textcolor{koopmanc}{orange} bars are the linear decoder, the \textcolor{deepkoopman}{red} bars the proposed formulation linearized at the previous target, and the \textcolor{koopmanb}{purple} bars the proposed formulation linearized at the current state estimate.}
+  \label{fig:cl-cost-bars}
+\end{figure}
 
-\begin{table}[h]
-  \centering
-  \small
-  \setlength{\tabcolsep}{5pt}
-  \caption{Closed-loop performance with the output weight divided by five, $\ui{Q}{y} = \diag([0.4,\, 0.4,\, 0.4,\, 3])$, and the remaining weights of~\eqref{eq:cl:weights} unchanged. The columns have the same meaning as in Table~\ref{tab:cl-original}, and the objective function is accumulated with the weights of this tuning.}
-  \label{tab:cl-qy-half}
-  \begin{tabular}{lrrrrr}
-    \toprule
-    Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{NMPC}$ [\%] \\
-    \midrule
-    Nonlinear MPC, exact model & 23.2 & 2.7 & 2.1 & 28.0 & 100.0 \\
-    N4SID, order $6$ & 25.1 & 5.8 & 7.8 & 38.7 & 138.2 \\
-    Koopman, linear $h$ & 24.0 & 2.8 & 3.2 & 30.0 & 107.1 \\
-    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 23.4 & 2.8 & 2.2 & 28.4 & 101.2 \\
-    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 23.5 & 2.7 & 2.1 & 28.3 & 101.0 \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+To assess the sensitivity of these results to the tuning, the campaign was repeated with the output weight divided by five, $\ui{Q}{y} = \diag([0.4,\, 0.4,\, 0.4,\, 3])$, and multiplied by five, $\ui{Q}{y} = \diag([10,\, 10,\, 10,\, 75])$, with the remaining weights of~\eqref{eq:cl:weights} unchanged and the objective accumulated with the weights of each tuning. Fig.~\ref{fig:cl-cost-bars} shows the total objective of the two proposed variants relative to the linear-decoder controller at the same tuning. With $\ui{Q}{y}$ divided by five, the variants linearized at the previous target and at the current state estimate reach $94.7\%$ and $94.3\%$, respectively. In the original setup they reach $88.6\%$ and $89.2\%$, and with $\ui{Q}{y}$ multiplied by five they reach $83.2\%$ and $85.9\%$. The relative objective of both variants thus decreases as the output weight increases. This is expected, as the improvement of proposed method lies in the output map, so when the outputs are more penalized, it has a greater improvement compared to lower penalization of outputs.
 
-{\renewcommand{\gensource}{grok4.7}\genopen
-Table~\ref{tab:cl-original} measures each identified model against the nonlinear benchmark. With the original weights the N4SID controller reaches $128.1\%$ of the benchmark objective, the Koopman controller with the linear decoder reaches $117.5\%$, and the proposed linearizations at the previous target and at the current state estimate reach $104.1\%$ and $104.8\%$. The nonlinear output mapping therefore accounts for thirteen percentage points of the objective against the standard Koopman MPC of Sec.~\ref{sec:easy-mpc}, taken at the previous-target linearization. The two controllers share the scenario, the tuning, the constraints, and the disturbance sequence, and they differ in the model and in the way the outputs are recovered from the lifted state. The subspace controller is the most expensive of the five, and the largest part of its excess is $\ui{J}{u}$.
-\genclose}
-
-{\renewcommand{\gensource}{grok4.7}\genopen
-The three tunings ask whether that gain grows with the share of $\ui{J}{y}$. The proposed formulation replaces the linear recovery $y_k = C z_k$ by the first-order expansion of the decoder, both in the weighting matrix~\eqref{eq:cs:Qz} and in the output constraints~\eqref{eq:cs:mpc:y}. When $\ui{Q}{y}$ is multiplied by five, the previous-target linearization reaches $110.7\%$ of the benchmark and the linear-decoder controller reaches $133.0\%$, so the gap widens. When $\ui{Q}{y}$ is divided by five, the same two controllers reach $101.2\%$ and $107.1\%$, so the gap shrinks. The linearization at the current state estimate reaches $114.3\%$ at the higher output weight, where its input cost is $36.9$ against $29.5$ for the previous target, and $101.0\%$ at the lower weight, where the two variants differ by $0.2$ percentage points. The previous target is the linearization point with the lower objective at the original weights and at the higher output weight. At the lower weight the current-state linearization is lower, by $0.2$ percentage points. Both variants remain above the benchmark.
-\genclose}
-
-}
 
 % % \begin{table}[h]
 % %   \centering
@@ -1151,6 +1146,29 @@ The three tunings ask whether that gain grows with the share of $\ui{J}{y}$. The
 
 \section{Discussion}
 \label{sec:discussion}
+
+{\renewcommand{\gensource}{claude-opus-5.5}\generatedstyle
+\genopen
+In this section, we interpret the closed-loop results of Sec.~\ref{sec:Results}. The comparison between the Koopman controller with the linear decoder and the proposed formulation isolates the effect of the output mapping, since both controllers share the scenario, the tuning, the constraints, and the disturbance sequence, and they differ only in the model and in the way the outputs are recovered from the lifted state. The proposed formulation replaces the linear recovery $y_k = C z_k$ by the first-order expansion of the decoder, both in the weighting matrix~\eqref{eq:cs:Qz} and in the output constraints~\eqref{eq:cs:mpc:y}. In the original setup, this replacement lowers the closed-loop objective from $91.8\%$ to $81.3\%$ of the N4SID objective at the previous-target linearization. Most of this reduction comes from the output cost $\ui{J}{y}$, which is consistent with the faster settling of the temperatures after both grade changes in Fig.~\ref{fig:cl-trajectories}. The resulting objective is only $4.1\%$ above that of a nonlinear MPC that uses the exact process model and is informed of every feed upset at the instant at which it is applied, which is the practical bound of this comparison.
+\genclose
+
+\genopen
+The residual temperature deviations of the N4SID controller and, to a smaller extent, of the linear-decoder controller during the holds do not contradict the offset-free design, which removes the offset only once the disturbance estimate $\hat{d}(t)$ has converged. A model that misses the steady state of the plant at the new grade requires a larger correction through $\hat{d}(t)$, and the deviation persists for as long as this correction is building up. Both proposed variants reach the temperature setpoints within one minute, so that the offset-free property becomes visible well within each hold.
+\genclose
+
+\genopen
+The proposed formulation does not improve the rejection of the feed upsets. After the colder feed, both proposed variants show the largest temperature deviation of the four controllers, and after the leaner feed the linear-decoder controller shows the smallest one. The linear-decoder controller also has the lowest input-increment cost $J_{\Delta\text{u}}$ in Table~\ref{tab:cl-original}. Both upsets act on the plant only and enter the control problem solely through $\hat{d}(t)$, and the two proposed variants respond to them almost identically, which indicates that the linearization point has little influence on the rejection of a disturbance at a fixed operating point. The advantage of the proposed formulation is therefore concentrated in the transitions between operating points, where the nonlinearity of the output mapping matters most.
+\genclose
+
+\genopen
+The gain of the proposed formulation grows with the share of $\ui{J}{y}$ in the objective. Since the formulation changes only how the outputs enter the control problem, its effect on the closed-loop objective is expected to scale with the weight on the outputs, which agrees with the relative objective in Fig.~\ref{fig:cl-cost-bars} decreasing from approximately $94\%$ to $83\%$ as $\ui{Q}{y}$ increases twenty-five-fold. Conversely, when the input terms dominate the objective, the linear decoder loses little against the proposed formulation.
+\genclose
+
+\genopen
+The choice of the linearization point has a smaller effect on the objective than the choice of the output mapping. In the original setup and at the lower output weight, the two variants differ by at most $0.6$ percentage points, and only at the higher output weight does the previous target give a clearly lower objective, mainly through the input-target cost. This is consistent with the argument of Sec.~\ref{sec:method} that the target of the previous sampling instant closely approximates the steady-state lifted state at which the target optimization evaluates the output equation. As a consequence, the linearization at the previous target is the preferred variant in this case study, since it achieves a comparable or lower objective while evaluating a single Jacobian that is shared by the observer, the target optimizer, and the MPC problem.
+\genclose
+}
+
 \section{Conclusion}
 
 \bibliographystyle{elsarticle-harv}
