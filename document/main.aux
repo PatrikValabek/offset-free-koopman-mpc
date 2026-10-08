@@ -33,25 +33,25 @@
 \citation{korda2018linear}
 \citation{chen2022offset}
 \citation{pan2024offset}
-\newlabel{eq:koopman:lift}{{5}{3}{Koopman operator}{equation.2.5}{}}
 \citation{lusch2018deep}
+\newlabel{eq:koopman:lift}{{5}{3}{Koopman operator}{equation.2.5}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Architecture of the deep Koopman operator for nonautonomous systems.\relax }}{4}{figure.caption.1}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{fig:DK-nonautonomous}{{1}{4}{Architecture of the deep Koopman operator for nonautonomous systems.\relax }{figure.caption.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {3}Offset-free Koopman MPC}{4}{section.3}\protected@file@percent }
 \newlabel{sec:easy-mpc}{{3}{4}{Offset-free Koopman MPC}{section.3}{}}
+\newlabel{eq:target:opt}{{6}{4}{Offset-free Koopman MPC}{equation.3.6}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Architecture of the deep Koopman operator for a nonautonomous system with the linear approximation of the output map. This approximation is required for the MPC problem to remain a quadratic program.\relax }}{5}{figure.caption.2}\protected@file@percent }
 \newlabel{fig:DK-linear}{{2}{5}{Architecture of the deep Koopman operator for a nonautonomous system with the linear approximation of the output map. This approximation is required for the MPC problem to remain a quadratic program.\relax }{figure.caption.2}{}}
-\newlabel{eq:target:opt}{{6}{5}{Offset-free Koopman MPC}{equation.3.6}{}}
 \newlabel{eq:target:opt:obj}{{6a}{5}{Offset-free Koopman MPC}{equation.3.1}{}}
 \newlabel{eq:target:opt:z}{{6b}{5}{Offset-free Koopman MPC}{equation.3.2}{}}
 \newlabel{eq:target:opt:y}{{6c}{5}{Offset-free Koopman MPC}{equation.3.3}{}}
 \newlabel{eq:target:opt:u}{{6d}{5}{Offset-free Koopman MPC}{equation.3.4}{}}
 \newlabel{eq:target:opt:ycon}{{6e}{5}{Offset-free Koopman MPC}{equation.3.5}{}}
 \newlabel{eq:target:opt:params}{{6f}{5}{Offset-free Koopman MPC}{equation.3.6}{}}
+\newlabel{eq:of:mpc}{{7}{5}{Offset-free Koopman MPC}{equation.3.7}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces  Basic closed-loop control structure of the offset-free MPC. The observer receives the measured output $y$ and the applied input $u$ and delivers the lifted state estimate $\hat  {z}$ and the disturbance estimate $\hat  {d}$. The target optimization receives $\hat  {d}$ together with the setpoint $y_\text  {sp}$ and delivers the steady-state target $\bar  {y}$, and the MPC block receives $\bar  {y}$, $\hat  {z}$, and $\hat  {d}$ and delivers the input $u$ applied to the plant. \relax }}{6}{figure.caption.3}\protected@file@percent }
 \newlabel{fig:close_loop}{{3}{6}{Basic closed-loop control structure of the offset-free MPC. The observer receives the measured output $y$ and the applied input $u$ and delivers the lifted state estimate $\hat {z}$ and the disturbance estimate $\hat {d}$. The target optimization receives $\hat {d}$ together with the setpoint $y_\text {sp}$ and delivers the steady-state target $\bar {y}$, and the MPC block receives $\bar {y}$, $\hat {z}$, and $\hat {d}$ and delivers the input $u$ applied to the plant. \relax }{figure.caption.3}{}}
-\newlabel{eq:of:mpc}{{7}{7}{Offset-free Koopman MPC}{equation.3.7}{}}
 \newlabel{eq:of:mpc:obj}{{7a}{7}{Offset-free Koopman MPC}{equation.3.1}{}}
 \newlabel{eq:of:mpc:z}{{7b}{7}{Offset-free Koopman MPC}{equation.3.2}{}}
 \newlabel{eq:of:mpc:y}{{7c}{7}{Offset-free Koopman MPC}{equation.3.3}{}}
@@ -65,7 +65,7 @@
 \newlabel{eq:linearization}{{8}{8}{Linearization of the output mapping}{equation.4.8}{}}
 \newlabel{eq:linearization:target}{{8a}{8}{Linearization of the output mapping}{equation.4.1}{}}
 \newlabel{eq:linearization:state}{{8b}{8}{Linearization of the output mapping}{equation.4.2}{}}
-\newlabel{eq:linearization:affine}{{9}{9}{Linearization of the output mapping}{equation.4.9}{}}
+\newlabel{eq:linearization:affine}{{9}{8}{Linearization of the output mapping}{equation.4.9}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Target optimization}{9}{subsection.4.2}\protected@file@percent }
 \newlabel{eq:cs:target}{{10}{9}{Target optimization}{equation.4.10}{}}
 \newlabel{eq:cs:target:obj}{{10a}{10}{Target optimization}{equation.4.1}{}}
@@ -140,8 +140,8 @@
 \@writefile{toc}{\contentsline {section}{\numberline {6}Control setup}{21}{section.6}\protected@file@percent }
 \newlabel{sec:control-setup}{{6}{21}{Control setup}{section.6}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Simulation scenario and disturbances}{21}{subsection.6.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Schedule of the closed-loop campaign. Each row lists the output setpoints and the fresh-feed conditions in force from the given time onwards, and the simulation ends at $t = 1250\,\text  {s}$. The feed conditions act on the plant only and are not measured by any controller.\relax }}{22}{table.caption.8}\protected@file@percent }
-\newlabel{tab:campaign}{{4}{22}{Schedule of the closed-loop campaign. Each row lists the output setpoints and the fresh-feed conditions in force from the given time onwards, and the simulation ends at $t = 1250\,\text {s}$. The feed conditions act on the plant only and are not measured by any controller.\relax }{table.caption.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Schedule of the closed-loop campaign. Each row lists the output setpoints and the fresh-feed conditions in force from the given time onwards, and the simulation ends at \textcolor {generated}{\bfseries  \boldmath  {\scriptsize  [claude-opus-5.5]} $t = 1000\,\text  {s}$ {\scriptsize  [/claude-opus-5.5]}}. The feed conditions act on the plant only and are not measured by any controller.\relax }}{22}{table.caption.8}\protected@file@percent }
+\newlabel{tab:campaign}{{4}{22}{Schedule of the closed-loop campaign. Each row lists the output setpoints and the fresh-feed conditions in force from the given time onwards, and the simulation ends at \textgenerated {{\scriptsize [claude-opus-5.5]} $t = 1000\,\text {s}$ {\scriptsize [/claude-opus-5.5]}}. The feed conditions act on the plant only and are not measured by any controller.\relax }{table.caption.8}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Tuning}{22}{subsection.6.2}\protected@file@percent }
 \newlabel{eq:cl:weights}{{20}{22}{Tuning}{equation.6.20}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Observers}{22}{subsection.6.3}\protected@file@percent }

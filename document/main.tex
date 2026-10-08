@@ -284,7 +284,6 @@ Neither the state nor the disturbance is measured, and both are therefore recons
 The Koopman operator theory was introduced by~\cite{koopman1931hamiltonian} and popularized by~\cite{mezic2005spectral}. The theory represents a nonlinear system exactly by a linear operator, by lifting its states or measurements into an infinite-dimensional space in which the lifted variables evolve linearly.
 \todo{Intro?}
 
-{\generatedstyle\renewcommand{\gensource}{opus5}\genopen
 Consider the nonlinear discrete-time system with control
 \begin{equation}
   \label{eq:koopman:sys}
@@ -303,7 +302,6 @@ Any practical use of~\eqref{eq:koopman:def} therefore restricts $\mathcal{F}$ to
   z_k = g(x_k) = \left[ \psi_1(x_k),\; \ldots,\; \psi_{n_z}(x_k) \right]^\intercal,
 \end{equation}
 where $g$ is the vector-valued lifting map that collects the $n_z$ retained lifting functions and $z_k \in \mathbb{R}^{n_z}$ is the lifted state. Under this restriction, and with the dependence on the input assumed to be affine, the operator $\mathcal{K}$ reduces to a finite-dimensional linear model in the lifted coordinates that is driven by the input through a constant matrix, which is the structure stated in Sec.~\ref{sec:easy-mpc} and the one that keeps the MPC problem a quadratic program. The model is exact only if the span of $\psi_1, \ldots, \psi_{n_z}$ is invariant under $\mathcal{K}$, so the choice of the lifting functions determines its accuracy, which is why they are identified from data in this work rather than picked from a fixed library. The state $x_k$ of the controlled plant is not measured here, and the lifting map is consequently evaluated at the measured output, $z_k = g(y_k)$ with $g : \mathbb{R}^{n_y} \to \mathbb{R}^{n_z}$.
-\genclose}
 
 
 Over the years, many data-driven approximations of the Koopman operator have been proposed, starting with the connection between the dynamic mode decomposition (DMD) and the Koopman operator theory established by~\cite{rowley2009spectral} and extended to the extended DMD (EDMD) by~\cite{williams2015data}. More recently, neural networks have been used to approximate the lifting functions, so that the lifted system evolves linearly. These algorithms were developed not only for autonomous systems but also for systems with control~\citep{kaiser2021data}. The Koopman operator was brought together with the MPC by~\cite{korda2018linear}, and in recent years almost every kind of MPC has been reformulated to accept an approximation of the Koopman operator, mostly represented as a linear time-invariant (LTI) system in the state-space form. The offset-free version is no exception. \cite{chen2022offset} applied the offset-free control to a soft robot, while~\cite{pan2024offset} applied the same methodology to thermal regulation, which is an application closer to the process control.
@@ -710,7 +708,7 @@ While the premium grade is held, the fresh feed first becomes colder, which repr
   \centering
   \small
   \setlength{\tabcolsep}{3pt}
-  \caption{Schedule of the closed-loop campaign. Each row lists the output setpoints and the fresh-feed conditions in force from the given time onwards, and the simulation ends at $t = 1250\,\text{s}$. The feed conditions act on the plant only and are not measured by any controller.}
+  \caption{Schedule of the closed-loop campaign. Each row lists the output setpoints and the fresh-feed conditions in force from the given time onwards, and the simulation ends at \textgenerated{{\scriptsize[claude-opus-5.5]} $t = 1000\,\text{s}$ {\scriptsize[/claude-opus-5.5]}}. The feed conditions act on the plant only and are not measured by any controller.}
   \label{tab:campaign}
   \begin{tabular}{rlcccccc}
     \toprule
@@ -761,8 +759,7 @@ To evaluate the closed-loop performance, we accumulate over the whole simulation
     J &= \ui{J}{y} + J_{\Delta\text{u}} + \ui{J}{u}, \label{eq:cl:obj:sum}
   \end{align}
 \end{subequations}
-where $\ui{J}{y}$ is the closed-loop output cost, $\|v\|_Q^2 = v^\intercal Q v$, and $\mathcal{T} = \{0,\, \Ts,\, \ldots,\, (\ui{n}{sim}-1)\Ts\}$ is the set of the sampling instants of the campaign, with $\ui{n}{sim} = 1500$ its length in samples; $J_{\Delta\text{u}}$ is the closed-loop input-increment cost and $\ui{J}{u}$ the closed-loop input-target cost; and $J$ is their sum. The three parts are the closed-loop counterparts of the three terms of~\eqref{eq:of:mpc:obj} and are evaluated with the weights of the tuning that is being reported.
-\todo{Table~\ref{tab:campaign} now ends at $1250\,\text{s}$ on the same clock as the figures, while this sentence still sets $\ui{n}{sim} = 1500$. The tabulated objectives were summed over $1500$ samples of the unshifted run. Should $\ui{n}{sim}$ stay $1500$, or become $1250$ with the objectives recomputed on that window?} 
+where $\ui{J}{y}$ is the closed-loop output cost, $\|v\|_Q^2 = v^\intercal Q v$, and $\mathcal{T} = \{0,\, \Ts,\, \ldots,\, (\ui{n}{sim}-1)\Ts\}$ is the set of the sampling instants of the campaign, with {\renewcommand{\gensource}{claude-opus-5.5}\textgenerated{\genopen $\ui{n}{sim} = 1000$\genclose}} its length in samples; $J_{\Delta\text{u}}$ is the closed-loop input-increment cost and $\ui{J}{u}$ the closed-loop input-target cost; and $J$ is their sum. The three parts are the closed-loop counterparts of the three terms of~\eqref{eq:of:mpc:obj} and are evaluated with the weights of the tuning that is being reported.
 %A large $\ui{J}{y}$ means that the plant spends time away from the requested grade, which in a campaign is off-specification product, whereas a large $J_{\Delta\text{u}}$ or $\ui{J}{u}$ means that the duties and the flow rates are moved far and held far from the economically preferred operating point, which is paid for in utilities and in throughput.
 
 The target optimization~\eqref{eq:cs:target} and the MPC problem~\eqref{eq:cs:mpc} are quadratic programs, formulated in CVXPY and solved with Gurobi~\cite{gurobi}. The decoder $h(\ui{z}{LP})$ and its Jacobian $H(\ui{z}{LP})$ are evaluated in PyTorch~\cite{paszke2019pytorch} at every sampling instant. 
@@ -920,10 +917,10 @@ In this section, we report the closed-loop results of the simulation scenario of
     Controller & $\ui{J}{y}$ & $J_{\Delta\text{u}}$ & $\ui{J}{u}$ & $J$ & $J/\ui{J}{N4SID}$ [\%] \\
     \midrule
     %Nonlinear MPC, exact model & 91.0 & 8.5 & 7.6 & 107.1 & 100.0 \\
-    N4SID, order $6$ & 102.0 & 12.9 & 22.3 & 137.1 & 100.0 \\
-    Koopman, linear $h$ & 104.6 & 8.5 & 12.6 & 125.8 & 91.8 \\
-    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 93.2 & 9.0 & 9.3 & 111.5 & 81.3 \\
-    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 92.9 & 9.1 & 10.2 & 112.2 & 81.8 \\
+    N4SID, order $6$ & 101.7 & 12.7 & 21.9 & 136.3 & 100.0 \\
+    Koopman, linear $h$ & 104.6 & 8.5 & 12.6 & 125.8 & 92.2 \\
+    Proposed, $\ui{z}{LP} = \bar{z}(t-\Ts)$ & 93.2 & 9.0 & 9.3 & 111.5 & 81.8 \\
+    Proposed, $\ui{z}{LP} = \hat{z}(t)$ & 92.9 & 9.1 & 10.2 & 112.2 & 82.3 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -967,7 +964,7 @@ In this section, we report the closed-loop results of the simulation scenario of
 % \end{table}
 
 
-Table~\ref{tab:cl-original} lists the closed-loop objective in the original setup. Compared with the industrial benchmark, represented by the MPC using the N4SID model, the proposed variants linearized at the previous target and at the current state estimate improve the closed-loop performance by $18.7\%$ and $18.2\%$, respectively. Compared with the state-of-the-art deep Koopman MPC, which uses the linear decoder and reaches $8.2\%$ improvement over the N4SID objective, the proposed variants improve the closed-loop performance by a further $10.5\%$ and $10.0\%$, respectively.
+Table~\ref{tab:cl-original} lists the closed-loop objective in the original setup. Compared with the industrial benchmark, represented by the MPC using the N4SID model, the proposed variants linearized at the previous target and at the current state estimate improve the closed-loop performance by $18.2\%$ and $17.7\%$, respectively. Compared with the state-of-the-art deep Koopman MPC, which uses the linear decoder and reaches $7.8\%$ improvement over the N4SID objective, the proposed variants improve the closed-loop performance by a further $10.5\%$ and $9.9\%$, respectively.
 
 
 \begin{figure}[htbp]
@@ -977,7 +974,7 @@ Table~\ref{tab:cl-original} lists the closed-loop objective in the original setu
   \label{fig:cl-cost-bars}
 \end{figure}
 
-To assess the sensitivity of these results to the tuning, the campaign was repeated with the output weight divided by five, $\ui{Q}{y} = \diag([0.4,\, 0.4,\, 0.4,\, 3])$, and multiplied by five, $\ui{Q}{y} = \diag([10,\, 10,\, 10,\, 75])$, with the remaining weights of~\eqref{eq:cl:weights} unchanged and the objective accumulated with the weights of each tuning. Fig.~\ref{fig:cl-cost-bars} shows the total objective of the two proposed variants relative to the linear-decoder controller at the same tuning. With $\ui{Q}{y}$ divided by five, the variants linearized at the previous target and at the current state estimate reach $94.7\%$ and $94.3\%$, respectively. In the original setup they reach $88.6\%$ and $89.2\%$, and with $\ui{Q}{y}$ multiplied by five they reach $83.2\%$ and $85.9\%$. The relative objective of both variants thus decreases as the output weight increases. This is expected, as the improvement of proposed method lies in the output map, so when the outputs are more penalized, it has a greater improvement compared to lower penalization of outputs.
+To assess the sensitivity of these results to the tuning, the campaign was repeated with the output weight divided by five, $\ui{Q}{y} = \diag([0.4,\, 0.4,\, 0.4,\, 3])$, and multiplied by five, $\ui{Q}{y} = \diag([10,\, 10,\, 10,\, 75])$, with the remaining weights of~\eqref{eq:cl:weights} unchanged and the objective accumulated with the weights of each tuning. Fig.~\ref{fig:cl-cost-bars} shows the total objective of the two proposed variants relative to the linear-decoder controller at the same tuning. With $\ui{Q}{y}$ divided by five, the variants linearized at the previous target and at the current state estimate reach $94.5\%$ and $94.3\%$, respectively. In the original setup they reach $88.7\%$ and $89.2\%$, and with $\ui{Q}{y}$ multiplied by five they reach $83.2\%$ and $85.9\%$. The relative objective of both variants thus decreases as the output weight increases. This is expected, as the improvement of proposed method lies in the output map, so when the outputs are more penalized, it has a greater improvement compared to lower penalization of outputs.
 
 
 % % \begin{table}[h]
@@ -1149,7 +1146,7 @@ To assess the sensitivity of these results to the tuning, the campaign was repea
 
 {\renewcommand{\gensource}{claude-opus-5.5}\generatedstyle
 \genopen
-In this section, we interpret the closed-loop results of Sec.~\ref{sec:Results}. The comparison between the Koopman controller with the linear decoder and the proposed formulation isolates the effect of the output mapping, since both controllers share the scenario, the tuning, the constraints, and the disturbance sequence, and they differ only in the model and in the way the outputs are recovered from the lifted state. The proposed formulation replaces the linear recovery $y_k = C z_k$ by the first-order expansion of the decoder, both in the weighting matrix~\eqref{eq:cs:Qz} and in the output constraints~\eqref{eq:cs:mpc:y}. In the original setup, this replacement lowers the closed-loop objective from $91.8\%$ to $81.3\%$ of the N4SID objective at the previous-target linearization. Most of this reduction comes from the output cost $\ui{J}{y}$, which is consistent with the faster settling of the temperatures after both grade changes in Fig.~\ref{fig:cl-trajectories}. The resulting objective is only $4.1\%$ above that of a nonlinear MPC that uses the exact process model and is informed of every feed upset at the instant at which it is applied, which is the practical bound of this comparison.
+In this section, we interpret the closed-loop results of Sec.~\ref{sec:Results}. The comparison between the Koopman controller with the linear decoder and the proposed formulation isolates the effect of the output mapping, since both controllers share the scenario, the tuning, the constraints, and the disturbance sequence, and they differ only in the model and in the way the outputs are recovered from the lifted state. The proposed formulation replaces the linear recovery $y_k = C z_k$ by the first-order expansion of the decoder, both in the weighting matrix~\eqref{eq:cs:Qz} and in the output constraints~\eqref{eq:cs:mpc:y}. In the original setup, this replacement lowers the closed-loop objective from $92.2\%$ to $81.8\%$ of the N4SID objective at the previous-target linearization. Most of this reduction comes from the output cost $\ui{J}{y}$, which is consistent with the faster settling of the temperatures after both grade changes in Fig.~\ref{fig:cl-trajectories}. The resulting objective is only $4.1\%$ above that of a nonlinear MPC that uses the exact process model and is informed of every feed upset at the instant at which it is applied, which is the practical bound of this comparison.
 \genclose
 
 \genopen

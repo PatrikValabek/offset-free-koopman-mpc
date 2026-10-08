@@ -320,7 +320,8 @@ def plot_disturbances() -> Path:
 def plot_cost_bars() -> Path:
     """Grouped bars of J / J_{linear h} for three output-weight tunings.
 
-    Costs are the tabulated totals in document/main.tex. Columns are the
+    Costs are accumulated over the plotted window, samples 250 to 1249 of
+    each run, i.e. 0 s to 1000 s on the figure clock. Columns are the
     Koopman model with the linear decoder, the proposed linearization at
     the previous target, and the proposed linearization at the current
     estimate. Each row is divided by the linear-decoder cost of that tuning.
@@ -330,9 +331,9 @@ def plot_cost_bars() -> Path:
     # Cols: linear h, previous target, current estimate.
     costs = np.array(
         [
-            [30.0, 28.4, 28.3],
-            [125.8, 111.5, 112.2],
-            [605.9, 504.3, 520.6],
+            [30.001, 28.351, 28.297],
+            [125.766, 111.495, 112.244],
+            [605.886, 504.273, 520.607],
         ],
         dtype=float,
     )
